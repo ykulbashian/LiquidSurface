@@ -1,7 +1,9 @@
 package com.mycardboarddreams.liquidsurface.sample;
 
+import android.graphics.Point;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Display;
 
 import com.google.fpl.liquidfun.liquidfunJNI;
 import com.mycardboarddreams.liquidsurface.LiquidTextureView;
@@ -30,7 +32,16 @@ public class SampleActivity extends ActionBarActivity {
 
         ltv = (LiquidTextureView) findViewById(R.id.liquid_texture_view);
 
-        ltv.createLiquidShape(new float[]{100, 100, 200, 200, 100, 300}, 0xFF00FF00, 1);
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int horizontalMiddle = size.x/2;
+        int verticalMiddle = size.y/2;
+
+        ltv.createLiquidShape(new float[]{
+                horizontalMiddle - 200, verticalMiddle,
+                horizontalMiddle + 200, verticalMiddle,
+                horizontalMiddle, verticalMiddle + 400}, 0xFF00FFFF);
     }
 
     @Override

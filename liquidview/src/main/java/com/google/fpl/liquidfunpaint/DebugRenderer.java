@@ -29,6 +29,7 @@ import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.Material.AttributeInfo;
 import com.google.fpl.liquidfunpaint.shader.ShaderProgram;
 import com.google.fpl.liquidfunpaint.shader.Texture;
+import com.mycardboarddreams.liquidsurface.R;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -361,8 +362,8 @@ public class DebugRenderer extends Draw {
         mCircleMaterial.setBlendFunc(
                 Material.BlendFactor.SRC_ALPHA,
                 Material.BlendFactor.ONE_MINUS_SRC_ALPHA);
-//        mCircleMaterial.addTexture("uDiffuseTexture",
-//                new Texture(context, R.drawable.debug_circle));
+        mCircleMaterial.addTexture("uDiffuseTexture",
+                new Texture(context, R.drawable.debug_circle));
 
         mLineShader = new ShaderProgram(
                 "no_texture.glslv", "no_texture.glslf");

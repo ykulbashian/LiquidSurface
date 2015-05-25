@@ -19,7 +19,6 @@ import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.Vec2;
 import com.google.fpl.liquidfun.World;
-import com.google.fpl.liquidfunpaint.Controller;
 import com.google.fpl.liquidfunpaint.Renderer;
 
 
@@ -123,6 +122,9 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
     }
 
+    public void createLiquidShape(final float[] vertices, final int color){
+        createLiquidShape(vertices, color, 1);
+    }
 
     public void createLiquidShape(final float[] vertices, final int color, final int numTimes){
 
