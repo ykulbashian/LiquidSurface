@@ -20,7 +20,7 @@ import javax.microedition.khronos.opengles.GL11;
 /**
  * Created by PC on 5/18/2015.
  */
-public class LiquidRenderThread extends Thread {
+public class LiquidRenderThread {
     private static final int EGL_OPENGL_ES2_BIT = 4;
     private static final int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
     private static final String TAG = "RenderThread";
@@ -40,68 +40,95 @@ public class LiquidRenderThread extends Thread {
     public boolean running = false;
     private boolean paused = true;
 
+    private RenderThread thread;
+
     final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
 
     public LiquidRenderThread(){}
 
-    public LiquidRenderThread(SurfaceTexture surface, int width, int height, float targetFramesPerSecond) {
-        initialize(surface, width, height, targetFramesPerSecond);
+    public LiquidRenderThread(SurfaceTexture surface, int width, int height, float targetFramesPerSecond, boolean isPaused) {
+        initialize(surface, width, height, targetFramesPerSecond, isPaused);
     }
 
-    public void initialize(SurfaceTexture surface, int width, int height, float targetFramesPerSecond){
+    public void initialize(SurfaceTexture surface, int width, int height, float targetFramesPerSecond, boolean isPaused){
         mSurface = surface;
         setDimensions(width, height);
         targetFrameDurationMillis = (int) ((1f/targetFramesPerSecond)*1000);
+        setPaused(isPaused);
     }
 
     public void setPaused(boolean isPaused){
         paused = isPaused;
     }
 
-    @Override
-    public void run() {
-        initGL();
-        checkGlError();
-
-        Renderer.getInstance().onSurfaceCreated(mGl, eglConfig);
-        Renderer.getInstance().onSurfaceChanged(mGl, surfaceWidth, surfaceHeight);
-
-        long lastFrameTime = System.currentTimeMillis();
-
-        running = true;
-
-        while (running) {
-            if(!paused) {
-
-                lastFrameTime = System.currentTimeMillis();
-
-                checkCurrent();
-
-                while(!pendingRunnables.isEmpty()){
-                    pendingRunnables.poll().run();
-                }
-
-                Renderer.getInstance().onDrawFrame(mGl);
-
-                checkGlError();
-                if (!mEgl.eglSwapBuffers(mEglDisplay, mEglSurface)) {
-                    Log.e(TAG, "cannot swap buffers!");
-                }
+    public void stopThread(){
+        if(thread != null){
+            running = false;
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
-            try {
-                if(paused)
-                    Thread.sleep(100);
-                else {
-                    long thisFrameTime = System.currentTimeMillis();
-                    long timDiff = thisFrameTime - lastFrameTime;
-                    lastFrameTime = thisFrameTime;
-                    Thread.sleep(Math.max(10l, targetFrameDurationMillis - timDiff));
+            thread = null;
+        }
+
+    }
+
+    public void startThread(SurfaceTexture surface, int width, int height, float framesPerSec){
+        thread = new RenderThread();
+        initialize(surface, width, height, framesPerSec, false);
+        thread.start();
+
+    }
+
+    private class RenderThread extends Thread {
+        @Override
+        public void run() {
+            initGL();
+            checkGlError();
+
+            Renderer.getInstance().onSurfaceCreated(mGl, eglConfig);
+            Renderer.getInstance().onSurfaceChanged(mGl, surfaceWidth, surfaceHeight);
+
+            long lastFrameTime = System.currentTimeMillis();
+
+            running = true;
+
+            while (running) {
+                if (!paused) {
+
+                    lastFrameTime = System.currentTimeMillis();
+
+                    checkCurrent();
+
+                    while (!pendingRunnables.isEmpty()) {
+                        pendingRunnables.poll().run();
+                    }
+
+                    Renderer.getInstance().onDrawFrame(mGl);
+
+                    checkGlError();
+                    if (!mEgl.eglSwapBuffers(mEglDisplay, mEglSurface)) {
+                        Log.e(TAG, "cannot swap buffers!");
+                    }
                 }
-            } catch (InterruptedException e) {
+
+                try {
+                    if (paused)
+                        Thread.sleep(100);
+                    else {
+                        long thisFrameTime = System.currentTimeMillis();
+                        long timDiff = thisFrameTime - lastFrameTime;
+                        lastFrameTime = thisFrameTime;
+                        Thread.sleep(Math.max(10l, targetFrameDurationMillis - timDiff));
+                    }
+                } catch (InterruptedException e) {
 // Ignore
+                }
             }
         }
+
     }
 
     public void setDimensions(int width, int height){

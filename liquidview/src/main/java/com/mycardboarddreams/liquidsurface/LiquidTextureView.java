@@ -30,7 +30,7 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
 
     private LiquidRenderThread thread;
 
-    private ControllerWrapper mController;
+    private RotatableController mController;
 
     protected static final Transform MAT_IDENTITY;
 
@@ -72,17 +72,17 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
         mainHandler = new Handler(context.getMainLooper());
 
         thread = new LiquidRenderThread();
+        mController = new RotatableController((Activity) getContext());
     }
 
     private void initializeParticleSimulation(Activity activity) {
 
         Renderer.getInstance().init(activity);
         Renderer.getInstance().startSimulation();
-
-        mController = new ControllerWrapper(activity);
     }
 
     public void resumeParticles() {
+        mController.updateDownDirection((Activity) getContext());
         Renderer.getInstance().startSimulation();
         mController.onResume();
         thread.setPaused(false);
@@ -95,19 +95,16 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
     }
 
     public boolean isStarted(){
-        return thread != null && thread.running;
+        return thread.running;
     }
 
 
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        if(thread == null)
-            thread = new LiquidRenderThread();
 
         float framesPerSec = (float) getResources().getInteger(R.integer.target_fps);
-        thread.initialize(surface, width, height, framesPerSec);
-        thread.start();
+        thread.startThread(surface, width, height, framesPerSec);
     }
 
     @Override
@@ -118,8 +115,7 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        thread.running = false;
-        thread = null;
+        thread.stopThread();
         return false;
     }
 
@@ -210,7 +206,7 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
         final PolygonShape polygon = new PolygonShape();
         polygon.set(normalizedVertices, normalizedVertices.length / 2);
 
-        ParticleColor pColor = LiquidUtils.getColor(color);
+        ParticleColor pColor = getColor(color);
 
         Vec2 mVelocity = new Vec2(0, 0);
 
@@ -235,21 +231,15 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
         pgd.delete();
     }
 
-    private class ControllerWrapper extends Controller {
+    public static ParticleColor getColor (int color) {
+        ParticleColor pColor = new ParticleColor();
+        short a = (short) (color >> 24 & 0xFF);
+        short r = (short) (color >> 16 & 0xFF);
+        short g = (short) (color >> 8 & 0xFF);
+        short b = (short) (color & 0xFF);
+        pColor.set(r, g, b, a);
 
-        public ControllerWrapper(Activity activity) {
-            super(activity);
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-        }
-
-        @Override
-        public void onPause() {
-            super.onPause();
-        }
+        return pColor;
     }
 
 }
