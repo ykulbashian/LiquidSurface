@@ -3,7 +3,6 @@ package com.mycardboarddreams.liquidsurface.sample;
 import android.graphics.Point;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Display;
 
 import com.google.fpl.liquidfun.liquidfunJNI;
 import com.mycardboarddreams.liquidsurface.LiquidTextureView;
@@ -11,6 +10,9 @@ import com.mycardboarddreams.liquidsurface.LiquidTextureView;
 
 public class SampleActivity extends ActionBarActivity {
 
+    /**
+     * Load the native libraries
+     */
     static {
         try{
             System.loadLibrary("liquidfun");
@@ -32,27 +34,33 @@ public class SampleActivity extends ActionBarActivity {
 
         ltv = (LiquidTextureView) findViewById(R.id.liquid_texture_view);
 
-        Display display = getWindowManager().getDefaultDisplay();
+        /**
+         * Create a triangle of blue liquid
+         */
         Point size = new Point();
-        display.getSize(size);
-        int horizontalMiddle = size.x/2;
-        int verticalMiddle = size.y/2;
+        getWindowManager().getDefaultDisplay().getSize(size);
+
+        int blueColor = 0xFF00FFFF;
 
         ltv.createLiquidShape(new float[]{
-                horizontalMiddle - 200, verticalMiddle,
-                horizontalMiddle + 200, verticalMiddle,
-                horizontalMiddle, verticalMiddle + 400}, 0xFF00FFFF);
+                size.x/2 - 200, size.y/2,
+                size.x/2 + 200, size.y/2,
+                size.x/2, size.y/2 + 400},
+                blueColor);
+    }
+
+    /**
+     * Make sure you call the following onResume() and onPause()
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ltv.resumeParticles();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         ltv.pauseParticles();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        ltv.resumeParticles();
     }
 }

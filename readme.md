@@ -15,6 +15,7 @@ This will generate the native (.so) libraries automatically and the rest should 
 
 # Using the Library
 
+### Add particle resume/pause
 In your activity, remember to call:
 
 ```
@@ -31,9 +32,10 @@ LiquidTextureView.pauseParticles();
 
 in the Activity's onPause()
 
+### Load native libraries
 In your Application class (or your home Activity) add the following code to load the native libraries:
 
-```
+```java
 static {
     try{
         System.loadLibrary("liquidfun");
@@ -42,6 +44,68 @@ static {
     } catch (UnsatisfiedLinkError e) {
         // only ignore exception in non-android env. This is to aid Robolectric integration.
         if ("Dalvik".equals(System.getProperty("java.vm.name"))) throw e;
+    }
+}
+```
+
+### Simple example
+The most simple example of an app is the following:
+
+```java
+public class SampleActivity extends ActionBarActivity {
+
+    /**
+     * Load the native libraries
+     */
+    static {
+        try{
+            System.loadLibrary("liquidfun");
+            System.loadLibrary("liquidfun_jni");
+
+            liquidfunJNI.init();
+        } catch (UnsatisfiedLinkError e) {
+            // only ignore exception in non-android env. This is to aid Robolectric integration.
+            if ("Dalvik".equals(System.getProperty("java.vm.name"))) throw e;
+        }
+    }
+
+    LiquidTextureView ltv;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sample);
+
+        ltv = (LiquidTextureView) findViewById(R.id.liquid_texture_view);
+
+        /**
+         * Create a triangle of blue liquid
+         */
+        Point size = new Point();
+        getWindowManager().getDefaultDisplay().getSize(size);
+
+        int blueColor = 0xFF00FFFF;
+
+        ltv.createLiquidShape(new float[]{
+                size.x/2 - 200, size.y/2,
+                size.x/2 + 200, size.y/2,
+                size.x/2, size.y/2 + 400},
+                blueColor);
+    }
+
+    /**
+     * Make sure you call the following onResume() and onPause()
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ltv.resumeParticles();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ltv.pauseParticles();
     }
 }
 ```
