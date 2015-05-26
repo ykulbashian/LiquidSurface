@@ -62,7 +62,12 @@ public class BlurRenderer {
                 "aTexCoord", 2, Material.AttrComponentType.FLOAT, 4, false,
                 RenderHelper.SCREEN_QUAD_VERTEX_STRIDE);
 
-        mBlurSurface = new RenderSurface(FB_SIZE, FB_SIZE);
+        float ratio = Renderer.getInstance().sRenderWorldHeight/Renderer.getInstance().sRenderWorldWidth;
+
+        if(ratio < 1)
+            mBlurSurface = new RenderSurface(FB_SIZE, (int) (FB_SIZE*ratio));
+        else
+            mBlurSurface = new RenderSurface((int) (FB_SIZE/ratio), FB_SIZE);
     }
 
     /**

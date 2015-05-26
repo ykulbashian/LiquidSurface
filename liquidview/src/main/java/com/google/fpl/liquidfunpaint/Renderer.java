@@ -170,7 +170,7 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
         // Reset the boundary
         initBoundaries();
 
-        mParticleRenderer.onSurfaceChanged(width, height);
+        mParticleRenderer.onSurfaceChanged(mActivity, width, height);
 
         if (DEBUG_DRAW) {
             mDebugRenderer.onSurfaceChanged();

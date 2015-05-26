@@ -242,7 +242,7 @@ public class ParticleRenderer {
         mBlurRenderer.draw(mRenderSurface[1].getTexture(), mRenderSurface[1]);
     }
 
-    public void onSurfaceChanged(int width, int height) {
+    public void onSurfaceChanged(Context context, int width, int height) {
 
         // Set up the transform
         float ratio = (float) width / width;
@@ -257,12 +257,19 @@ public class ParticleRenderer {
                 2f / Renderer.getInstance().sRenderWorldWidth,
                 2 * ratio / Renderer.getInstance().sRenderWorldHeight,
                 1);
+
+        onSurfaceCreated(context);
     }
 
     public void onSurfaceCreated(Context context) {
+        float ratio = ((Renderer.getInstance().sRenderWorldHeight/Renderer.getInstance().sRenderWorldWidth) + 1)/2;
+
         // Create the render surfaces
         for (int i = 0; i < mRenderSurface.length; i++) {
-            mRenderSurface[i] = new RenderSurface(FB_SIZE, FB_SIZE);
+            if(ratio < 1)
+                mRenderSurface[i] = new RenderSurface(FB_SIZE, (int) (FB_SIZE*ratio));
+            else
+                mRenderSurface[i] = new RenderSurface((int) (FB_SIZE/ratio), FB_SIZE);
             mRenderSurface[i].setClearColor(Color.argb(0, 255, 255, 255));
         }
 
