@@ -2,6 +2,7 @@ package com.mycardboarddreams.liquidsurface;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -197,7 +198,11 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
         final PolygonShape polygon = new PolygonShape();
         polygon.set(normalizedVertices, normalizedVertices.length / 2);
 
-        ParticleColor pColor = getColor(options.color);
+        ParticleColor pColor = new ParticleColor(
+                (short)Color.red(options.color),
+                (short)Color.green(options.color),
+                (short)Color.blue(options.color),
+                (short)Color.alpha(options.color));
 
         final ParticleGroupDef pgd = new ParticleGroupDef();
         pgd.setFlags(options.particleType);
@@ -218,17 +223,6 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
             Renderer.getInstance().releaseParticleSystem();
         }
         pgd.delete();
-    }
-
-    public static ParticleColor getColor (int color) {
-        ParticleColor pColor = new ParticleColor();
-        short a = (short) (color >> 24 & 0xFF);
-        short r = (short) (color >> 16 & 0xFF);
-        short g = (short) (color >> 8 & 0xFF);
-        short b = (short) (color & 0xFF);
-        pColor.set(r, g, b, a);
-
-        return pColor;
     }
 
 }
