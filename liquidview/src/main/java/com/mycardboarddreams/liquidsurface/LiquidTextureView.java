@@ -11,14 +11,12 @@ import android.view.TextureView;
 import com.google.fpl.liquidfun.Body;
 import com.google.fpl.liquidfun.BodyDef;
 import com.google.fpl.liquidfun.ParticleColor;
-import com.google.fpl.liquidfun.ParticleFlag;
 import com.google.fpl.liquidfun.ParticleGroup;
 import com.google.fpl.liquidfun.ParticleGroupDef;
 import com.google.fpl.liquidfun.ParticleGroupFlag;
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
-import com.google.fpl.liquidfun.Vec2;
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.Renderer;
 
@@ -38,9 +36,6 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
         MAT_IDENTITY = new Transform();
         MAT_IDENTITY.setIdentity();
     }
-
-    private Handler mainHandler;
-    private int timeBetweenCalls = 500;
 
     public LiquidTextureView(Context context) {
         super(context);
@@ -68,8 +63,6 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
         setSurfaceTextureListener(this);
 
         setOpaque(false);
-
-        mainHandler = new Handler(context.getMainLooper());
 
         thread = new LiquidRenderThread();
         mController = new RotatableController((Activity) getContext());
@@ -183,7 +176,6 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
     }
 
     public void clearAllLiquid() {
-        mainHandler.removeCallbacksAndMessages(null);
         Renderer.getInstance().reset();
         thread.clearPhysicsCommands();
     }
