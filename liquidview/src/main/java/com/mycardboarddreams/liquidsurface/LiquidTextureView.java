@@ -123,24 +123,13 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
     }
 
     public void createLiquidShape(final float[] vertices, final int color){
-        createLiquidShape(vertices, color, 1);
-    }
-
-    public void createLiquidShape(final float[] vertices, final int color, final int numTimes){
 
         thread.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0; i < numTimes; i++) {
-
-                    Runnable myRunnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            fillShape(vertices, color);
-                        }
-                    };
-                    mainHandler.postDelayed(myRunnable, i * timeBetweenCalls);
-                }
+                GroupOptions options = new GroupOptions();
+                options.setColor(color);
+                fillShape(vertices, options);
             }
         });
     }
@@ -198,7 +187,7 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
         thread.clearPhysicsCommands();
     }
 
-    public void fillShape(float[] vertices, int color){
+    private void fillShape(float[] vertices, GroupOptions options){
 
         if (vertices == null || vertices.length == 0 || vertices.length % 2 != 0)
             return;
@@ -208,16 +197,14 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
         final PolygonShape polygon = new PolygonShape();
         polygon.set(normalizedVertices, normalizedVertices.length / 2);
 
-        ParticleColor pColor = getColor(color);
-
-        Vec2 mVelocity = new Vec2(0, 0);
+        ParticleColor pColor = getColor(options.color);
 
         final ParticleGroupDef pgd = new ParticleGroupDef();
-        pgd.setFlags(ParticleFlag.waterParticle);
+        pgd.setFlags(options.particleType);
         pgd.setGroupFlags(ParticleGroupFlag.particleGroupCanBeEmpty);
-        pgd.setLinearVelocity(mVelocity);
+        pgd.setLinearVelocity(options.velocity);
         pgd.setColor(pColor);
-        pgd.setStrength(0.035f);
+        pgd.setStrength(options.strength);
 
         pgd.setShape(polygon);
 
