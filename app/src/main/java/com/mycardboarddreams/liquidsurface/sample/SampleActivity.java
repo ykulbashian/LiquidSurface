@@ -34,6 +34,15 @@ public class SampleActivity extends ActionBarActivity {
 
         ltv = (LiquidTextureView) findViewById(R.id.liquid_texture_view);
 
+    }
+
+    /**
+     * Make sure you call the following onResume() and onPause()
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         /**
          * Create a triangle of blue liquid
          */
@@ -43,18 +52,11 @@ public class SampleActivity extends ActionBarActivity {
         int blueColor = 0xFF00FFFF;
 
         ltv.createLiquidShape(new float[]{
-                size.x/2 - 200, size.y/2,
-                size.x/2 + 200, size.y/2,
-                size.x/2, size.y/2 + 400},
-                blueColor);
-    }
+                        size.x / 2 - 200, size.y / 2,
+                        size.x / 2 + 200, size.y / 2,
+                        size.x / 2, size.y / 2 + 400},
+                        blueColor);
 
-    /**
-     * Make sure you call the following onResume() and onPause()
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
         ltv.resumeParticles();
     }
 

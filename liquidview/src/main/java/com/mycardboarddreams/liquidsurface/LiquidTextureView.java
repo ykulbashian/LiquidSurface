@@ -108,6 +108,7 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        clearAllLiquid();
         thread.stopThread();
         return false;
     }
