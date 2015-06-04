@@ -10,21 +10,6 @@ import com.mycardboarddreams.liquidsurface.LiquidTextureView;
 
 public class SampleActivity extends ActionBarActivity {
 
-    /**
-     * Load the native libraries
-     */
-    static {
-        try{
-            System.loadLibrary("liquidfun");
-            System.loadLibrary("liquidfun_jni");
-
-            liquidfunJNI.init();
-        } catch (UnsatisfiedLinkError e) {
-            // only ignore exception in non-android env. This is to aid Robolectric integration.
-            if ("Dalvik".equals(System.getProperty("java.vm.name"))) throw e;
-        }
-    }
-
     LiquidTextureView ltv;
 
     @Override

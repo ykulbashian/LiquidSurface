@@ -18,6 +18,7 @@ import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.World;
+import com.google.fpl.liquidfun.liquidfunJNI;
 import com.google.fpl.liquidfunpaint.Renderer;
 
 
@@ -25,6 +26,21 @@ import com.google.fpl.liquidfunpaint.Renderer;
  * Created by yervant on 3/25/2015.
  */
 public class LiquidTextureView extends TextureView implements TextureView.SurfaceTextureListener {
+
+    /**
+     * Load the native libraries
+     */
+    static {
+        try{
+            System.loadLibrary("liquidfun");
+            System.loadLibrary("liquidfun_jni");
+
+            liquidfunJNI.init();
+        } catch (UnsatisfiedLinkError e) {
+            // only ignore exception in non-android env. This is to aid Robolectric integration.
+            if ("Dalvik".equals(System.getProperty("java.vm.name"))) throw e;
+        }
+    }
 
     private LiquidRenderThread thread;
 
