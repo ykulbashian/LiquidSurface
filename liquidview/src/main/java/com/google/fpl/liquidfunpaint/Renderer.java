@@ -52,10 +52,10 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
     private static final Renderer _instance = new Renderer();
     private static final String TAG = "Renderer";
     private static final int ONE_SEC = 1000000000;
-    private static final float WORLD_HEIGHT = 6f;
+    private static final float WORLD_HEIGHT = 3f;
     public static final int MAX_PARTICLE_COUNT = 5000;
-    public static final float PARTICLE_RADIUS = 0.04f;
-    public static final float PARTICLE_REPULSIVE_STRENGTH = 0.4f;
+    public static final float PARTICLE_RADIUS = 0.06f;
+    public static final float PARTICLE_REPULSIVE_STRENGTH = 0.5f;
     public static final boolean DEBUG_DRAW = false;
 
     // Parameters for world simulation
@@ -170,7 +170,7 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
         // Reset the boundary
         initBoundaries();
 
-        mParticleRenderer.onSurfaceChanged(mActivity, width, height);
+        mParticleRenderer.onSurfaceChanged(width, height);
 
         if (DEBUG_DRAW) {
             mDebugRenderer.onSurfaceChanged();

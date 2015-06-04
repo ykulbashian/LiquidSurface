@@ -1,27 +1,21 @@
 /**
-* Copyright (c) 2014 Google, Inc. All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
+ * Copyright (c) 2014 Google, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
 package com.google.fpl.liquidfunpaint;
-
-import android.content.Context;
-import android.graphics.Color;
-import android.opengl.GLES20;
-import android.opengl.Matrix;
-import android.util.Log;
 
 import com.google.fpl.liquidfun.ParticleGroup;
 import com.google.fpl.liquidfun.ParticleSystem;
@@ -32,8 +26,13 @@ import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
 import com.google.fpl.liquidfunpaint.tool.Tool;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.content.Context;
+import android.graphics.Color;
+import android.opengl.GLES20;
+import android.opengl.Matrix;
+import android.util.Log;
+
+import org.json.*;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -114,7 +113,7 @@ public class ParticleRenderer {
             ps.copyWeightBuffer(
                     0, worldParticleCount, mParticleWeightBuffer);
 
-            GLES20.glClearColor(1, 1, 1, 1);
+            GLES20.glClearColor(0, 0, 0, 0);
 
             // Draw the particles
             drawParticles();
@@ -187,7 +186,7 @@ public class ParticleRenderer {
             while (currGroup != null) {
                 // Only draw water particles in this pass; queue other groups
                 if (currGroup.getGroupFlags() ==
-                    Tool.getTool(Tool.ToolType.WATER).getParticleGroupFlags()) {
+                        Tool.getTool(Tool.ToolType.WATER).getParticleGroupFlags()) {
                     drawParticleGroup(currGroup);
                 } else {
                     mParticleRenderList.add(currGroup);
@@ -242,10 +241,10 @@ public class ParticleRenderer {
         mBlurRenderer.draw(mRenderSurface[1].getTexture(), mRenderSurface[1]);
     }
 
-    public void onSurfaceChanged(Context context, int width, int height) {
+    public void onSurfaceChanged(int width, int height) {
 
         // Set up the transform
-        float ratio = (float) width / width;
+        float ratio = (float) height / width;
         Matrix.setIdentityM(mTransformFromTexture, 0);
         Matrix.scaleM(mTransformFromTexture, 0, 1, 1 / ratio, 1);
 
@@ -257,19 +256,12 @@ public class ParticleRenderer {
                 2f / Renderer.getInstance().sRenderWorldWidth,
                 2 * ratio / Renderer.getInstance().sRenderWorldHeight,
                 1);
-
-        onSurfaceCreated(context);
     }
 
     public void onSurfaceCreated(Context context) {
-        float ratio = ((Renderer.getInstance().sRenderWorldHeight/Renderer.getInstance().sRenderWorldWidth) + 1)/2;
-
         // Create the render surfaces
         for (int i = 0; i < mRenderSurface.length; i++) {
-            if(ratio < 1)
-                mRenderSurface[i] = new RenderSurface(FB_SIZE, (int) (FB_SIZE*ratio));
-            else
-                mRenderSurface[i] = new RenderSurface((int) (FB_SIZE/ratio), FB_SIZE);
+            mRenderSurface[i] = new RenderSurface(FB_SIZE, FB_SIZE);
             mRenderSurface[i].setClearColor(Color.argb(0, 255, 255, 255));
         }
 
