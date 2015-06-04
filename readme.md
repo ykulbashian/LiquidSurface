@@ -1,4 +1,4 @@
-![Sample image 1](https://github.com/ykulbashian/LiquidSurface/tree/master/screenshots/Screenshot_1.png)
+![Sample liquid](screenshots/Screenshot_1.png)
 
 # Running the sample
 To run this project you need to do the following:
