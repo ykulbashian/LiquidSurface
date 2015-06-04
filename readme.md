@@ -1,3 +1,5 @@
+### **--currently the library only works in landscape mode, I'm working to fix that--**
+
 ![Sample liquid](screenshots/Screenshot_1.png)
 
 # Running the sample
