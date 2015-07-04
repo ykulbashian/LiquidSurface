@@ -1,8 +1,10 @@
 package com.mycardboarddreams.liquidsurface;
 
+import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLUtils;
 import android.util.Log;
+import android.view.TextureView;
 
 import com.google.fpl.liquidfunpaint.Renderer;
 
@@ -20,7 +22,7 @@ import javax.microedition.khronos.opengles.GL11;
 /**
  * Created by PC on 5/18/2015.
  */
-public class LiquidRenderThread {
+public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
     private static final int EGL_OPENGL_ES2_BIT = 4;
     private static final int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
     private static final String TAG = "RenderThread";
@@ -34,20 +36,20 @@ public class LiquidRenderThread {
 
     private int targetFrameDurationMillis;
 
-    int surfaceHeight;
-    int surfaceWidth;
+    private int surfaceHeight;
+    private int surfaceWidth;
 
     public boolean running = false;
     private boolean paused = true;
 
     private RenderThread thread;
 
+    private int targetFps;
+
     final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
 
-    public LiquidRenderThread(){}
-
-    public LiquidRenderThread(SurfaceTexture surface, int width, int height, float targetFramesPerSecond, boolean isPaused) {
-        initialize(surface, width, height, targetFramesPerSecond, isPaused);
+    public LiquidRenderThread(Context context){
+        targetFps = context.getResources().getInteger(R.integer.target_fps);
     }
 
     public void initialize(SurfaceTexture surface, int width, int height, float targetFramesPerSecond, boolean isPaused){
@@ -57,8 +59,12 @@ public class LiquidRenderThread {
         setPaused(isPaused);
     }
 
-    public void setPaused(boolean isPaused){
+    public synchronized void setPaused(boolean isPaused){
         paused = isPaused;
+    }
+
+    public synchronized boolean isPaused(){
+        return paused;
     }
 
     public void stopThread(){
@@ -96,7 +102,7 @@ public class LiquidRenderThread {
             running = true;
 
             while (running) {
-                if (!paused) {
+                if (!isPaused()) {
 
                     lastFrameTime = System.currentTimeMillis();
 
@@ -234,16 +240,39 @@ public class LiquidRenderThread {
         checkEglError();
     }
 
-    public GL10 getGL(){
-        return mGl;
-    }
-
     public void addPhysicsCommand(Runnable runnable){
         pendingRunnables.add(runnable);
     }
 
     public void clearPhysicsCommands(){
         pendingRunnables.clear();
+    }
+
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        startThread(surface, width, height, targetFps);
+    }
+
+    @Override
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+        setDimensions(width, height);
+        Renderer.getInstance().onSurfaceChanged(mGl, width, height);
+    }
+
+    @Override
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        clearAllLiquid();
+        stopThread();
+        return false;
+    }
+
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+    }
+
+    public void clearAllLiquid() {
+        Renderer.getInstance().reset();
+        clearPhysicsCommands();
     }
 
 }

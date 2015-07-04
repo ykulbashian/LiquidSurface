@@ -25,7 +25,7 @@ import com.google.fpl.liquidfunpaint.Renderer;
 /**
  * Created by yervant on 3/25/2015.
  */
-public class LiquidTextureView extends TextureView implements TextureView.SurfaceTextureListener {
+public class LiquidTextureView extends TextureView {
 
     /**
      * Load the native libraries
@@ -76,11 +76,11 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
 
         initializeParticleSimulation(activity);
 
-        setSurfaceTextureListener(this);
-
         setOpaque(false);
 
-        thread = new LiquidRenderThread();
+        thread = new LiquidRenderThread(activity);
+        setSurfaceTextureListener(thread);
+
         mController = new RotatableController((Activity) getContext());
     }
 
@@ -108,30 +108,6 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
     }
 
 
-
-    @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-
-        float framesPerSec = (float) getResources().getInteger(R.integer.target_fps);
-        thread.startThread(surface, width, height, framesPerSec);
-    }
-
-    @Override
-    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-        thread.setDimensions(width, height);
-        Renderer.getInstance().onSurfaceChanged(thread.getGL(), width, height);
-    }
-
-    @Override
-    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        clearAllLiquid();
-        thread.stopThread();
-        return false;
-    }
-
-    @Override
-    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-    }
 
     public void createLiquidShape(final float[] vertices, final int color){
 
@@ -190,11 +166,6 @@ public class LiquidTextureView extends TextureView implements TextureView.Surfac
         }
 
         return normalizedVerts;
-    }
-
-    public void clearAllLiquid() {
-        Renderer.getInstance().reset();
-        thread.clearPhysicsCommands();
     }
 
     private void fillShape(float[] vertices, GroupOptions options){
