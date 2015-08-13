@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.google.fpl.liquidfunpaint.util.Vector2f;
 import com.mycardboarddreams.liquidsurface.LiquidTextureView;
 
 
@@ -43,11 +44,12 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
 
         int blueColor = 0xFF00FFCC;
 
-        ltv.createLiquidShape(new float[]{
-                        size.x / 2 - 200, size.y / 2,
-                        size.x / 2 + 200, size.y / 2,
-                        size.x / 2, size.y / 2 + 400},
+        Vector2f center = new Vector2f(size.x / 2, size.y / 2);
+
+        ltv.createLiquidShape(createCircle(center, 200, 8),
                         blueColor);
+
+        ltv.createSolidShape(createCircle(center, 50, 8));
     }
 
     @Override
@@ -60,5 +62,18 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         createLiquidTriangle();
+    }
+
+    private float[] createCircle(Vector2f center, float radius, int numPoints){
+        float[] vertices = new float[numPoints*2];
+
+        float angle = 360f/numPoints;
+
+        for(int i = 0; i < numPoints; i++){
+            vertices[2*i] = center.x + (float) (radius*Math.cos(i*angle));
+            vertices[2*i + 1] = center.y + (float) (radius*Math.sin(i*angle));
+        }
+
+        return vertices;
     }
 }

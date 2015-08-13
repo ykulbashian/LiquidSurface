@@ -55,7 +55,7 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
     private static final float WORLD_HEIGHT = 3f;
     public static final int MAX_PARTICLE_COUNT = 5000;
     public static final float PARTICLE_RADIUS = 0.06f;
-    public static final float PARTICLE_REPULSIVE_STRENGTH = 0.5f;
+    public static final float PARTICLE_REPULSIVE_STRENGTH = 0.0f;
     public static final boolean DEBUG_DRAW = false;
 
     // Parameters for world simulation
@@ -289,6 +289,7 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
             ParticleSystemDef psDef = new ParticleSystemDef();
             psDef.setRadius(PARTICLE_RADIUS);
             psDef.setRepulsiveStrength(PARTICLE_REPULSIVE_STRENGTH);
+            psDef.setElasticStrength(2.0f);
             mParticleSystem = mWorld.createParticleSystem(psDef);
             mParticleSystem.setMaxParticleCount(MAX_PARTICLE_COUNT);
             psDef.delete();

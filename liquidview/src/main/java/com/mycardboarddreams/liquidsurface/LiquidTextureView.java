@@ -11,6 +11,8 @@ import android.view.TextureView;
 import com.google.fpl.liquidfun.Body;
 import com.google.fpl.liquidfun.BodyDef;
 import com.google.fpl.liquidfun.ParticleColor;
+import com.google.fpl.liquidfun.ParticleDef;
+import com.google.fpl.liquidfun.ParticleFlag;
 import com.google.fpl.liquidfun.ParticleGroup;
 import com.google.fpl.liquidfun.ParticleGroupDef;
 import com.google.fpl.liquidfun.ParticleGroupFlag;
@@ -127,24 +129,11 @@ public class LiquidTextureView extends TextureView {
         thread.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
-                World world = Renderer.getInstance().acquireWorld();
-
-                try{
-                    BodyDef bodyDef = new BodyDef();
-                    Body boundaryBody = world.createBody(bodyDef);
-                    PolygonShape boundaryPolygon = new PolygonShape();
-
-                    float[] normalizedVertices = normalizePositions(vertices);
-
-                    boundaryPolygon.set(normalizedVertices, normalizedVertices.length / 2);
-                    boundaryBody.createFixture(boundaryPolygon, 0.0f);
-
-                    bodyDef.delete();
-                    boundaryPolygon.delete();
-
-                } finally {
-                    Renderer.getInstance().releaseWorld();
-                }
+                GroupOptions options = new GroupOptions();
+                options.setColor(0xFF000000);
+                options.particleGroup = ParticleGroupFlag.rigidParticleGroup;
+                options.setParticleType(ParticleFlag.wallParticle);
+                fillShape(vertices, options);
 
             }
         });
@@ -186,7 +175,7 @@ public class LiquidTextureView extends TextureView {
 
         final ParticleGroupDef pgd = new ParticleGroupDef();
         pgd.setFlags(options.particleType);
-        pgd.setGroupFlags(ParticleGroupFlag.particleGroupCanBeEmpty);
+        pgd.setGroupFlags(options.particleGroup);
         pgd.setLinearVelocity(options.velocity);
         pgd.setColor(pColor);
         pgd.setStrength(options.strength);

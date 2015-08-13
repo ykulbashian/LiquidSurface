@@ -3,6 +3,7 @@ package com.mycardboarddreams.liquidsurface;
 import android.graphics.Color;
 
 import com.google.fpl.liquidfun.ParticleFlag;
+import com.google.fpl.liquidfun.ParticleGroupFlag;
 import com.google.fpl.liquidfun.Vec2;
 
 /**
@@ -28,7 +29,8 @@ public class GroupOptions {
 
     Vec2 velocity = new Vec2(0, 0);
     int color = Color.CYAN;
-    float strength = 0.1f;
-    int particleType = ParticleFlag.waterParticle;
+    float strength = 2.0f;
+    int particleType = ParticleFlag.springParticle;
+    int particleGroup = ParticleGroupFlag.particleGroupCanBeEmpty;
 
 }
