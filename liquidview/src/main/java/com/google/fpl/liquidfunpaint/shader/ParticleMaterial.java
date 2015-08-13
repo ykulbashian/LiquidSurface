@@ -56,11 +56,13 @@ public class ParticleMaterial extends Material {
     public void beginRender() {
         super.beginRender();
 
+        float pSize =  mParticleSizeScale * ParticleRenderer.FB_SIZE *
+                (Renderer.PARTICLE_RADIUS /
+                        Math.min(Renderer.getInstance().sRenderWorldWidth, Renderer.getInstance().sRenderWorldHeight));
+
         // Specific uniforms to this material
         GLES20.glUniform1f(
                 getUniformLocation("uPointSize"),
-                Math.max(1.0f, mParticleSizeScale * ParticleRenderer.FB_SIZE *
-                        (Renderer.PARTICLE_RADIUS /
-                                Renderer.getInstance().sRenderWorldHeight)));
+                Math.max(1.0f, pSize));
     }
 }

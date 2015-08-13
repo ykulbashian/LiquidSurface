@@ -162,8 +162,13 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
 
-        sRenderWorldHeight = WORLD_HEIGHT;
-        sRenderWorldWidth = width * WORLD_HEIGHT / height;
+        if(height < width) { //landscape
+            sRenderWorldHeight = WORLD_HEIGHT;
+            sRenderWorldWidth = width * WORLD_HEIGHT / height;
+        } else { //portrait
+            sRenderWorldHeight = height * WORLD_HEIGHT / width;
+            sRenderWorldWidth = WORLD_HEIGHT;
+        }
         sScreenWidth = width;
         sScreenHeight = height;
 

@@ -66,6 +66,7 @@ public class ParticleRenderer {
     private final RenderSurface[] mRenderSurface = new RenderSurface[2];
     private final float[] mTransformFromTexture = new float[16];
     private final float[] mTransformFromWorld = new float[16];
+    private final float[] mPerspectiveTransform = new float[16];
 
     private ByteBuffer mParticleColorBuffer;
     private ByteBuffer mParticlePositionBuffer;
@@ -177,6 +178,9 @@ public class ParticleRenderer {
         GLES20.glUniformMatrix4fv(
                 mWaterParticleMaterial.getUniformLocation("uTransform"),
                 1, false, mTransformFromWorld, 0);
+        GLES20.glUniformMatrix4fv(
+                mWaterParticleMaterial.getUniformLocation("uTransformPerspective"),
+                1, false, mPerspectiveTransform, 0);
 
         // Go through each particle group
         ParticleSystem ps = Renderer.getInstance().acquireParticleSystem();
@@ -224,6 +228,9 @@ public class ParticleRenderer {
         GLES20.glUniformMatrix4fv(
                 mParticleMaterial.getUniformLocation("uTransform"),
                 1, false, mTransformFromWorld, 0);
+        GLES20.glUniformMatrix4fv(
+                mParticleMaterial.getUniformLocation("uTransformPerspective"),
+                1, false, mPerspectiveTransform, 0);
 
         ParticleSystem ps = Renderer.getInstance().acquireParticleSystem();
         try {
@@ -246,15 +253,52 @@ public class ParticleRenderer {
         // Set up the transform
         float ratio = (float) height / width;
         Matrix.setIdentityM(mTransformFromTexture, 0);
+        Matrix.setIdentityM(mTransformFromWorld, 0);
+
+        if(height > width) // portrait
+            resizeTransformPortrait(ratio);
+        else // landscape
+            resizeTransformLandscape(ratio);
+
+        Matrix.setIdentityM(mPerspectiveTransform, 0);
+
+        float[] mViewMatrix = new float[16];
+        float[] mProjectionMatrix = new float[16];
+        Matrix.setIdentityM(mViewMatrix, 0);
+        Matrix.setIdentityM(mProjectionMatrix, 0);
+
+        Matrix.frustumM(mProjectionMatrix, 0, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 2);
+        // Set the camera position (View matrix)
+        Matrix.setLookAtM(mViewMatrix, 0,
+                0, 0, -1,
+                0f, 0f, 0f,
+                0f, 1.0f, 0.0f);
+
+        // Calculate the projection and view transformation
+        Matrix.multiplyMM(mPerspectiveTransform, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+    }
+
+    private void resizeTransformLandscape(float ratio){
         Matrix.scaleM(mTransformFromTexture, 0, 1, 1 / ratio, 1);
 
-        Matrix.setIdentityM(mTransformFromWorld, 0);
         Matrix.translateM(mTransformFromWorld, 0, -1, -ratio, 0);
         Matrix.scaleM(
                 mTransformFromWorld,
                 0,
-                2f / Renderer.getInstance().sRenderWorldWidth,
-                2 * ratio / Renderer.getInstance().sRenderWorldHeight,
+                2 / Renderer.getInstance().sRenderWorldWidth,
+                2 *ratio / Renderer.getInstance().sRenderWorldHeight,
+                1);
+    }
+
+    private void resizeTransformPortrait(float ratio){
+        Matrix.scaleM(mTransformFromTexture, 0, 1*ratio, 1, 1);
+
+        Matrix.translateM(mTransformFromWorld, 0, -1/ratio, -1, 0);
+        Matrix.scaleM(
+                mTransformFromWorld,
+                0,
+                2 / ratio / Renderer.getInstance().sRenderWorldWidth,
+                2 / Renderer.getInstance().sRenderWorldHeight,
                 1);
     }
 
