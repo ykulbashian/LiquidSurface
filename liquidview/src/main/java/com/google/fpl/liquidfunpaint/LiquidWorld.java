@@ -10,6 +10,8 @@ import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.World;
 import com.mycardboarddreams.liquidsurface.BuildConfig;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -20,7 +22,6 @@ public class LiquidWorld {
     private World mWorld = null;
     private Lock mWorldLock = new ReentrantLock();
 
-    private ParticleSystem mParticleSystem = null;
     private static final float WORLD_SPAN = 3f;
     public float sRenderWorldWidth = WORLD_SPAN;
     public float sRenderWorldHeight = WORLD_SPAN;
@@ -43,6 +44,8 @@ public class LiquidWorld {
 
     private Body mBoundaryBody = null;
 
+    private ParticleSystems particleSystems = new ParticleSystems();
+
     private static LiquidWorld sInstance = new LiquidWorld();
 
     public static LiquidWorld getInstance(){
@@ -58,6 +61,9 @@ public class LiquidWorld {
             sRenderWorldHeight = height * WORLD_SPAN / width;
             sRenderWorldWidth = WORLD_SPAN;
         }
+
+        // Reset the boundary
+        initBoundaries();
     }
 
     public boolean hasWorld(){
@@ -132,19 +138,7 @@ public class LiquidWorld {
 
     /** Create a new particle system */
     void initParticleSystem() {
-        World world = acquireWorld();
-        try {
-            // Create a new particle system; we only use one.
-            ParticleSystemDef psDef = new ParticleSystemDef();
-            psDef.setRadius(Renderer.PARTICLE_RADIUS);
-            psDef.setRepulsiveStrength(Renderer.PARTICLE_REPULSIVE_STRENGTH);
-            psDef.setElasticStrength(2.0f);
-            mParticleSystem = mWorld.createParticleSystem(psDef);
-            mParticleSystem.setMaxParticleCount(Renderer.MAX_PARTICLE_COUNT);
-            psDef.delete();
-        } finally {
-            releaseWorld();
-        }
+        particleSystems.createDefaultParticleSystem(null);
     }
 
     void deleteWorld() {
@@ -158,7 +152,7 @@ public class LiquidWorld {
             if (world != null) {
                 world.delete();
                 mWorld = null;
-                mParticleSystem = null;
+                particleSystems.clear();
             }
         } finally {
             releaseWorld();
@@ -190,7 +184,7 @@ public class LiquidWorld {
      */
     public ParticleSystem acquireParticleSystem() {
         mWorldLock.lock();
-        return mParticleSystem;
+        return particleSystems.get(null);
     }
 
     /**
@@ -223,7 +217,7 @@ public class LiquidWorld {
                 }
                 final float fps = mFrames / ((float) time - mTime) * ONE_SEC;
                 float avefps = totalFrames / ((float) time - mStartTime) * ONE_SEC;
-                final int count = mParticleSystem.getParticleCount();
+                final int count = particleSystems.getParticleCount();
                 Log.d(TAG, fps + " fps (Now)");
                 Log.d(TAG, avefps + " fps (Average)");
                 Log.d(TAG, count + " particles");

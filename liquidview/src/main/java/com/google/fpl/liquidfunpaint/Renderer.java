@@ -142,9 +142,6 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
         sScreenWidth = width;
         sScreenHeight = height;
 
-        // Reset the boundary
-        liquidWorld.initBoundaries();
-
         mParticleRenderer.onSurfaceChanged(width, height);
 
         if (DEBUG_DRAW) {
