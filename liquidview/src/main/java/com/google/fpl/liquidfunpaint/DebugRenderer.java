@@ -152,7 +152,7 @@ public class DebugRenderer extends Draw {
 
         float pointSize =
                 Math.max(1.0f, Renderer.getInstance().sScreenWidth *
-                        (2.0f * radius / Renderer.getInstance().sRenderWorldWidth));
+                        (2.0f * radius / LiquidWorld.getInstance().sRenderWorldWidth));
         mCirclePointSizeBuffer.putFloat(pointSize);
     }
 
@@ -183,7 +183,7 @@ public class DebugRenderer extends Draw {
 
         float pointSize =
                 Math.max(1.0f, Renderer.getInstance().sScreenWidth *
-                        (2.0f * radius / Renderer.getInstance().sRenderWorldWidth));
+                        (2.0f * radius / LiquidWorld.getInstance().sRenderWorldWidth));
         for (int i = 0; i < count; ++i) {
             mCirclePointSizeBuffer.putFloat(pointSize);
         }
@@ -229,7 +229,7 @@ public class DebugRenderer extends Draw {
     }
 
     public void draw() {
-        World world = Renderer.getInstance().acquireWorld();
+        World world = LiquidWorld.getInstance().acquireWorld();
         try {
             resetAllBuffers();
 
@@ -244,7 +244,7 @@ public class DebugRenderer extends Draw {
             drawCircles(mTransformFromWorld);
             drawSegments(mTransformFromWorld);
         } finally {
-            Renderer.getInstance().releaseWorld();
+            LiquidWorld.getInstance().releaseWorld();
         }
     }
 
@@ -322,8 +322,8 @@ public class DebugRenderer extends Draw {
           Matrix.scaleM(
                   mTransformFromWorld,
                   0,
-                  2f / Renderer.getInstance().sRenderWorldWidth,
-                  2f / Renderer.getInstance().sRenderWorldHeight,
+                  2f / LiquidWorld.getInstance().sRenderWorldWidth,
+                  2f / LiquidWorld.getInstance().sRenderWorldHeight,
                   1);
     }
 

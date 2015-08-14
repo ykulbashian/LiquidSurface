@@ -23,6 +23,7 @@ import android.view.View;
 import com.google.fpl.liquidfun.Fixture;
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.QueryCallback;
+import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.Renderer;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
@@ -137,14 +138,14 @@ public class MoveTool extends Tool implements Observer {
     @Override
     protected void updatePointerInfo(PointerInfo pInfo, Vector2f worldPoint) {
         if (pInfo.isNewPointer()) {
-            ParticleSystem ps = Renderer.getInstance().acquireParticleSystem();
+            ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
             try {
                 mCb.set(this, pInfo);
                 mShape.setPosition(worldPoint.x, worldPoint.y);
                 mShape.setRadius(mBrushSize / 2);
                 ps.queryShapeAABB(mCb, mShape, MAT_IDENTITY);
             } finally {
-                Renderer.getInstance().releaseParticleSystem();
+                LiquidWorld.getInstance().releaseParticleSystem();
             }
         }
     }
@@ -205,7 +206,7 @@ public class MoveTool extends Tool implements Observer {
         assert arg instanceof Float;
         float velocityScale = 1 / (Float) arg;
 
-        ParticleSystem ps = Renderer.getInstance().acquireParticleSystem();
+        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
         try {
             for (int i = 0; i < mPointerResultList.size(); ++i) {
                 Vector<ParticleQueryResult> particleList =
@@ -238,7 +239,7 @@ public class MoveTool extends Tool implements Observer {
                 }
             }
         } finally {
-            Renderer.getInstance().releaseParticleSystem();
+            LiquidWorld.getInstance().releaseParticleSystem();
         }
     }
 }

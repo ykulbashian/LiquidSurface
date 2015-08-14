@@ -21,6 +21,7 @@ import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfun.liquidfunJNI;
+import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.Renderer;
 
 
@@ -140,11 +141,11 @@ public class LiquidTextureView extends TextureView {
     }
 
     private float getWidthRatio(){
-        return Renderer.getInstance().sRenderWorldWidth / getWidth();
+        return LiquidWorld.getInstance().sRenderWorldWidth / getWidth();
     }
 
     private float getHeightRatio(){
-        return Renderer.getInstance().sRenderWorldWidth / getWidth();
+        return LiquidWorld.getInstance().sRenderWorldWidth / getWidth();
     }
 
     private float[] normalizePositions(float[] originalVertices){
@@ -182,14 +183,14 @@ public class LiquidTextureView extends TextureView {
 
         pgd.setShape(polygon);
 
-        ParticleSystem ps = Renderer.getInstance().acquireParticleSystem();
+        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
         try {
             ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
 
             ParticleGroup pGroup = ps.createParticleGroup(pgd);
 
         } finally {
-            Renderer.getInstance().releaseParticleSystem();
+            LiquidWorld.getInstance().releaseParticleSystem();
         }
         pgd.delete();
     }

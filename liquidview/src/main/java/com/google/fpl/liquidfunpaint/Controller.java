@@ -89,13 +89,13 @@ public class Controller implements OnTouchListener, SensorEventListener {
             float x = event.values[0];
             float y = event.values[1];
 
-            World world = Renderer.getInstance().acquireWorld();
+            World world = LiquidWorld.getInstance().acquireWorld();
             try {
                 world.setGravity(
                         mGravityVec[0] * x - mGravityVec[1] * y,
                         mGravityVec[1] * x + mGravityVec[0] * y);
             } finally {
-                Renderer.getInstance().releaseWorld();
+                LiquidWorld.getInstance().releaseWorld();
             }
         }
     }

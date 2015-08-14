@@ -27,6 +27,7 @@ import com.google.fpl.liquidfun.ParticleGroupDef;
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.Vec2;
+import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.Renderer;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
@@ -210,11 +211,11 @@ public abstract class Tool {
         worldPoint.x = Math.max(border,
                 Math.min(
                         worldPoint.x,
-                        Renderer.getInstance().sRenderWorldWidth - border));
+                        LiquidWorld.getInstance().sRenderWorldWidth - border));
         worldPoint.y = Math.max(border,
                 Math.min(
                         worldPoint.y,
-                        Renderer.getInstance().sRenderWorldHeight - border));
+                        LiquidWorld.getInstance().sRenderWorldHeight - border));
     }
 
     /**
@@ -256,9 +257,9 @@ public abstract class Tool {
         float radius = mBrushSize / 2;
 
         Vector2f worldPoint = new Vector2f(
-                Renderer.getInstance().sRenderWorldWidth
+                LiquidWorld.getInstance().sRenderWorldWidth
                     * screenX / v.getWidth(),
-                Renderer.getInstance().sRenderWorldHeight *
+                LiquidWorld.getInstance().sRenderWorldHeight *
                     (v.getHeight() - screenY)
                 / v.getHeight());
         clampToWorld(worldPoint, radius);
@@ -358,7 +359,7 @@ public abstract class Tool {
                     radius);
         }
 
-        ParticleSystem ps = Renderer.getInstance().acquireParticleSystem();
+        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
         try {
             if (mOperations.contains(ToolOperation.REMOVE_PARTICLES)) {
                 buffer.position(pInfo.getBufferStart());
@@ -388,7 +389,7 @@ public abstract class Tool {
                 pgd.delete();
             }
         } finally {
-            Renderer.getInstance().releaseParticleSystem();
+            LiquidWorld.getInstance().releaseParticleSystem();
         }
     }
 

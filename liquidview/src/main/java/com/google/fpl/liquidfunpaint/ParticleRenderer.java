@@ -103,7 +103,7 @@ public class ParticleRenderer {
         mParticleWeightBuffer.rewind();
         mParticleRenderList.clear();
 
-        ParticleSystem ps = Renderer.getInstance().acquireParticleSystem();
+        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
         try {
             int worldParticleCount = ps.getParticleCount();
             // grab the most current particle buffers
@@ -134,7 +134,7 @@ public class ParticleRenderer {
             // Copy the other particles to screen
             mScreenRenderer.draw(mTransformFromTexture);
         } finally {
-            Renderer.getInstance().releaseParticleSystem();
+            LiquidWorld.getInstance().releaseParticleSystem();
         }
     }
 
@@ -183,7 +183,7 @@ public class ParticleRenderer {
                 1, false, mPerspectiveTransform, 0);
 
         // Go through each particle group
-        ParticleSystem ps = Renderer.getInstance().acquireParticleSystem();
+        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
         try {
             ParticleGroup currGroup = ps.getParticleGroupList();
 
@@ -199,7 +199,7 @@ public class ParticleRenderer {
                 currGroup = currGroup.getNext();
             }
         } finally {
-            Renderer.getInstance().releaseParticleSystem();
+            LiquidWorld.getInstance().releaseParticleSystem();
         }
 
         mWaterParticleMaterial.endRender();
@@ -232,14 +232,14 @@ public class ParticleRenderer {
                 mParticleMaterial.getUniformLocation("uTransformPerspective"),
                 1, false, mPerspectiveTransform, 0);
 
-        ParticleSystem ps = Renderer.getInstance().acquireParticleSystem();
+        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
         try {
             // Go through all the particleGroups in the render list
             for (ParticleGroup currGroup : mParticleRenderList) {
                 drawParticleGroup(currGroup);
             }
         } finally {
-            Renderer.getInstance().releaseParticleSystem();
+            LiquidWorld.getInstance().releaseParticleSystem();
         }
 
         mParticleMaterial.endRender();
@@ -285,8 +285,8 @@ public class ParticleRenderer {
         Matrix.scaleM(
                 mTransformFromWorld,
                 0,
-                2 / Renderer.getInstance().sRenderWorldWidth,
-                2 *ratio / Renderer.getInstance().sRenderWorldHeight,
+                2 / LiquidWorld.getInstance().sRenderWorldWidth,
+                2 *ratio / LiquidWorld.getInstance().sRenderWorldHeight,
                 1);
     }
 
@@ -297,8 +297,8 @@ public class ParticleRenderer {
         Matrix.scaleM(
                 mTransformFromWorld,
                 0,
-                2 / ratio / Renderer.getInstance().sRenderWorldWidth,
-                2 / Renderer.getInstance().sRenderWorldHeight,
+                2 / ratio / LiquidWorld.getInstance().sRenderWorldWidth,
+                2 / LiquidWorld.getInstance().sRenderWorldHeight,
                 1);
     }
 

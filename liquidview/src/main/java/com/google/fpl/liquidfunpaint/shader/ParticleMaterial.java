@@ -20,6 +20,7 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.util.Log;
 
+import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.ParticleRenderer;
 import com.google.fpl.liquidfunpaint.Renderer;
 
@@ -58,7 +59,7 @@ public class ParticleMaterial extends Material {
 
         float pSize =  mParticleSizeScale * ParticleRenderer.FB_SIZE *
                 (Renderer.PARTICLE_RADIUS /
-                        Math.min(Renderer.getInstance().sRenderWorldWidth, Renderer.getInstance().sRenderWorldHeight));
+                        Math.min(LiquidWorld.getInstance().sRenderWorldWidth, LiquidWorld.getInstance().sRenderWorldHeight));
 
         // Specific uniforms to this material
         GLES20.glUniform1f(
