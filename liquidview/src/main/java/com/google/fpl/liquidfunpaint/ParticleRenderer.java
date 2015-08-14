@@ -251,14 +251,16 @@ public class ParticleRenderer {
     public void onSurfaceChanged(int width, int height) {
 
         // Set up the transform
-        float ratio = (float) height / width;
         Matrix.setIdentityM(mTransformFromTexture, 0);
         Matrix.setIdentityM(mTransformFromWorld, 0);
 
-        if(height > width) // portrait
-            resizeTransformPortrait(ratio);
-        else // landscape
-            resizeTransformLandscape(ratio);
+        Matrix.translateM(mTransformFromWorld, 0, -1, -1, 0);
+        Matrix.scaleM(
+                mTransformFromWorld,
+                0,
+                2f / LiquidWorld.getInstance().sRenderWorldWidth,
+                2f / LiquidWorld.getInstance().sRenderWorldHeight,
+                1);
 
         Matrix.setIdentityM(mPerspectiveTransform, 0);
 
@@ -276,30 +278,6 @@ public class ParticleRenderer {
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(mPerspectiveTransform, 0, mProjectionMatrix, 0, mViewMatrix, 0);
-    }
-
-    private void resizeTransformLandscape(float ratio){
-        Matrix.scaleM(mTransformFromTexture, 0, 1, 1 / ratio, 1);
-
-        Matrix.translateM(mTransformFromWorld, 0, -1, -ratio, 0);
-        Matrix.scaleM(
-                mTransformFromWorld,
-                0,
-                2 / LiquidWorld.getInstance().sRenderWorldWidth,
-                2 *ratio / LiquidWorld.getInstance().sRenderWorldHeight,
-                1);
-    }
-
-    private void resizeTransformPortrait(float ratio){
-        Matrix.scaleM(mTransformFromTexture, 0, 1*ratio, 1, 1);
-
-        Matrix.translateM(mTransformFromWorld, 0, -1/ratio, -1, 0);
-        Matrix.scaleM(
-                mTransformFromWorld,
-                0,
-                2 / ratio / LiquidWorld.getInstance().sRenderWorldWidth,
-                2 / LiquidWorld.getInstance().sRenderWorldHeight,
-                1);
     }
 
     public void onSurfaceCreated(Context context) {
