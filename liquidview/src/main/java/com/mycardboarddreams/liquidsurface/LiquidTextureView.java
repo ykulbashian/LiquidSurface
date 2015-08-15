@@ -137,7 +137,7 @@ public class LiquidTextureView extends TextureView {
     }
 
     private float getHeightRatio(){
-        return LiquidWorld.getInstance().sRenderWorldHeight / getHeight();
+        return LiquidWorld.getInstance().sRenderWorldWidth / getWidth();
     }
 
     private float[] normalizePositions(float[] originalVertices){
