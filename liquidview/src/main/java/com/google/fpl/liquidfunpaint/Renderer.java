@@ -185,10 +185,10 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
         // Draw particles
-        mParticleRenderer.draw();
+        mParticleRenderer.draw(sScreenWidth, sScreenHeight);
 
         if (DEBUG_DRAW) {
-            mDebugRenderer.draw();
+            mDebugRenderer.draw(sScreenWidth, sScreenHeight);
         }
     }
 

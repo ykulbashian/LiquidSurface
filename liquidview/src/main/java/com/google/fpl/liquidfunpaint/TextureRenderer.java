@@ -91,10 +91,10 @@ public class TextureRenderer {
      */
     public void drawTexture(
             Texture texture, float transform[],
-            float left, float bottom, float right, float top) {
+            float left, float bottom, float right, float top, int width, int height) {
         drawTexture(
                 texture, transform, Renderer.MAT4X4_IDENTITY,
-                left, bottom, right, top, 1.0f, false);
+                left, bottom, right, top, 1.0f, false, width, height);
     }
 
     /**
@@ -115,7 +115,7 @@ public class TextureRenderer {
     public void drawTexture(
             Texture texture, float inTransform[], float inUvTransform[],
             float left, float bottom, float right, float top,
-            float alphaScale, boolean noScale) {
+            float alphaScale, boolean noScale, int width, int height) {
         setRect(left, bottom, right, top);
 
         uvTransform = Arrays.copyOf(inUvTransform, uvTransform.length);
@@ -128,10 +128,10 @@ public class TextureRenderer {
             // previous value to get how much the texture's UVs should be
             // scaled. The UV will be scaled inverse proportionally.
             float widthUvScale =
-                    (right - left) / 2 * Renderer.getInstance().sScreenWidth /
+                    (right - left) / 2 * width /
                     texture.getWidth();
             float heightUvScale =
-                    (top - bottom) / 2 * Renderer.getInstance().sScreenHeight /
+                    (top - bottom) / 2 * height /
                     texture.getHeight();
             Matrix.scaleM(uvTransform, 0, widthUvScale, heightUvScale, 1);
         }

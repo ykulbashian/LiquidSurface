@@ -77,7 +77,8 @@ public class LiquidTextureView extends TextureView {
 
         Activity activity = (Activity)context;
 
-        initializeParticleSimulation(activity);
+        Renderer.getInstance().init(activity);
+        Renderer.getInstance().startSimulation();
 
         setOpaque(false);
 
@@ -85,12 +86,6 @@ public class LiquidTextureView extends TextureView {
         setSurfaceTextureListener(thread);
 
         mController = new RotatableController((Activity) getContext());
-    }
-
-    private void initializeParticleSimulation(Activity activity) {
-
-        Renderer.getInstance().init(activity);
-        Renderer.getInstance().startSimulation();
     }
 
     public void resumeParticles() {
@@ -109,8 +104,6 @@ public class LiquidTextureView extends TextureView {
     public boolean isStarted(){
         return thread.running;
     }
-
-
 
     public void createLiquidShape(final float[] vertices, final int color){
 

@@ -228,7 +228,7 @@ public class DebugRenderer extends Draw {
                 0.0f, 1.0f, 0.0f);
     }
 
-    public void draw() {
+    public void draw(int width, int height) {
         World world = LiquidWorld.getInstance().acquireWorld();
         try {
             resetAllBuffers();
@@ -238,8 +238,8 @@ public class DebugRenderer extends Draw {
 
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
             GLES20.glViewport(
-                    0, 0, Renderer.getInstance().sScreenWidth,
-                    Renderer.getInstance().sScreenHeight);
+                    0, 0, width,
+                    height);
             drawPolygons(mTransformFromWorld);
             drawCircles(mTransformFromWorld);
             drawSegments(mTransformFromWorld);

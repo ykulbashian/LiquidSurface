@@ -96,7 +96,7 @@ public class ParticleRenderer {
     /**
      * This should only execute on the GLSurfaceView thread.
      */
-    public void draw() {
+    public void draw(int width, int height) {
         // Per frame resets of buffers
         mParticlePositionBuffer.rewind();
         mParticleColorBuffer.rewind();
@@ -121,12 +121,12 @@ public class ParticleRenderer {
 
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
             GLES20.glViewport(
-                    0, 0, Renderer.getInstance().sScreenWidth,
-                    Renderer.getInstance().sScreenHeight);
+                    0, 0, width,
+                    height);
 
             // Draw the paper texture.
             TextureRenderer.getInstance().drawTexture(
-                    mPaperTexture, Renderer.MAT4X4_IDENTITY, -1, -1, 1, 1);
+                    mPaperTexture, Renderer.MAT4X4_IDENTITY, -1, -1, 1, 1, width, height);
 
             // Copy the water particles to screen
             mWaterScreenRenderer.draw(mTransformFromTexture);
