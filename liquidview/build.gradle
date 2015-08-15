@@ -25,6 +25,11 @@ android {
     sourceSets.main {
         jni.srcDirs = [] // This prevents the auto generation of Android.mk
         jniLibs.srcDir 'src/main/Box2D/swig/libs'
+
+        java {
+            srcDir 'src/main/java'
+            srcDir 'src/main/Box2D/swig/gen'
+        }
     }
 
 }

@@ -87,6 +87,11 @@ public:
     void SetDamping(float32 damping);
     void SetRadius(float32 radius);
 
+    void SetDensity(float32 density);
+	float32 GetDensity() const;
+	void SetGravityScale(float32 gravityScale);
+	float32 GetGravityScale() const;
+
     void QueryShapeAABB(
             b2QueryCallback* callback,
             const b2Shape& shape,
@@ -95,6 +100,9 @@ public:
     void SetParticleVelocity(int32 index, float32 vx, float32 vy);
     float GetParticlePositionX(int32 index) const;
     float GetParticlePositionY(int32 index) const;
+
+	void SetParticleLifetime(const int32 index, const float32 lifetime);
+	void SetDestructionByAge(const bool enable);
 
     int CopyPositionBuffer(
             int startIndex, int numParticles, void* outBuf, int size) const;

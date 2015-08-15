@@ -60,6 +60,10 @@ public:
     int32 GetParticleCount() const;
     int32 GetBufferIndex() const;
     int32 GetGroupFlags() const;
+    float32 GetMass() const;
+    b2Vec2 GetCenter() const;
+    const b2Vec2& GetPosition() const;
+    void DestroyParticles();
 };
 %clearnodefaultdtor; // Re-enable default constructors
 %clearnodefaultctor; // Re-enable default destructors
