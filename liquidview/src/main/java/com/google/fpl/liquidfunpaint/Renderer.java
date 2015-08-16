@@ -44,8 +44,6 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
 
     private static final float TIME_STEP = 1 / 60f; // 60 fps
 
-    private LiquidWorld liquidWorld = LiquidWorld.getInstance();
-
     // Public static constants; variables for reuse
     public static final float MAT4X4_IDENTITY[];
 
@@ -72,7 +70,7 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
 
     @Override
     protected void finalize() {
-        liquidWorld.deleteWorld();
+        LiquidWorld.getInstance().deleteWorld();
 
         if (mDebugRenderer != null) {
             mDebugRenderer.delete();
@@ -105,24 +103,24 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
      * Initializes the boundaries and reset the ParticleRenderer as well.
      */
     public void reset() {
-        World world = liquidWorld.acquireWorld();
+        LiquidWorld.getInstance().acquireWorld();
         try {
-            liquidWorld.createNewWorld();
+            LiquidWorld.getInstance().createNewWorld();
 
             if (Renderer.DEBUG_DRAW) {
-                world.setDebugDraw(mDebugRenderer);
+                LiquidWorld.getInstance().acquireWorld().setDebugDraw(mDebugRenderer);
             }
 
             mParticleRenderer.reset();
         } finally {
-            liquidWorld.releaseWorld();
+            LiquidWorld.getInstance().releaseWorld();
         }
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
         // Show the frame rate
-        liquidWorld.showFrameRate();
+        LiquidWorld.getInstance().showFrameRate();
 
         update(TIME_STEP);
         render();
@@ -132,7 +130,7 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
 
-        liquidWorld.initializeWorldDimensions(width, height);
+        LiquidWorld.getInstance().initializeWorldDimensions(width, height);
 
         sScreenWidth = width;
         sScreenHeight = height;
@@ -146,7 +144,7 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        if (!liquidWorld.hasWorld()) {
+        if (!LiquidWorld.getInstance().hasWorld()) {
             throw new IllegalStateException("Init world before rendering");
         }
 
@@ -170,7 +168,7 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
 
             mParticleRenderer.update(dt);
 
-            liquidWorld.stepWorld(dt);
+            LiquidWorld.getInstance().stepWorld(dt);
         }
     }
 
