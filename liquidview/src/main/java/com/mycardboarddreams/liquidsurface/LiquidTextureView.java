@@ -86,7 +86,7 @@ public class LiquidTextureView extends TextureView {
         return thread.running;
     }
 
-    public void createLiquidShape(final float[] vertices, final int color){
+    public void createLiquidShape(final float[] vertices){
 
         thread.addPhysicsCommand(new Runnable() {
             @Override
@@ -102,8 +102,7 @@ public class LiquidTextureView extends TextureView {
         thread.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
-                ParticleSystems.getInstance().fillShape(normalizePositions(vertices), GroupOptions.SOLID, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
-
+                LiquidWorld.getInstance().createPhysicsObject(normalizePositions(vertices));
             }
         });
     }

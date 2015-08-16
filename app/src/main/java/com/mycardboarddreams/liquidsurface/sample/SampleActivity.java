@@ -32,24 +32,22 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         super.onResume();
         createLiquidTriangle();
 
+        ltv.createSolidShape(createCircle(getCenterPoint(), 200, 8));
+
         ltv.resumeParticles();
     }
 
-    private void createLiquidTriangle() {
-        /**
-         * Create a triangle of blue liquid
-         */
+    private Vector2f getCenterPoint(){
+
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
-
-        int blueColor = 0xFF00FFCC;
-
         Vector2f center = new Vector2f(size.x / 2, size.y / 2);
+        return center;
+    }
 
-        ltv.createLiquidShape(createCircle(center, 200, 8),
-                        blueColor);
+    private void createLiquidTriangle() {
 
-        ltv.createSolidShape(createCircle(center, 50, 8));
+        ltv.createLiquidShape(createCircle(getCenterPoint(), 200, 8));
     }
 
     @Override

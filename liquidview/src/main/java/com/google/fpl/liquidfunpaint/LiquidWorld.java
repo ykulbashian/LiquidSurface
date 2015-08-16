@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.fpl.liquidfun.Body;
 import com.google.fpl.liquidfun.BodyDef;
+import com.google.fpl.liquidfun.BodyType;
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.World;
@@ -229,6 +230,17 @@ public class LiquidWorld {
             }
             mFrames++;
             totalFrames++;
+        }
+    }
+
+    public void createPhysicsObject(float[] vertices){
+
+        World world = acquireWorld();
+
+        try {
+           SolidWorld.getInstance().createSolidObject(world, vertices);
+        } finally {
+            releaseWorld();
         }
     }
 }

@@ -11,7 +11,8 @@ import com.google.fpl.liquidfun.Vec2;
  */
 public enum GroupOptions {
 
-    SOLID(Color.BLACK, ParticleFlag.wallParticle, ParticleGroupFlag.rigidParticleGroup),
+    SOLID(Color.BLACK, ParticleFlag.elasticParticle, ParticleGroupFlag.rigidParticleGroup),
+    WALL(Color.BLACK, ParticleFlag.wallParticle, ParticleGroupFlag.rigidParticleGroup),
     LIQUID(Color.CYAN, ParticleFlag.waterParticle, ParticleGroupFlag.particleGroupCanBeEmpty);
 
     GroupOptions(int color, int particleFlag, int groupFlag){
