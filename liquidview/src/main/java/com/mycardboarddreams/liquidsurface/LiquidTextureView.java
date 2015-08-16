@@ -2,26 +2,15 @@ package com.mycardboarddreams.liquidsurface;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.SurfaceTexture;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.TextureView;
 
-import com.google.fpl.liquidfun.Body;
-import com.google.fpl.liquidfun.BodyDef;
-import com.google.fpl.liquidfun.ParticleColor;
-import com.google.fpl.liquidfun.ParticleDef;
 import com.google.fpl.liquidfun.ParticleFlag;
-import com.google.fpl.liquidfun.ParticleGroup;
-import com.google.fpl.liquidfun.ParticleGroupDef;
 import com.google.fpl.liquidfun.ParticleGroupFlag;
-import com.google.fpl.liquidfun.ParticleSystem;
-import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
-import com.google.fpl.liquidfun.World;
-import com.google.fpl.liquidfun.liquidfunJNI;
+import com.google.fpl.liquidfunpaint.GroupOptions;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
+import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.Renderer;
 
 
@@ -47,13 +36,6 @@ public class LiquidTextureView extends TextureView {
     private LiquidRenderThread thread;
 
     private RotatableController mController;
-
-    protected static final Transform MAT_IDENTITY;
-
-    static {
-        MAT_IDENTITY = new Transform();
-        MAT_IDENTITY.setIdentity();
-    }
 
     public LiquidTextureView(Context context) {
         super(context);
@@ -109,9 +91,7 @@ public class LiquidTextureView extends TextureView {
         thread.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
-                GroupOptions options = new GroupOptions();
-                options.setColor(color);
-                fillShape(vertices, options);
+                ParticleSystems.getInstance().fillShape(normalizePositions(vertices), GroupOptions.LIQUID, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
             }
         });
     }
@@ -122,11 +102,7 @@ public class LiquidTextureView extends TextureView {
         thread.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
-                GroupOptions options = new GroupOptions();
-                options.setColor(0xFF000000);
-                options.particleGroup = ParticleGroupFlag.rigidParticleGroup;
-                options.setParticleType(ParticleFlag.wallParticle);
-                fillShape(vertices, options);
+                ParticleSystems.getInstance().fillShape(normalizePositions(vertices), GroupOptions.SOLID, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
 
             }
         });
@@ -150,41 +126,5 @@ public class LiquidTextureView extends TextureView {
         return normalizedVerts;
     }
 
-    private void fillShape(float[] vertices, GroupOptions options){
-
-        if (vertices == null || vertices.length == 0 || vertices.length % 2 != 0)
-            return;
-
-        float[] normalizedVertices = normalizePositions(vertices);
-
-        final PolygonShape polygon = new PolygonShape();
-        polygon.set(normalizedVertices, normalizedVertices.length / 2);
-
-        ParticleColor pColor = new ParticleColor(
-                (short)Color.red(options.color),
-                (short)Color.green(options.color),
-                (short)Color.blue(options.color),
-                (short)Color.alpha(options.color));
-
-        final ParticleGroupDef pgd = new ParticleGroupDef();
-        pgd.setFlags(options.particleType);
-        pgd.setGroupFlags(options.particleGroup);
-        pgd.setLinearVelocity(options.velocity);
-        pgd.setColor(pColor);
-        pgd.setStrength(options.strength);
-
-        pgd.setShape(polygon);
-
-        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
-        try {
-            ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
-
-            ParticleGroup pGroup = ps.createParticleGroup(pgd);
-
-        } finally {
-            LiquidWorld.getInstance().releaseParticleSystem();
-        }
-        pgd.delete();
-    }
 
 }

@@ -109,8 +109,6 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
         try {
             liquidWorld.createNewWorld();
 
-            liquidWorld.initParticleSystem();
-
             if (Renderer.DEBUG_DRAW) {
                 world.setDebugDraw(mDebugRenderer);
             }

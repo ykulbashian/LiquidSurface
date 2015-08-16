@@ -1,4 +1,4 @@
-package com.mycardboarddreams.liquidsurface;
+package com.google.fpl.liquidfunpaint;
 
 import android.graphics.Color;
 
@@ -9,7 +9,16 @@ import com.google.fpl.liquidfun.Vec2;
 /**
  * Created by PC on 5/27/2015.
  */
-public class GroupOptions {
+public enum GroupOptions {
+
+    SOLID(Color.BLACK, ParticleFlag.wallParticle, ParticleGroupFlag.rigidParticleGroup),
+    LIQUID(Color.CYAN, ParticleFlag.waterParticle, ParticleGroupFlag.particleGroupCanBeEmpty);
+
+    GroupOptions(int color, int particleFlag, int groupFlag){
+        setColor(color);
+        setParticleType(particleFlag);
+        particleGroup = groupFlag;
+    }
 
     public void setVelocity(Vec2 velocity) {
         this.velocity = velocity;

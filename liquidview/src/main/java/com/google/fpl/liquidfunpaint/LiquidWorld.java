@@ -5,13 +5,10 @@ import android.util.Log;
 import com.google.fpl.liquidfun.Body;
 import com.google.fpl.liquidfun.BodyDef;
 import com.google.fpl.liquidfun.ParticleSystem;
-import com.google.fpl.liquidfun.ParticleSystemDef;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.World;
 import com.mycardboarddreams.liquidsurface.BuildConfig;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -43,8 +40,6 @@ public class LiquidWorld {
     private long mTime;
 
     private Body mBoundaryBody = null;
-
-    private ParticleSystems particleSystems = new ParticleSystems();
 
     private static LiquidWorld sInstance = new LiquidWorld();
 
@@ -133,12 +128,14 @@ public class LiquidWorld {
         mWorld = new World(0, 0);
 
         initBoundaries();
+
+        initParticleSystem();
     }
 
 
     /** Create a new particle system */
     void initParticleSystem() {
-        particleSystems.createDefaultParticleSystem(null);
+        ParticleSystems.getInstance().resetToDefaultParticleSystem();
     }
 
     void deleteWorld() {
@@ -152,7 +149,7 @@ public class LiquidWorld {
             if (world != null) {
                 world.delete();
                 mWorld = null;
-                particleSystems.clear();
+                ParticleSystems.getInstance().clear();
             }
         } finally {
             releaseWorld();
@@ -182,9 +179,14 @@ public class LiquidWorld {
      * don't want to call ParticleSystem.createParticleGroup() at the same
      * time.
      */
+    public ParticleSystem acquireParticleSystem(String key) {
+        mWorldLock.lock();
+        return ParticleSystems.getInstance().get(key);
+    }
+
     public ParticleSystem acquireParticleSystem() {
         mWorldLock.lock();
-        return particleSystems.get(null);
+        return ParticleSystems.getInstance().get(ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
     }
 
     /**
@@ -217,7 +219,7 @@ public class LiquidWorld {
                 }
                 final float fps = mFrames / ((float) time - mTime) * ONE_SEC;
                 float avefps = totalFrames / ((float) time - mStartTime) * ONE_SEC;
-                final int count = particleSystems.getParticleCount();
+                final int count = ParticleSystems.getInstance().getParticleCount();
                 Log.d(TAG, fps + " fps (Now)");
                 Log.d(TAG, avefps + " fps (Average)");
                 Log.d(TAG, count + " particles");

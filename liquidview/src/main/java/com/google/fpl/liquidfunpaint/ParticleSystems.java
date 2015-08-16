@@ -1,7 +1,14 @@
 package com.google.fpl.liquidfunpaint;
 
+import android.graphics.Color;
+
+import com.google.fpl.liquidfun.ParticleColor;
+import com.google.fpl.liquidfun.ParticleGroup;
+import com.google.fpl.liquidfun.ParticleGroupDef;
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.ParticleSystemDef;
+import com.google.fpl.liquidfun.PolygonShape;
+import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.World;
 
 import java.util.HashMap;
@@ -15,7 +22,23 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
     public static final float PARTICLE_RADIUS = 0.06f;
     public static final float PARTICLE_REPULSIVE_STRENGTH = 0.0f;
 
-    public void createDefaultParticleSystem(String key){
+
+    protected static final Transform MAT_IDENTITY;
+
+    static {
+        MAT_IDENTITY = new Transform();
+        MAT_IDENTITY.setIdentity();
+    }
+
+    public static final String DEFAULT_PARTICLE_SYSTEM = "default_particle_system";
+
+    private static ParticleSystems sInstance = new ParticleSystems();
+
+    public static ParticleSystems getInstance(){
+        return sInstance;
+    }
+
+    public void resetToDefaultParticleSystem(){
         World world = LiquidWorld.getInstance().acquireWorld();
         try {
             // Create a new particle system; we only use one.
@@ -26,7 +49,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
             ParticleSystem particleSystem = world.createParticleSystem(psDef);
             particleSystem.setMaxParticleCount(MAX_PARTICLE_COUNT);
 
-            put(key, particleSystem);
+            put(DEFAULT_PARTICLE_SYSTEM, particleSystem);
             psDef.delete();
         } finally {
             LiquidWorld.getInstance().releaseWorld();
@@ -39,6 +62,42 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
             count += system.getParticleCount();
         }
         return count;
+    }
+
+
+    public void fillShape(float[] normalizedVertices, GroupOptions options, String key){
+
+        if (normalizedVertices == null || normalizedVertices.length == 0 || normalizedVertices.length % 2 != 0)
+            return;
+
+        final PolygonShape polygon = new PolygonShape();
+        polygon.set(normalizedVertices, normalizedVertices.length / 2);
+
+        ParticleColor pColor = new ParticleColor(
+                (short) Color.red(options.color),
+                (short)Color.green(options.color),
+                (short)Color.blue(options.color),
+                (short)Color.alpha(options.color));
+
+        final ParticleGroupDef pgd = new ParticleGroupDef();
+        pgd.setFlags(options.particleType);
+        pgd.setGroupFlags(options.particleGroup);
+        pgd.setLinearVelocity(options.velocity);
+        pgd.setColor(pColor);
+        pgd.setStrength(options.strength);
+
+        pgd.setShape(polygon);
+
+        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem(key);
+        try {
+            ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
+
+            ParticleGroup pGroup = ps.createParticleGroup(pgd);
+
+        } finally {
+            LiquidWorld.getInstance().releaseParticleSystem();
+        }
+        pgd.delete();
     }
 
 }
