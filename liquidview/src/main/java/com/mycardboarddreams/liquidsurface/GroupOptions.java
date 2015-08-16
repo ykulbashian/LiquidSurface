@@ -30,7 +30,7 @@ public class GroupOptions {
     Vec2 velocity = new Vec2(0, 0);
     int color = Color.CYAN;
     float strength = 2.0f;
-    int particleType = ParticleFlag.springParticle;
+    int particleType = ParticleFlag.waterParticle;
     int particleGroup = ParticleGroupFlag.particleGroupCanBeEmpty;
 
 }

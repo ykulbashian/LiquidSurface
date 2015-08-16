@@ -22,6 +22,7 @@ import android.util.Log;
 
 import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.ParticleRenderer;
+import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.Renderer;
 
 import org.json.JSONException;
@@ -58,7 +59,7 @@ public class ParticleMaterial extends Material {
         super.beginRender();
 
         float pSize =  mParticleSizeScale * ParticleRenderer.FB_SIZE *
-                (Renderer.PARTICLE_RADIUS /
+                (ParticleSystems.PARTICLE_RADIUS /
                         Math.min(LiquidWorld.getInstance().sRenderWorldWidth, LiquidWorld.getInstance().sRenderWorldHeight));
 
         // Specific uniforms to this material

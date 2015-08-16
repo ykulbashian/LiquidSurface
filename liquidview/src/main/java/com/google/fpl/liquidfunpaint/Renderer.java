@@ -40,9 +40,6 @@ import javax.microedition.khronos.opengles.GL10;
 public class Renderer extends Observable implements GLSurfaceView.Renderer {
     // Private constants
     private static final Renderer _instance = new Renderer();
-    public static final int MAX_PARTICLE_COUNT = 5000;
-    public static final float PARTICLE_RADIUS = 0.06f;
-    public static final float PARTICLE_REPULSIVE_STRENGTH = 0.0f;
     public static final boolean DEBUG_DRAW = false;
 
     private static final float TIME_STEP = 1 / 60f; // 60 fps
