@@ -46,6 +46,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
             psDef.setRadius(PARTICLE_RADIUS);
             psDef.setRepulsiveStrength(PARTICLE_REPULSIVE_STRENGTH);
             psDef.setElasticStrength(2.0f);
+            psDef.setDensity(0.5f);
             ParticleSystem particleSystem = world.createParticleSystem(psDef);
             particleSystem.setMaxParticleCount(MAX_PARTICLE_COUNT);
 

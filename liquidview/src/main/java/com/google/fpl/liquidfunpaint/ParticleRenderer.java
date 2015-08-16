@@ -126,7 +126,7 @@ public class ParticleRenderer {
 
             // Draw the paper texture.
             TextureRenderer.getInstance().drawTexture(
-                    mPaperTexture, Renderer.MAT4X4_IDENTITY, -1, -1, 1, 1, width, height);
+                    mPaperTexture, Renderer.MAT4X4_IDENTITY, -1, 1, 1, -1, width, height);
 
             // Copy the water particles to screen
             mWaterScreenRenderer.draw(mTransformFromTexture);

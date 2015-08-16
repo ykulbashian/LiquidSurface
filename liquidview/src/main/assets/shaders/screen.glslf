@@ -29,5 +29,5 @@ void main()
     gl_FragColor = texture2D(uDiffuseTexture, vTexCoord);
 
     // Alpha Threshold
-    gl_FragColor.a = (gl_FragColor.a > uAlphaThreshold) ? gl_FragColor.a : 0.0;
+    gl_FragColor.a = (gl_FragColor.a > uAlphaThreshold) ? gl_FragColor.a*0.8 : 0.0;
 }
