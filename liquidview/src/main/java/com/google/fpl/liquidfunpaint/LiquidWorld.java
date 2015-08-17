@@ -1,5 +1,6 @@
 package com.google.fpl.liquidfunpaint;
 
+import android.app.Activity;
 import android.util.Log;
 
 import com.google.fpl.liquidfun.ParticleSystem;
@@ -41,7 +42,7 @@ public class LiquidWorld implements Observable.Observer<Float> {
         return sInstance;
     }
 
-    void initializeWorldDimensions(int width, int height){
+    void onSurfaceChanged(int width, int height){
 
         if(height < width) { //landscape
             sRenderWorldHeight = WORLD_SPAN;
@@ -53,6 +54,8 @@ public class LiquidWorld implements Observable.Observer<Float> {
 
         // Reset the boundary
         initBoundaries();
+
+        ParticleSystems.getInstance().onSurfaceChanged(width, height);
     }
 
     public boolean hasWorld(){
@@ -76,13 +79,7 @@ public class LiquidWorld implements Observable.Observer<Float> {
 
         initBoundaries();
 
-        initParticleSystem();
-    }
-
-
-    /** Create a new particle system */
-    void initParticleSystem() {
-        ParticleSystems.getInstance().resetToDefaultParticleSystem();
+        ParticleSystems.getInstance().reset();
     }
 
     void deleteWorld() {
@@ -180,5 +177,13 @@ public class LiquidWorld implements Observable.Observer<Float> {
     @Override
     public void update(Observable observable, Float data) {
         stepWorld(data);
+    }
+
+    public void onSurfaceCreated(Activity activity) {
+        ParticleSystems.getInstance().onSurfaceCreated(activity);
+    }
+
+    public void draw(int width, int height){
+        ParticleSystems.getInstance().draw(width, height);
     }
 }

@@ -1,5 +1,6 @@
 package com.google.fpl.liquidfunpaint;
 
+import android.app.Activity;
 import android.graphics.Color;
 
 import com.google.fpl.liquidfun.ParticleColor;
@@ -10,18 +11,21 @@ import com.google.fpl.liquidfun.ParticleSystemDef;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.World;
+import com.google.fpl.liquidfunpaint.util.Observable;
 
 import java.util.HashMap;
 
 /**
  * Created by PC on 8/13/2015.
  */
-public class ParticleSystems extends HashMap<String, ParticleSystem> {
+public class ParticleSystems extends HashMap<String, ParticleSystem> implements Observable.Observer<Float> {
 
     public static final int MAX_PARTICLE_COUNT = 5000;
     public static final float PARTICLE_RADIUS = 0.06f;
     public static final float PARTICLE_REPULSIVE_STRENGTH = 0.0f;
 
+
+    private ParticleRenderer mParticleRenderer = new ParticleRenderer();
 
     protected static final Transform MAT_IDENTITY;
 
@@ -38,7 +42,9 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
         return sInstance;
     }
 
-    public void resetToDefaultParticleSystem(){
+    public void reset(){
+        mParticleRenderer.reset();
+
         World world = LiquidWorld.getInstance().acquireWorld();
         try {
             // Create a new particle system; we only use one.
@@ -101,4 +107,20 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
         pgd.delete();
     }
 
+    public void onSurfaceChanged(int width, int height){
+        mParticleRenderer.onSurfaceChanged(width, height);
+    }
+
+    public void onSurfaceCreated(Activity activity){
+        mParticleRenderer.onSurfaceCreated(activity);
+    }
+
+    @Override
+    public void update(Observable<Float> observable, Float data) {
+        mParticleRenderer.update(observable, data);
+    }
+
+    public void draw(int width, int height) {
+        mParticleRenderer.draw(width, height);
+    }
 }

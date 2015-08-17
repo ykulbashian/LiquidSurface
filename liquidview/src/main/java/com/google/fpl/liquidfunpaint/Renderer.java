@@ -55,8 +55,6 @@ public class Renderer extends Observable<Float> implements GLSurfaceView.Rendere
     // Renderer class owns all Box2D objects, for thread-safety
     // Variables for thread synchronization
     private volatile boolean mSimulation = false;
-
-    private ParticleRenderer mParticleRenderer;
     protected DebugRenderer mDebugRenderer = null;
 
 
@@ -87,13 +85,12 @@ public class Renderer extends Observable<Float> implements GLSurfaceView.Rendere
         mActivity = activity;
 
         // Initialize all the different renderers
-        mParticleRenderer = new ParticleRenderer();
         if (DEBUG_DRAW) {
             mDebugRenderer = new DebugRenderer();
             mDebugRenderer.setFlags(Draw.SHAPE_BIT | Draw.PARTICLE_BIT);
         }
 
-        addObserver(mParticleRenderer);
+        addObserver(ParticleSystems.getInstance());
         addObserver(LiquidWorld.getInstance());
 
         reset();
@@ -112,7 +109,6 @@ public class Renderer extends Observable<Float> implements GLSurfaceView.Rendere
                 LiquidWorld.getInstance().acquireWorld().setDebugDraw(mDebugRenderer);
             }
 
-            mParticleRenderer.reset();
         } finally {
             LiquidWorld.getInstance().releaseWorld();
         }
@@ -131,12 +127,10 @@ public class Renderer extends Observable<Float> implements GLSurfaceView.Rendere
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
 
-        LiquidWorld.getInstance().initializeWorldDimensions(width, height);
+        LiquidWorld.getInstance().onSurfaceChanged(width, height);
 
         sScreenWidth = width;
         sScreenHeight = height;
-
-        mParticleRenderer.onSurfaceChanged(width, height);
 
         if (DEBUG_DRAW) {
             mDebugRenderer.onSurfaceChanged();
@@ -154,7 +148,7 @@ public class Renderer extends Observable<Float> implements GLSurfaceView.Rendere
 
         TextureRenderer.getInstance().onSurfaceCreated();
 
-        mParticleRenderer.onSurfaceCreated(mActivity);
+        LiquidWorld.getInstance().onSurfaceCreated(mActivity);
 
         if (DEBUG_DRAW) {
             mDebugRenderer.onSurfaceCreated(mActivity);
@@ -175,7 +169,7 @@ public class Renderer extends Observable<Float> implements GLSurfaceView.Rendere
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
         // Draw particles
-        mParticleRenderer.draw(sScreenWidth, sScreenHeight);
+        LiquidWorld.getInstance().draw(sScreenWidth, sScreenHeight);
 
         if (DEBUG_DRAW) {
             mDebugRenderer.draw(sScreenWidth, sScreenHeight);

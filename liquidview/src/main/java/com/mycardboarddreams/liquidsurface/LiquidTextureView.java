@@ -78,10 +78,6 @@ public class LiquidTextureView extends TextureView {
         thread.setPaused(true);
     }
 
-    public boolean isStarted(){
-        return thread.running;
-    }
-
     public void createLiquidShape(final float[] vertices){
 
         thread.addPhysicsCommand(new Runnable() {
