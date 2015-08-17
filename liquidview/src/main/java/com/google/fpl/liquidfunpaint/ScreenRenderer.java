@@ -35,8 +35,7 @@ public class ScreenRenderer {
     private Material mMaterial;
     private float mAlphaThreshold;
 
-    public ScreenRenderer(
-            Context context, JSONObject json, Texture fboTexture) {
+    public ScreenRenderer(JSONObject json, Texture fboTexture) {
         mMaterial = new Material(
                 new ShaderProgram("texture.glslv", "screen.glslf"));
 

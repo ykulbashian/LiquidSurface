@@ -12,14 +12,18 @@ import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.shader.Texture;
+import com.google.fpl.liquidfunpaint.util.DrawableResponder;
 import com.google.fpl.liquidfunpaint.util.Observable;
 
 import java.util.HashMap;
 
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
 /**
  * Created by PC on 8/13/2015.
  */
-public class ParticleSystems extends HashMap<String, ParticleSystem> implements Observable.Observer<Float> {
+public class ParticleSystems extends HashMap<String, ParticleSystem> implements DrawableResponder {
 
     public static final int MAX_PARTICLE_COUNT = 5000;
     public static final float PARTICLE_RADIUS = 0.06f;
@@ -108,8 +112,9 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> implements 
         pgd.delete();
     }
 
-    public void onSurfaceChanged(int width, int height){
-        mParticleRenderer.onSurfaceChanged(width, height);
+    @Override
+    public void onSurfaceChanged(GL10 gl, int width, int height){
+        mParticleRenderer.onSurfaceChanged(gl, width, height);
     }
 
     public void onSurfaceCreated(Activity activity){
@@ -117,11 +122,12 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> implements 
     }
 
     @Override
-    public void update(Observable<Float> observable, Float data) {
-        mParticleRenderer.update(observable, data);
+    public void onDrawFrame(GL10 gl) {
+        mParticleRenderer.onDrawFrame(gl);
     }
 
-    public void draw(int width, int height) {
-        mParticleRenderer.draw(width, height);
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+
     }
 }

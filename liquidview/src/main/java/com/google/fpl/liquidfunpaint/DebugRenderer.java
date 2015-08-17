@@ -29,15 +29,19 @@ import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.Material.AttributeInfo;
 import com.google.fpl.liquidfunpaint.shader.ShaderProgram;
 import com.google.fpl.liquidfunpaint.shader.Texture;
+import com.google.fpl.liquidfunpaint.util.DrawableResponder;
 import com.mycardboarddreams.liquidsurface.R;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
 /**
  * DebugRenderer for LiquidFun, extending the b2Draw class.
  */
-public class DebugRenderer extends Draw {
+public class DebugRenderer extends Draw implements DrawableResponder {
     private static final int DEBUG_CAPACITY = 20000;
     private static final float DEBUG_OPACITY = 0.8f;
     private static final float DEBUG_AXIS_SCALE = 0.3f;
@@ -70,7 +74,11 @@ public class DebugRenderer extends Draw {
     private AttributeInfo mLinePositionAttr;
     private AttributeInfo mLineColorAttr;
 
-    public DebugRenderer() {
+    private Context mContext;
+
+    public DebugRenderer(Context context) {
+        mContext = context.getApplicationContext();
+
         mPolygonPositionBuffer = ByteBuffer.allocateDirect(DEBUG_CAPACITY)
                 .order(ByteOrder.nativeOrder());
         mPolygonColorBuffer = ByteBuffer.allocateDirect(DEBUG_CAPACITY)
@@ -228,18 +236,20 @@ public class DebugRenderer extends Draw {
                 0.0f, 1.0f, 0.0f);
     }
 
-    public void draw(int width, int height) {
+    @Override
+    public void onDrawFrame(GL10 gl) {
         World world = LiquidWorld.getInstance().acquireWorld();
         try {
-            resetAllBuffers();
+            reset();
 
             // This captures everything we need to draw into buffers
             world.drawDebugData();
 
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
             GLES20.glViewport(
-                    0, 0, width,
-                    height);
+                    0, 0,
+                    Renderer.getInstance().sScreenWidth,
+                    Renderer.getInstance().sScreenHeight);
             drawPolygons(mTransformFromWorld);
             drawCircles(mTransformFromWorld);
             drawSegments(mTransformFromWorld);
@@ -316,7 +326,8 @@ public class DebugRenderer extends Draw {
         mLineMaterial.endRender();
     }
 
-    public void onSurfaceChanged() {
+    @Override
+    public void onSurfaceChanged(GL10 gl, int width, int height) {
           Matrix.setIdentityM(mTransformFromWorld, 0);
           Matrix.translateM(mTransformFromWorld, 0, -1, -1, 0);
           Matrix.scaleM(
@@ -327,7 +338,8 @@ public class DebugRenderer extends Draw {
                   1);
     }
 
-    public void onSurfaceCreated(Context context) {
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         // Create all the debug materials we need
         mPolygonShader = new ShaderProgram(
                 "no_texture.glslv", "no_texture.glslf");
@@ -363,7 +375,7 @@ public class DebugRenderer extends Draw {
                 Material.BlendFactor.SRC_ALPHA,
                 Material.BlendFactor.ONE_MINUS_SRC_ALPHA);
         mCircleMaterial.addTexture("uDiffuseTexture",
-                new Texture(context, R.drawable.debug_circle));
+                new Texture(mContext, R.drawable.debug_circle));
 
         mLineShader = new ShaderProgram(
                 "no_texture.glslv", "no_texture.glslf");
@@ -381,7 +393,7 @@ public class DebugRenderer extends Draw {
 
     }
 
-    private void resetAllBuffers() {
+    public void reset() {
         mPolygonPositionBuffer.clear();
         mPolygonColorBuffer.clear();
 
@@ -392,4 +404,5 @@ public class DebugRenderer extends Draw {
         mLinePositionBuffer.clear();
         mLineColorBuffer.clear();
     }
+
 }

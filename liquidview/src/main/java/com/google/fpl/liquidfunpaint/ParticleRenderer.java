@@ -23,6 +23,7 @@ import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
 import com.google.fpl.liquidfunpaint.tool.Tool;
+import com.google.fpl.liquidfunpaint.util.DrawableResponder;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
 import com.google.fpl.liquidfunpaint.util.Observable;
 
@@ -39,6 +40,9 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
 /**
  * Renderer to draw particle water, objects, and wall. It draws particles as
  * fluid (or objects) by following three steps:
@@ -47,7 +51,7 @@ import java.util.List;
  * 3) Applies threshold.
  * This only executes on the GLSurfaceView thread.
  */
-public class ParticleRenderer implements Observable.Observer<Float> {
+public class ParticleRenderer implements DrawableResponder {
     private static final String TAG = "PtlRenderer";
     public static final String JSON_FILE = "materials/particlerenderer.json";
 
@@ -85,16 +89,10 @@ public class ParticleRenderer implements Observable.Observer<Float> {
     }
 
     /**
-     * Once per frame operations
-     */
-    @Override
-    public void update(Observable obs, Float dt) {
-    }
-
-    /**
      * This should only execute on the GLSurfaceView thread.
      */
-    public void draw(int width, int height) {
+    @Override
+    public void onDrawFrame(GL10 gl) {
         // Per frame resets of buffers
         mParticlePositionBuffer.rewind();
         mParticleColorBuffer.rewind();
@@ -119,8 +117,9 @@ public class ParticleRenderer implements Observable.Observer<Float> {
 
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
             GLES20.glViewport(
-                    0, 0, width,
-                    height);
+                    0, 0,
+                    Renderer.getInstance().sScreenWidth,
+                    Renderer.getInstance().sScreenHeight);
 
             // Copy the water particles to screen
             mWaterScreenRenderer.draw(mTransformFromTexture);
@@ -242,7 +241,8 @@ public class ParticleRenderer implements Observable.Observer<Float> {
         mBlurRenderer.draw(mRenderSurface[1].getTexture(), mRenderSurface[1]);
     }
 
-    public void onSurfaceChanged(int width, int height) {
+    @Override
+    public void onSurfaceChanged(GL10 gl, int width, int height) {
 
         // Set up the transform
         float ratio = (float) height / width;
@@ -349,12 +349,12 @@ public class ParticleRenderer implements Observable.Observer<Float> {
 
             // Scrolling texture when we copy water particles from FBO to screen
             mWaterScreenRenderer = new ScreenRenderer(
-                    context, json.getJSONObject("waterParticleToScreen"),
+                    json.getJSONObject("waterParticleToScreen"),
                     mRenderSurface[0].getTexture());
 
             // Scrolling texture when we copy water particles from FBO to screen
             mScreenRenderer = new ScreenRenderer(
-                    context, json.getJSONObject("otherParticleToScreen"),
+                    json.getJSONObject("otherParticleToScreen"),
                     mRenderSurface[1].getTexture());
 
         } catch (JSONException ex) {
@@ -367,4 +367,10 @@ public class ParticleRenderer implements Observable.Observer<Float> {
         mParticleColorBuffer.clear();
         mParticleWeightBuffer.clear();
     }
+
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+
+    }
+
 }

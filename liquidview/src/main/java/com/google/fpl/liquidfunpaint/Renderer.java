@@ -18,6 +18,7 @@ package com.google.fpl.liquidfunpaint;
 
 import com.google.fpl.liquidfun.Draw;
 import com.google.fpl.liquidfunpaint.shader.ShaderProgram;
+import com.google.fpl.liquidfunpaint.util.DrawableResponder;
 import com.google.fpl.liquidfunpaint.util.Observable;
 
 import android.app.Activity;
@@ -34,7 +35,7 @@ import javax.microedition.khronos.opengles.GL10;
  * thread-safety is to called acquireWorld to obtain a thread-safe world
  * pointer, and releaseWorld when you are done with the object.
  */
-public class Renderer extends Observable<Float> implements GLTextureView.Renderer {
+public class Renderer extends Observable<Float> implements DrawableResponder {
     // Private constants
     private static final Renderer _instance = new Renderer();
     public static final boolean DEBUG_DRAW = false;
@@ -54,8 +55,6 @@ public class Renderer extends Observable<Float> implements GLTextureView.Rendere
     // Renderer class owns all Box2D objects, for thread-safety
     // Variables for thread synchronization
     private volatile boolean mSimulation = false;
-    protected DebugRenderer mDebugRenderer = null;
-
 
     static {
         MAT4X4_IDENTITY = new float[16];
@@ -66,11 +65,6 @@ public class Renderer extends Observable<Float> implements GLTextureView.Rendere
     @Override
     protected void finalize() {
         LiquidWorld.getInstance().deleteWorld();
-
-        if (mDebugRenderer != null) {
-            mDebugRenderer.delete();
-            mDebugRenderer = null;
-        }
     }
 
     private Renderer() {
@@ -83,47 +77,46 @@ public class Renderer extends Observable<Float> implements GLTextureView.Rendere
     public void init(Activity activity) {
         mActivity = activity;
 
-        // Initialize all the different renderers
-        if (DEBUG_DRAW) {
-            mDebugRenderer = new DebugRenderer();
-            mDebugRenderer.setFlags(Draw.SHAPE_BIT | Draw.PARTICLE_BIT);
-        }
-
-        addObserver(ParticleSystems.getInstance());
-        addObserver(LiquidWorld.getInstance());
+        LiquidWorld.getInstance().init(activity);
 
         reset();
+
+        startSimulation();
     }
 
     /**
      * Resets the world -- which means a delete and a new.
      * Initializes the boundaries and reset the ParticleRenderer as well.
      */
+    @Override
     public void reset() {
-        LiquidWorld.getInstance().reset(mDebugRenderer);
+        LiquidWorld.getInstance().reset();
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        // Show the frame rate
-        LiquidWorld.getInstance().showFrameRate();
+        if (mSimulation) {
+            setChanged();
+            notifyObservers();
 
-        update(TIME_STEP);
-        render();
+            LiquidWorld.getInstance().update(TIME_STEP);
+
+            GLES20.glClearColor(1, 1, 1, 1);
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+
+            // Draw particles
+            LiquidWorld.getInstance().onDrawFrame(gl);
+        }
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        GLES20.glViewport(0, 0, width, height);
-
-        LiquidWorld.getInstance().onSurfaceChanged(width, height);
-
         sScreenWidth = width;
         sScreenHeight = height;
 
-        if (DEBUG_DRAW) {
-            mDebugRenderer.onSurfaceChanged();
-        }
+        GLES20.glViewport(0, 0, width, height);
+
+        LiquidWorld.getInstance().onSurfaceChanged(gl, width, height);
     }
 
     @Override
@@ -132,37 +125,11 @@ public class Renderer extends Observable<Float> implements GLTextureView.Rendere
             throw new IllegalStateException("Init world before rendering");
         }
 
-        // Load all shaders
         ShaderProgram.loadAllShaders(mActivity.getAssets());
 
         TextureRenderer.getInstance().onSurfaceCreated();
 
-        LiquidWorld.getInstance().onSurfaceCreated(mActivity);
-
-        if (DEBUG_DRAW) {
-            mDebugRenderer.onSurfaceCreated(mActivity);
-        }
-    }
-
-    /** Update function for render loop */
-    private void update(float dt) {
-        if (mSimulation) {
-            setChanged();
-            notifyObservers(dt);
-        }
-    }
-
-    /** Render function for render loop */
-    private void render() {
-        GLES20.glClearColor(1, 1, 1, 1);
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-
-        // Draw particles
-        LiquidWorld.getInstance().draw(sScreenWidth, sScreenHeight);
-
-        if (DEBUG_DRAW) {
-            mDebugRenderer.draw(sScreenWidth, sScreenHeight);
-        }
+        LiquidWorld.getInstance().onSurfaceCreated(mActivity, gl, config);
     }
 
     public void pauseSimulation() {

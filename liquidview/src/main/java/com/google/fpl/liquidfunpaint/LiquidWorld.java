@@ -3,9 +3,11 @@ package com.google.fpl.liquidfunpaint;
 import android.app.Activity;
 import android.util.Log;
 
+import com.google.fpl.liquidfun.Draw;
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.shader.Texture;
+import com.google.fpl.liquidfunpaint.util.DrawableResponder;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
 import com.google.fpl.liquidfunpaint.util.Observable;
 import com.mycardboarddreams.liquidsurface.BuildConfig;
@@ -16,10 +18,13 @@ import org.json.JSONObject;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
 /**
  * Created by PC on 8/13/2015.
  */
-public class LiquidWorld implements Observable.Observer<Float> {
+public class LiquidWorld implements DrawableResponder {
     private World mWorld = null;
     private Lock mWorldLock = new ReentrantLock();
 
@@ -40,6 +45,8 @@ public class LiquidWorld implements Observable.Observer<Float> {
 
     private Texture mPaperTexture;
 
+    protected DebugRenderer mDebugRenderer = null;
+
     // Measure the frame rate
     long totalFrames = -10000;
     private int mFrames;
@@ -52,7 +59,16 @@ public class LiquidWorld implements Observable.Observer<Float> {
         return sInstance;
     }
 
-    void onSurfaceChanged(int width, int height){
+    public void init(Activity activity){
+
+        if (Renderer.DEBUG_DRAW) {
+            mDebugRenderer = new DebugRenderer(activity);
+            mDebugRenderer.setFlags(Draw.SHAPE_BIT | Draw.PARTICLE_BIT);
+        }
+    }
+
+    @Override
+    public void onSurfaceChanged(GL10 gl, int width, int height){
 
         if(height < width) { //landscape
             sRenderWorldHeight = WORLD_SPAN;
@@ -62,18 +78,6 @@ public class LiquidWorld implements Observable.Observer<Float> {
             sRenderWorldWidth = WORLD_SPAN;
         }
 
-        // Reset the boundary
-        initBoundaries();
-
-        ParticleSystems.getInstance().onSurfaceChanged(width, height);
-    }
-
-    public boolean hasWorld(){
-        return mWorld != null;
-    }
-
-    /** Constructs boundaries for the canvas. **/
-    void initBoundaries() {
         World world = acquireWorld();
 
         try {
@@ -81,21 +85,31 @@ public class LiquidWorld implements Observable.Observer<Float> {
         } finally {
             releaseWorld();
         }
+
+        ParticleSystems.getInstance().onSurfaceChanged(gl, width, height);
+
+        if (Renderer.DEBUG_DRAW) {
+            mDebugRenderer.onSurfaceChanged(gl, width, height);
+        }
     }
 
-    void reset(DebugRenderer debugRenderer){
+    public boolean hasWorld(){
+        return mWorld != null;
+    }
+
+    public void reset(){
 
         acquireWorld();
         try {
             deleteWorld();
             mWorld = new World(0, 0);
 
-            initBoundaries();
+            SolidWorld.getInstance().createWorldBoundaries(mWorld, sRenderWorldWidth, sRenderWorldHeight);
 
             ParticleSystems.getInstance().reset();
 
             if (Renderer.DEBUG_DRAW) {
-                mWorld.setDebugDraw(debugRenderer);
+                mWorld.setDebugDraw(mDebugRenderer);
             }
 
         } finally {
@@ -107,6 +121,12 @@ public class LiquidWorld implements Observable.Observer<Float> {
         World world = acquireWorld();
 
         try {
+
+            if (mDebugRenderer != null) {
+                mDebugRenderer.delete();
+                mDebugRenderer = null;
+            }
+
             SolidWorld.getInstance().delete();
 
             if (world != null) {
@@ -195,15 +215,20 @@ public class LiquidWorld implements Observable.Observer<Float> {
         }
     }
 
-    @Override
-    public void update(Observable observable, Float data) {
+    public void update(Float data) {
+        showFrameRate();
+
         stepWorld(data);
     }
 
-    public void onSurfaceCreated(Activity context) {
+    public void onSurfaceCreated(Activity context, GL10 gl, EGLConfig config) {
         createBackground(context);
 
         ParticleSystems.getInstance().onSurfaceCreated(context);
+
+        if (Renderer.DEBUG_DRAW) {
+            mDebugRenderer.onSurfaceCreated(gl, config);
+        }
     }
 
     private void createBackground(Activity context) {
@@ -221,11 +246,23 @@ public class LiquidWorld implements Observable.Observer<Float> {
         }
     }
 
-    public void draw(int width, int height){
+    @Override
+    public void onDrawFrame(GL10 gl){
         // Draw the paper texture.
         TextureRenderer.getInstance().drawTexture(
-                mPaperTexture, Renderer.MAT4X4_IDENTITY, -1, 1, 1, -1, width, height);
+                mPaperTexture, Renderer.MAT4X4_IDENTITY, -1, 1, 1, -1,
+                Renderer.getInstance().sScreenWidth,
+                Renderer.getInstance().sScreenHeight);
 
-        ParticleSystems.getInstance().draw(width, height);
+        ParticleSystems.getInstance().onDrawFrame(gl);
+
+        if (Renderer.DEBUG_DRAW) {
+            mDebugRenderer.onDrawFrame(gl);
+        }
+    }
+
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+
     }
 }
