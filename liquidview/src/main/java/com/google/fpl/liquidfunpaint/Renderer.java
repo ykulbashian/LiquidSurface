@@ -105,7 +105,7 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
     public void reset() {
         LiquidWorld.getInstance().acquireWorld();
         try {
-            LiquidWorld.getInstance().createNewWorld();
+            LiquidWorld.getInstance().reset();
 
             if (Renderer.DEBUG_DRAW) {
                 LiquidWorld.getInstance().acquireWorld().setDebugDraw(mDebugRenderer);

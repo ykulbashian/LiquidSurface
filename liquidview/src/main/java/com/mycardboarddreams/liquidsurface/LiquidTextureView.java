@@ -59,15 +59,10 @@ public class LiquidTextureView extends TextureView {
 
         Activity activity = (Activity)context;
 
-        Renderer.getInstance().init(activity);
-        Renderer.getInstance().startSimulation();
-
-        setOpaque(false);
-
         thread = new LiquidRenderThread(activity);
         setSurfaceTextureListener(thread);
 
-        mController = new RotatableController((Activity) getContext());
+        mController = new RotatableController(activity);
     }
 
     public void resumeParticles() {

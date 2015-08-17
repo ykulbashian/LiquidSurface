@@ -1,5 +1,6 @@
 package com.mycardboarddreams.liquidsurface;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLUtils;
@@ -48,8 +49,11 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
 
     final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
 
-    public LiquidRenderThread(Context context){
+    public LiquidRenderThread(Activity context){
         targetFps = context.getResources().getInteger(R.integer.target_fps);
+
+        Renderer.getInstance().init(context);
+        Renderer.getInstance().startSimulation();
     }
 
     public void initialize(SurfaceTexture surface, int width, int height, float targetFramesPerSecond, boolean isPaused){

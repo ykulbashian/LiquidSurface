@@ -69,7 +69,7 @@ public class LiquidWorld {
         }
     }
 
-    void createNewWorld(){
+    void reset(){
         deleteWorld();
         mWorld = new World(0, 0);
 
