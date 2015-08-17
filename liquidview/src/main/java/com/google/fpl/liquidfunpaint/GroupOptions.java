@@ -13,7 +13,7 @@ public enum GroupOptions {
 
     SOLID(Color.BLACK, ParticleFlag.elasticParticle, ParticleGroupFlag.rigidParticleGroup),
     WALL(Color.BLACK, ParticleFlag.wallParticle, ParticleGroupFlag.rigidParticleGroup),
-    LIQUID(Color.CYAN, ParticleFlag.waterParticle, ParticleGroupFlag.particleGroupCanBeEmpty);
+    LIQUID(0xFF00AAFF, ParticleFlag.waterParticle, ParticleGroupFlag.particleGroupCanBeEmpty);
 
     GroupOptions(int color, int particleFlag, int groupFlag){
         setColor(color);

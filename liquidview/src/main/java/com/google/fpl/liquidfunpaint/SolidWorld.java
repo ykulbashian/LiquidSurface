@@ -119,4 +119,10 @@ public class SolidWorld {
             mCircleBody = null;
         }
     }
+
+    public void spinWheel(float direction){
+        if(mCircleBody != null){
+            mCircleBody.applyAngularImpulse(direction, true);
+        }
+    }
 }

@@ -1,16 +1,18 @@
 package com.mycardboarddreams.liquidsurface.sample;
 
 import android.graphics.Point;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
 
+import com.google.fpl.liquidfunpaint.Renderer;
+import com.google.fpl.liquidfunpaint.SolidWorld;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 import com.mycardboarddreams.liquidsurface.LiquidTextureView;
 
 
-public class SampleActivity extends AppCompatActivity implements View.OnClickListener{
+public class SampleActivity extends AppCompatActivity implements View.OnTouchListener{
 
     LiquidTextureView ltv;
 
@@ -21,7 +23,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
 
         ltv = (LiquidTextureView) findViewById(R.id.liquid_texture_view);
 
-        ltv.setOnClickListener(this);
+        ltv.setOnTouchListener(this);
     }
 
     /**
@@ -30,9 +32,9 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onResume() {
         super.onResume();
-        createLiquidTriangle();
+        createLiquidCircle();
 
-        ltv.createSolidShape(createCircle(getCenterPoint(), 200, 8));
+        ltv.createSolidShape(createCircle(getCenterPoint(), 100, 8));
 
         ltv.resumeParticles();
     }
@@ -45,9 +47,9 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         return center;
     }
 
-    private void createLiquidTriangle() {
+    private void createLiquidCircle() {
 
-        ltv.createLiquidShape(createCircle(getCenterPoint(), 200, 8));
+        ltv.createLiquidShape(createCircle(getCenterPoint(), 500, 8));
     }
 
     @Override
@@ -56,10 +58,19 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
         ltv.pauseParticles();
     }
 
-
     @Override
-    public void onClick(View v) {
-        createLiquidTriangle();
+    public boolean onTouch(View v, MotionEvent event) {
+        int action = event.getAction();
+        if(action == MotionEvent.ACTION_DOWN) {
+            if(event.getX() > Renderer.getInstance().sScreenWidth/2)
+                SolidWorld.getInstance().spinWheel(-0.05f);
+            else
+                SolidWorld.getInstance().spinWheel(0.05f);
+        } else if(action == MotionEvent.ACTION_UP){
+            SolidWorld.getInstance().spinWheel(0);
+        }
+
+        return true;
     }
 
     private float[] createCircle(Vector2f center, float radius, int numPoints){
@@ -74,4 +85,5 @@ public class SampleActivity extends AppCompatActivity implements View.OnClickLis
 
         return vertices;
     }
+
 }
