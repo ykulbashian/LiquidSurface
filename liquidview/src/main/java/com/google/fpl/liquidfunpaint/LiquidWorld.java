@@ -2,11 +2,7 @@ package com.google.fpl.liquidfunpaint;
 
 import android.util.Log;
 
-import com.google.fpl.liquidfun.Body;
-import com.google.fpl.liquidfun.BodyDef;
-import com.google.fpl.liquidfun.BodyType;
 import com.google.fpl.liquidfun.ParticleSystem;
-import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.World;
 import com.mycardboarddreams.liquidsurface.BuildConfig;
 
@@ -29,8 +25,6 @@ public class LiquidWorld {
     private static final int POSITION_ITERATIONS = 2;
     private static final int PARTICLE_ITERATIONS = 5;
 
-    private static final float BOUNDARY_THICKNESS = 20.0f;
-
     private static final String TAG = "Renderer";
     private static final int ONE_SEC = 1000000000;
 
@@ -39,8 +33,6 @@ public class LiquidWorld {
     private int mFrames;
     private long mStartTime;
     private long mTime;
-
-    private Body mBoundaryBody = null;
 
     private static LiquidWorld sInstance = new LiquidWorld();
 
@@ -71,54 +63,7 @@ public class LiquidWorld {
         World world = acquireWorld();
 
         try {
-            // clean up previous Body if exists
-            if (mBoundaryBody != null) {
-                world.destroyBody(mBoundaryBody);
-            }
-
-            // Create native objects
-            BodyDef bodyDef = new BodyDef();
-            PolygonShape boundaryPolygon = new PolygonShape();
-
-            mBoundaryBody = world.createBody(bodyDef);
-
-            // boundary definitions
-            // top
-            boundaryPolygon.setAsBox(
-                    sRenderWorldWidth,
-                    BOUNDARY_THICKNESS,
-                    sRenderWorldWidth / 2,
-                    sRenderWorldHeight + BOUNDARY_THICKNESS,
-                    0);
-            mBoundaryBody.createFixture(boundaryPolygon, 0.0f);
-            // bottom
-            boundaryPolygon.setAsBox(
-                    sRenderWorldWidth,
-                    BOUNDARY_THICKNESS,
-                    sRenderWorldWidth / 2,
-                    -BOUNDARY_THICKNESS,
-                    0);
-            mBoundaryBody.createFixture(boundaryPolygon, 0.0f);
-            // left
-            boundaryPolygon.setAsBox(
-                    BOUNDARY_THICKNESS,
-                    sRenderWorldHeight,
-                    -BOUNDARY_THICKNESS,
-                    sRenderWorldHeight / 2,
-                    0);
-            mBoundaryBody.createFixture(boundaryPolygon, 0.0f);
-            // right
-            boundaryPolygon.setAsBox(
-                    BOUNDARY_THICKNESS,
-                    sRenderWorldHeight,
-                    sRenderWorldWidth + BOUNDARY_THICKNESS,
-                    sRenderWorldHeight / 2,
-                    0);
-            mBoundaryBody.createFixture(boundaryPolygon, 0.0f);
-
-            // Clean up native objects
-            bodyDef.delete();
-            boundaryPolygon.delete();
+            SolidWorld.getInstance().createWorldBoundaries(world, sRenderWorldWidth, sRenderWorldHeight);
         } finally {
             releaseWorld();
         }
@@ -143,10 +88,8 @@ public class LiquidWorld {
         World world = acquireWorld();
 
         try {
-            if (mBoundaryBody != null) {
-                mBoundaryBody.delete();
-                mBoundaryBody = null;
-            }
+            SolidWorld.getInstance().delete();
+
             if (world != null) {
                 world.delete();
                 mWorld = null;
@@ -233,14 +176,5 @@ public class LiquidWorld {
         }
     }
 
-    public void createPhysicsObject(float[] vertices){
-
-        World world = acquireWorld();
-
-        try {
-           SolidWorld.getInstance().createSolidObject(world, vertices);
-        } finally {
-            releaseWorld();
-        }
     }
 }

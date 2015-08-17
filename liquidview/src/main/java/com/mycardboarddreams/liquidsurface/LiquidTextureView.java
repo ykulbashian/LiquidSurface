@@ -12,6 +12,7 @@ import com.google.fpl.liquidfunpaint.GroupOptions;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.Renderer;
+import com.google.fpl.liquidfunpaint.SolidWorld;
 
 
 /**
@@ -96,13 +97,11 @@ public class LiquidTextureView extends TextureView {
         });
     }
 
-
-
     public void createSolidShape(final float[] vertices){
         thread.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
-                LiquidWorld.getInstance().createPhysicsObject(normalizePositions(vertices));
+                SolidWorld.getInstance().createSolidObject(normalizePositions(vertices));
             }
         });
     }
