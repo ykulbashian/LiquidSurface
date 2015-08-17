@@ -5,8 +5,13 @@ import android.util.Log;
 
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.World;
+import com.google.fpl.liquidfunpaint.shader.Texture;
+import com.google.fpl.liquidfunpaint.util.FileHelper;
 import com.google.fpl.liquidfunpaint.util.Observable;
 import com.mycardboarddreams.liquidsurface.BuildConfig;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -27,8 +32,13 @@ public class LiquidWorld implements Observable.Observer<Float> {
     private static final int POSITION_ITERATIONS = 2;
     private static final int PARTICLE_ITERATIONS = 5;
 
+    private static final String PAPER_MATERIAL_NAME = "paper";
+    private static final String DIFFUSE_TEXTURE_NAME = "uDiffuseTexture";
+
     private static final String TAG = "Renderer";
     private static final int ONE_SEC = 1000000000;
+
+    private Texture mPaperTexture;
 
     // Measure the frame rate
     long totalFrames = -10000;
@@ -73,13 +83,24 @@ public class LiquidWorld implements Observable.Observer<Float> {
         }
     }
 
-    void reset(){
-        deleteWorld();
-        mWorld = new World(0, 0);
+    void reset(DebugRenderer debugRenderer){
 
-        initBoundaries();
+        acquireWorld();
+        try {
+            deleteWorld();
+            mWorld = new World(0, 0);
 
-        ParticleSystems.getInstance().reset();
+            initBoundaries();
+
+            ParticleSystems.getInstance().reset();
+
+            if (Renderer.DEBUG_DRAW) {
+                mWorld.setDebugDraw(debugRenderer);
+            }
+
+        } finally {
+            releaseWorld();
+        }
     }
 
     void deleteWorld() {
@@ -179,11 +200,32 @@ public class LiquidWorld implements Observable.Observer<Float> {
         stepWorld(data);
     }
 
-    public void onSurfaceCreated(Activity activity) {
-        ParticleSystems.getInstance().onSurfaceCreated(activity);
+    public void onSurfaceCreated(Activity context) {
+        createBackground(context);
+
+        ParticleSystems.getInstance().onSurfaceCreated(context);
+    }
+
+    private void createBackground(Activity context) {
+        // Read in our specific json file
+        String materialFile = FileHelper.loadAsset(
+                context.getAssets(), ParticleRenderer.JSON_FILE);
+        try {
+            JSONObject json = new JSONObject(materialFile);
+            // Texture for paper
+            JSONObject materialData = json.getJSONObject(PAPER_MATERIAL_NAME);
+            String textureName = materialData.getString(DIFFUSE_TEXTURE_NAME);
+            mPaperTexture = new Texture(context, textureName);
+        }  catch (JSONException ex) {
+            Log.e(TAG, "Cannot parse" + ParticleRenderer.JSON_FILE + "\n" + ex.getMessage());
+        }
     }
 
     public void draw(int width, int height){
+        // Draw the paper texture.
+        TextureRenderer.getInstance().drawTexture(
+                mPaperTexture, Renderer.MAT4X4_IDENTITY, -1, 1, 1, -1, width, height);
+
         ParticleSystems.getInstance().draw(width, height);
     }
 }

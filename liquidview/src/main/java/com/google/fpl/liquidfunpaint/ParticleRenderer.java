@@ -21,7 +21,6 @@ import com.google.fpl.liquidfun.ParticleGroup;
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
-import com.google.fpl.liquidfunpaint.shader.Texture;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
 import com.google.fpl.liquidfunpaint.tool.Tool;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
@@ -50,9 +49,7 @@ import java.util.List;
  */
 public class ParticleRenderer implements Observable.Observer<Float> {
     private static final String TAG = "PtlRenderer";
-    private static final String JSON_FILE = "materials/particlerenderer.json";
-    private static final String PAPER_MATERIAL_NAME = "paper";
-    private static final String DIFFUSE_TEXTURE_NAME = "uDiffuseTexture";
+    public static final String JSON_FILE = "materials/particlerenderer.json";
 
     // Framebuffer for the particles to render on.
     public static final int FB_SIZE = 256;
@@ -62,7 +59,6 @@ public class ParticleRenderer implements Observable.Observer<Float> {
     private BlurRenderer mBlurRenderer;
     private ScreenRenderer mWaterScreenRenderer;
     private ScreenRenderer mScreenRenderer;
-    private Texture mPaperTexture;
 
     private final RenderSurface[] mRenderSurface = new RenderSurface[2];
     private final float[] mTransformFromTexture = new float[16];
@@ -125,10 +121,6 @@ public class ParticleRenderer implements Observable.Observer<Float> {
             GLES20.glViewport(
                     0, 0, width,
                     height);
-
-            // Draw the paper texture.
-            TextureRenderer.getInstance().drawTexture(
-                    mPaperTexture, Renderer.MAT4X4_IDENTITY, -1, 1, 1, -1, width, height);
 
             // Copy the water particles to screen
             mWaterScreenRenderer.draw(mTransformFromTexture);
@@ -365,10 +357,6 @@ public class ParticleRenderer implements Observable.Observer<Float> {
                     context, json.getJSONObject("otherParticleToScreen"),
                     mRenderSurface[1].getTexture());
 
-            // Texture for paper
-            JSONObject materialData = json.getJSONObject(PAPER_MATERIAL_NAME);
-            String textureName = materialData.getString(DIFFUSE_TEXTURE_NAME);
-            mPaperTexture = new Texture(context, textureName);
         } catch (JSONException ex) {
             Log.e(TAG, "Cannot parse" + JSON_FILE + "\n" + ex.getMessage());
         }

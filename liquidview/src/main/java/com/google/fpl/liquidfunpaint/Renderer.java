@@ -22,7 +22,6 @@ import com.google.fpl.liquidfunpaint.util.Observable;
 
 import android.app.Activity;
 import android.opengl.GLES20;
-import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -35,7 +34,7 @@ import javax.microedition.khronos.opengles.GL10;
  * thread-safety is to called acquireWorld to obtain a thread-safe world
  * pointer, and releaseWorld when you are done with the object.
  */
-public class Renderer extends Observable<Float> implements GLSurfaceView.Renderer {
+public class Renderer extends Observable<Float> implements GLTextureView.Renderer {
     // Private constants
     private static final Renderer _instance = new Renderer();
     public static final boolean DEBUG_DRAW = false;
@@ -101,17 +100,7 @@ public class Renderer extends Observable<Float> implements GLSurfaceView.Rendere
      * Initializes the boundaries and reset the ParticleRenderer as well.
      */
     public void reset() {
-        LiquidWorld.getInstance().acquireWorld();
-        try {
-            LiquidWorld.getInstance().reset();
-
-            if (Renderer.DEBUG_DRAW) {
-                LiquidWorld.getInstance().acquireWorld().setDebugDraw(mDebugRenderer);
-            }
-
-        } finally {
-            LiquidWorld.getInstance().releaseWorld();
-        }
+        LiquidWorld.getInstance().reset(mDebugRenderer);
     }
 
     @Override
