@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.World;
+import com.google.fpl.liquidfunpaint.util.Observable;
 import com.mycardboarddreams.liquidsurface.BuildConfig;
 
 import java.util.concurrent.locks.Lock;
@@ -12,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Created by PC on 8/13/2015.
  */
-public class LiquidWorld {
+public class LiquidWorld implements Observable.Observer<Float> {
     private World mWorld = null;
     private Lock mWorldLock = new ReentrantLock();
 
@@ -176,5 +177,8 @@ public class LiquidWorld {
         }
     }
 
+    @Override
+    public void update(Observable observable, Float data) {
+        stepWorld(data);
     }
 }

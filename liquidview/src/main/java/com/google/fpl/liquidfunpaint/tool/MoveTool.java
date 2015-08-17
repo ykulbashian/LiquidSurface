@@ -25,10 +25,9 @@ import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.QueryCallback;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.Renderer;
+import com.google.fpl.liquidfunpaint.util.Observable;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Vector;
 
 /**
@@ -36,7 +35,7 @@ import java.util.Vector;
  * We create particle groups per draw, but we don't need to join them.
  * Particle groups are merely used to mimic the shape of a stroke.
  */
-public class MoveTool extends Tool implements Observer {
+public class MoveTool extends Tool implements Observable.Observer<Float> {
     private MoveQueryCallback mCb = new MoveQueryCallback();
     private SparseArray<Vector<ParticleQueryResult>> mPointerResultList =
             new SparseArray<Vector<ParticleQueryResult>>();
@@ -200,11 +199,10 @@ public class MoveTool extends Tool implements Observer {
     // This is called from the Update thread. We only update particle velocity
     // once per frame.
     @Override
-    public void update(Observable obj, Object arg) {
+    public void update(Observable obj, Float arg) {
         // Scale the velocity by the framerate. However the max is still
         // limited by LiquidFun so the particles won't snap to finger.
-        assert arg instanceof Float;
-        float velocityScale = 1 / (Float) arg;
+        float velocityScale = 1 / arg;
 
         ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
         try {

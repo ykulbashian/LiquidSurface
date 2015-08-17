@@ -25,6 +25,7 @@ import com.google.fpl.liquidfunpaint.shader.Texture;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
 import com.google.fpl.liquidfunpaint.tool.Tool;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
+import com.google.fpl.liquidfunpaint.util.Observable;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -47,7 +48,7 @@ import java.util.List;
  * 3) Applies threshold.
  * This only executes on the GLSurfaceView thread.
  */
-public class ParticleRenderer {
+public class ParticleRenderer implements Observable.Observer<Float> {
     private static final String TAG = "PtlRenderer";
     private static final String JSON_FILE = "materials/particlerenderer.json";
     private static final String PAPER_MATERIAL_NAME = "paper";
@@ -90,7 +91,8 @@ public class ParticleRenderer {
     /**
      * Once per frame operations
      */
-    public void update(float dt) {
+    @Override
+    public void update(Observable obs, Float dt) {
     }
 
     /**

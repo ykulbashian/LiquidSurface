@@ -17,15 +17,13 @@
 package com.google.fpl.liquidfunpaint;
 
 import com.google.fpl.liquidfun.Draw;
-import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.shader.ShaderProgram;
+import com.google.fpl.liquidfunpaint.util.Observable;
 
 import android.app.Activity;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-
-import java.util.Observable;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -37,7 +35,7 @@ import javax.microedition.khronos.opengles.GL10;
  * thread-safety is to called acquireWorld to obtain a thread-safe world
  * pointer, and releaseWorld when you are done with the object.
  */
-public class Renderer extends Observable implements GLSurfaceView.Renderer {
+public class Renderer extends Observable<Float> implements GLSurfaceView.Renderer {
     // Private constants
     private static final Renderer _instance = new Renderer();
     public static final boolean DEBUG_DRAW = false;
@@ -94,6 +92,9 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
             mDebugRenderer = new DebugRenderer();
             mDebugRenderer.setFlags(Draw.SHAPE_BIT | Draw.PARTICLE_BIT);
         }
+
+        addObserver(mParticleRenderer);
+        addObserver(LiquidWorld.getInstance());
 
         reset();
     }
@@ -165,10 +166,6 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
         if (mSimulation) {
             setChanged();
             notifyObservers(dt);
-
-            mParticleRenderer.update(dt);
-
-            LiquidWorld.getInstance().stepWorld(dt);
         }
     }
 
@@ -193,13 +190,4 @@ public class Renderer extends Observable implements GLSurfaceView.Renderer {
         mSimulation = true;
     }
 
-
-
-    /**
-     * This provides access to the main Activity class that our Renderer is
-     * associated with. Provided for debug access; use with care.
-     */
-    public Activity getCurrentActivity() {
-        return mActivity;
-    }
 }
