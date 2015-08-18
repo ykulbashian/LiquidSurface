@@ -24,7 +24,7 @@ import com.google.fpl.liquidfun.Fixture;
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.QueryCallback;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
-import com.google.fpl.liquidfunpaint.Renderer;
+import com.google.fpl.liquidfunpaint.renderer.Renderer;
 import com.google.fpl.liquidfunpaint.util.Observable;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 

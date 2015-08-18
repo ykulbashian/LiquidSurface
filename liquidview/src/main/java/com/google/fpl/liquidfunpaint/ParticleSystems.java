@@ -11,9 +11,8 @@ import com.google.fpl.liquidfun.ParticleSystemDef;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.World;
-import com.google.fpl.liquidfunpaint.shader.Texture;
+import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
 import com.google.fpl.liquidfunpaint.util.DrawableResponder;
-import com.google.fpl.liquidfunpaint.util.Observable;
 
 import java.util.HashMap;
 
@@ -47,6 +46,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> implements 
         return sInstance;
     }
 
+    @Override
     public void reset(){
         mParticleRenderer.reset();
 

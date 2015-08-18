@@ -6,10 +6,13 @@ import android.util.Log;
 import com.google.fpl.liquidfun.Draw;
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.World;
+import com.google.fpl.liquidfunpaint.renderer.DebugRenderer;
+import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
+import com.google.fpl.liquidfunpaint.renderer.Renderer;
+import com.google.fpl.liquidfunpaint.renderer.TextureRenderer;
 import com.google.fpl.liquidfunpaint.shader.Texture;
 import com.google.fpl.liquidfunpaint.util.DrawableResponder;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
-import com.google.fpl.liquidfunpaint.util.Observable;
 import com.mycardboarddreams.liquidsurface.BuildConfig;
 
 import org.json.JSONException;
@@ -97,6 +100,7 @@ public class LiquidWorld implements DrawableResponder {
         return mWorld != null;
     }
 
+    @Override
     public void reset(){
 
         acquireWorld();
@@ -117,7 +121,7 @@ public class LiquidWorld implements DrawableResponder {
         }
     }
 
-    void deleteWorld() {
+    public void deleteWorld() {
         World world = acquireWorld();
 
         try {
@@ -168,8 +172,7 @@ public class LiquidWorld implements DrawableResponder {
     }
 
     public ParticleSystem acquireParticleSystem() {
-        mWorldLock.lock();
-        return ParticleSystems.getInstance().get(ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
+        return acquireParticleSystem(ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
     }
 
     /**

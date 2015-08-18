@@ -15,7 +15,7 @@
 *
 */
 
-package com.google.fpl.liquidfunpaint;
+package com.google.fpl.liquidfunpaint.renderer;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;

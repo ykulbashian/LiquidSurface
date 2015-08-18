@@ -5,14 +5,12 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
-import com.google.fpl.liquidfunpaint.Renderer;
 import com.google.fpl.liquidfunpaint.tool.Tool;
 
 /**

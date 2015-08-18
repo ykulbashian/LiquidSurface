@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  */
-package com.google.fpl.liquidfunpaint;
+package com.google.fpl.liquidfunpaint.renderer;
 
-import com.google.fpl.liquidfun.Draw;
+import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.shader.ShaderProgram;
 import com.google.fpl.liquidfunpaint.util.DrawableResponder;
 import com.google.fpl.liquidfunpaint.util.Observable;

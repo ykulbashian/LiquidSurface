@@ -14,7 +14,7 @@
 * limitations under the License.
 *
 */
-package com.google.fpl.liquidfunpaint;
+package com.google.fpl.liquidfunpaint.renderer;
 
 import android.content.Context;
 import android.opengl.GLES20;
@@ -25,6 +25,7 @@ import com.google.fpl.liquidfun.Draw;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.Vec2;
 import com.google.fpl.liquidfun.World;
+import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.Material.AttributeInfo;
 import com.google.fpl.liquidfunpaint.shader.ShaderProgram;

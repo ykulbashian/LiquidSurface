@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package com.google.fpl.liquidfunpaint;
+package com.google.fpl.liquidfunpaint.renderer;
 
 import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.ShaderProgram;

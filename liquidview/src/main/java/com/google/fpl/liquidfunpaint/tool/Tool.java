@@ -28,7 +28,6 @@ import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.Vec2;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
-import com.google.fpl.liquidfunpaint.Renderer;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 import java.nio.ByteBuffer;

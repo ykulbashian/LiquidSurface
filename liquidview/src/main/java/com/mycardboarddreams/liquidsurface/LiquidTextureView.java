@@ -5,13 +5,10 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.TextureView;
 
-import com.google.fpl.liquidfun.ParticleFlag;
-import com.google.fpl.liquidfun.ParticleGroupFlag;
-import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfunpaint.GroupOptions;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
-import com.google.fpl.liquidfunpaint.Renderer;
+import com.google.fpl.liquidfunpaint.renderer.Renderer;
 import com.google.fpl.liquidfunpaint.SolidWorld;
 
 

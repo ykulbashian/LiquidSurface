@@ -1,13 +1,12 @@
 package com.mycardboarddreams.liquidsurface;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLUtils;
 import android.util.Log;
 import android.view.TextureView;
 
-import com.google.fpl.liquidfunpaint.Renderer;
+import com.google.fpl.liquidfunpaint.renderer.Renderer;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;

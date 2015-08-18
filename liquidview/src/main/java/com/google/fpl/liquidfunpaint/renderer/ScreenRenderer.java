@@ -14,7 +14,7 @@
 * limitations under the License.
 *
 */
-package com.google.fpl.liquidfunpaint;
+package com.google.fpl.liquidfunpaint.renderer;
 
 import android.content.Context;
 import android.opengl.GLES20;

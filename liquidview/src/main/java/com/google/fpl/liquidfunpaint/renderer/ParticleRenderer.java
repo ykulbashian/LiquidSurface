@@ -15,17 +15,18 @@
  *
  */
 
-package com.google.fpl.liquidfunpaint;
+package com.google.fpl.liquidfunpaint.renderer;
 
 import com.google.fpl.liquidfun.ParticleGroup;
 import com.google.fpl.liquidfun.ParticleSystem;
+import com.google.fpl.liquidfunpaint.LiquidWorld;
+import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
 import com.google.fpl.liquidfunpaint.tool.Tool;
 import com.google.fpl.liquidfunpaint.util.DrawableResponder;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
-import com.google.fpl.liquidfunpaint.util.Observable;
 
 import android.content.Context;
 import android.graphics.Color;

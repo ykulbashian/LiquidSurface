@@ -21,9 +21,8 @@ import android.opengl.GLES20;
 import android.util.Log;
 
 import com.google.fpl.liquidfunpaint.LiquidWorld;
-import com.google.fpl.liquidfunpaint.ParticleRenderer;
+import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
-import com.google.fpl.liquidfunpaint.Renderer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
