@@ -64,6 +64,8 @@ public:
     b2Vec2 GetCenter() const;
     const b2Vec2& GetPosition() const;
     void DestroyParticles();
+	void ApplyForce(const b2Vec2& force);
+	void ApplyLinearImpulse(const b2Vec2& impulse);
 };
 %clearnodefaultdtor; // Re-enable default constructors
 %clearnodefaultctor; // Re-enable default destructors

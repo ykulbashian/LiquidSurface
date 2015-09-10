@@ -719,6 +719,10 @@ public:
 	int CopyPositionBuffer(int startIndex, int numParticles, void* outBuf,
 						   int size) const;
 
+	/// Copy velocity buffer into a specified buffer, starting from startIndex.
+	int CopyVelocityBuffer(int startIndex, int numParticles, void* outBuf,
+						   int size) const;
+
 	/// Copy color buffer into a specified buffer, starting from startIndex.
 	int CopyColorBuffer(int startIndex, int numParticles, void* outBuf,
 					    int size) const;
@@ -726,6 +730,8 @@ public:
 	/// Copy color buffer into a specified buffer, starting from startIndex.
 	int CopyWeightBuffer(int startIndex, int numParticles, void* outBuf,
 						 int size) const;
+
+
 
 private:
 	/// Helper function for buffer copies.
@@ -1501,6 +1507,17 @@ inline int b2ParticleSystem::CopyPositionBuffer(int startIndex,
 					  copySize);
 }
 
+inline int b2ParticleSystem::CopyVelocityBuffer(int startIndex,
+												int numParticles,
+												void* outBuf,
+												int size) const
+{
+	int copySize = numParticles * sizeof(b2Vec2);
+	void* inBufWithOffset = (void*) (GetVelocityBuffer() + startIndex);
+	return CopyBuffer(startIndex, numParticles, inBufWithOffset, outBuf, size,
+					  copySize);
+}
+
 inline int b2ParticleSystem::CopyColorBuffer(int startIndex,
 											 int numParticles,
 											 void* outBuf,
@@ -1519,6 +1536,17 @@ inline int b2ParticleSystem::CopyWeightBuffer(int startIndex,
 {
 	int copySize = numParticles * sizeof(float32);
 	void* inBufWithOffset = (void*) (GetWeightBuffer() + startIndex);
+	return CopyBuffer(startIndex, numParticles, inBufWithOffset, outBuf, size,
+					  copySize);
+}
+
+inline int b2ParticleSystem::CopyVelocityBuffer(int startIndex,
+												int numParticles,
+												void* outBuf,
+												int size) const
+{
+	int copySize = numParticles * sizeof(b2Vec2);
+	void* inBufWithOffset = (void*) (GetVelocityBuffer() + startIndex);
 	return CopyBuffer(startIndex, numParticles, inBufWithOffset, outBuf, size,
 					  copySize);
 }
