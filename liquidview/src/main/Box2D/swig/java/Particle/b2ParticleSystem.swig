@@ -106,6 +106,8 @@ public:
 
     int CopyPositionBuffer(
             int startIndex, int numParticles, void* outBuf, int size) const;
+    int CopyVelocityBuffer(
+            int startIndex, int numParticles, void* outBuf, int size) const;
     int CopyColorBuffer(
             int startIndex, int numParticles, void* outBuf, int size) const;
     int CopyWeightBuffer(
