@@ -16,8 +16,18 @@
 */
 package com.google.fpl.liquidfunpaint.util;
 
+import com.google.fpl.liquidfun.Vec2;
+import com.google.fpl.liquidfunpaint.LiquidWorld;
+
 public final class MathHelper {
     public static float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
+    }
+
+    public static Vec2 normalizePosition(Vec2 pos){
+        Vec2 normal = new Vec2();
+        normal.setX(2*(pos.getX() - LiquidWorld.getInstance().sRenderWorldWidth/2)/LiquidWorld.getInstance().sRenderWorldWidth);
+        normal.setY(2*(pos.getY() - LiquidWorld.getInstance().sRenderWorldHeight/2)/LiquidWorld.getInstance().sRenderWorldHeight);
+        return normal;
     }
 }

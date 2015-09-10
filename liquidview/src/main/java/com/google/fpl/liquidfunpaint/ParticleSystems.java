@@ -10,6 +10,7 @@ import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.ParticleSystemDef;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
+import com.google.fpl.liquidfun.Vec2;
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
 import com.google.fpl.liquidfunpaint.util.DrawableResponder;
@@ -30,6 +31,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> implements 
 
 
     private ParticleRenderer mParticleRenderer = new ParticleRenderer();
+    ParticleGroup pGroup;
 
     protected static final Transform MAT_IDENTITY;
 
@@ -104,12 +106,31 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> implements 
         try {
             ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
 
-            ParticleGroup pGroup = ps.createParticleGroup(pgd);
+            pGroup = ps.createParticleGroup(pgd);
 
         } finally {
             LiquidWorld.getInstance().releaseParticleSystem();
         }
         pgd.delete();
+    }
+
+    public void emptyShape(float[] normalizedVertices){
+
+        pGroup.applyLinearImpulse(new Vec2(10, -2));
+//        emptyShape(normalizedVertices, DEFAULT_PARTICLE_SYSTEM);
+    }
+
+    public void emptyShape(float[] normalizedVertices, String key){
+        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem(key);
+        try {
+            final PolygonShape polygon = new PolygonShape();
+            polygon.set(normalizedVertices, normalizedVertices.length / 2);
+
+            ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
+
+        } finally {
+            LiquidWorld.getInstance().releaseParticleSystem();
+        }
     }
 
     @Override

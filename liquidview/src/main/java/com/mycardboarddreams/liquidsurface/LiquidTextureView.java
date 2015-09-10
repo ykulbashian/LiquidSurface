@@ -94,12 +94,21 @@ public class LiquidTextureView extends TextureView {
         });
     }
 
+    public void emptyShape(final float[] vertices){
+        thread.addPhysicsCommand(new Runnable() {
+            @Override
+            public void run() {
+                ParticleSystems.getInstance().emptyShape(normalizePositions(vertices));
+            }
+        });
+    }
+
     private float getWidthRatio(){
         return LiquidWorld.getInstance().sRenderWorldWidth / getWidth();
     }
 
     private float getHeightRatio(){
-        return LiquidWorld.getInstance().sRenderWorldWidth / getWidth();
+        return LiquidWorld.getInstance().sRenderWorldHeight / getHeight();
     }
 
     private float[] normalizePositions(float[] originalVertices){
