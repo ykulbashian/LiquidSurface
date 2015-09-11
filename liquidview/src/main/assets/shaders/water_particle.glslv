@@ -17,6 +17,7 @@
 // Vertex shader for particles
 
 attribute vec4 aPosition; // in 2d worldspace
+attribute vec4 aVelocity; // in 2d worldspace
 attribute vec4 aColor;    // vertex color
 attribute float aWeight;  // particle weight
 uniform mat4 uTransform;  // transforms from worldspace to clip space
@@ -41,5 +42,6 @@ void main() {
   float weight = aWeight * aWeight * uWeightParams[0] + uWeightParams[1];
 
   // Modulate the color by weight, if the weight is above the cutoff.
-  vColor.rgb *= (weight > uWeightParams[2]) ? 1.0 / weight : 1.0;
+  vColor.rgb *= ((weight > uWeightParams[2]) ? 1.0 / weight : 1.0);
+  vColor.rgba *= (aVelocity.x > 1.0 && weight < uWeightParams[2] + 0.2) ? 4.0 : 1.0;
 }

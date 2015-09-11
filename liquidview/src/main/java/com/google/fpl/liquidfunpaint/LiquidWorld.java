@@ -31,7 +31,10 @@ public class LiquidWorld implements DrawableResponder {
     private World mWorld = null;
     private Lock mWorldLock = new ReentrantLock();
 
-    private static final float WORLD_SPAN = 3f;
+    public static final float WORLD_SPAN = 3f;
+    public float sPhysicsWorldWidth = WORLD_SPAN;
+    public float sPhysicsWorldHeight = WORLD_SPAN;
+
     public float sRenderWorldWidth = WORLD_SPAN;
     public float sRenderWorldHeight = WORLD_SPAN;
 
@@ -43,10 +46,10 @@ public class LiquidWorld implements DrawableResponder {
     private static final String PAPER_MATERIAL_NAME = "paper";
     private static final String DIFFUSE_TEXTURE_NAME = "uDiffuseTexture";
 
+    private Texture mPaperTexture;
+
     private static final String TAG = "Renderer";
     private static final int ONE_SEC = 1000000000;
-
-    private Texture mPaperTexture;
 
     protected DebugRenderer mDebugRenderer = null;
 
@@ -62,8 +65,14 @@ public class LiquidWorld implements DrawableResponder {
         return sInstance;
     }
 
-    public void init(Activity activity){
+    private Activity mActivity;
 
+    public void init(Activity activity){
+        mActivity = activity;
+        createDebugRenderer(activity);
+    }
+
+    private void createDebugRenderer(Activity activity) {
         if (Renderer.DEBUG_DRAW) {
             mDebugRenderer = new DebugRenderer(activity);
             mDebugRenderer.setFlags(Draw.SHAPE_BIT | Draw.PARTICLE_BIT);
@@ -81,10 +90,13 @@ public class LiquidWorld implements DrawableResponder {
             sRenderWorldWidth = WORLD_SPAN;
         }
 
+        sPhysicsWorldWidth = sRenderWorldWidth;
+        sPhysicsWorldHeight = sRenderWorldHeight;
+
         World world = acquireWorld();
 
         try {
-            SolidWorld.getInstance().createWorldBoundaries(world, sRenderWorldWidth, sRenderWorldHeight);
+            SolidWorld.getInstance().createWorldBoundaries(world);
         } finally {
             releaseWorld();
         }
@@ -107,8 +119,9 @@ public class LiquidWorld implements DrawableResponder {
         try {
             deleteWorld();
             mWorld = new World(0, 0);
+            createDebugRenderer(mActivity);
 
-            SolidWorld.getInstance().createWorldBoundaries(mWorld, sRenderWorldWidth, sRenderWorldHeight);
+            SolidWorld.getInstance().createWorldBoundaries(mWorld);
 
             ParticleSystems.getInstance().reset();
 
@@ -232,6 +245,8 @@ public class LiquidWorld implements DrawableResponder {
         if (Renderer.DEBUG_DRAW) {
             mDebugRenderer.onSurfaceCreated(gl, config);
         }
+
+        SolidWorld.getInstance().initTexture(context);
     }
 
     private void createBackground(Activity context) {
@@ -262,6 +277,8 @@ public class LiquidWorld implements DrawableResponder {
         if (Renderer.DEBUG_DRAW) {
             mDebugRenderer.onDrawFrame(gl);
         }
+
+        SolidWorld.getInstance().onDrawFrame(gl);
     }
 
     @Override

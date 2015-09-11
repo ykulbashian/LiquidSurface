@@ -72,6 +72,7 @@ public class ParticleRenderer implements DrawableResponder {
 
     private ByteBuffer mParticleColorBuffer;
     private ByteBuffer mParticlePositionBuffer;
+    private ByteBuffer mParticleVelocityBuffer;
     private ByteBuffer mParticleWeightBuffer;
 
     private List<ParticleGroup> mParticleRenderList =
@@ -79,6 +80,9 @@ public class ParticleRenderer implements DrawableResponder {
 
     public ParticleRenderer() {
         mParticlePositionBuffer = ByteBuffer
+                .allocateDirect(2 * 4 * ParticleSystems.MAX_PARTICLE_COUNT)
+                .order(ByteOrder.nativeOrder());
+        mParticleVelocityBuffer = ByteBuffer
                 .allocateDirect(2 * 4 * ParticleSystems.MAX_PARTICLE_COUNT)
                 .order(ByteOrder.nativeOrder());
         mParticleColorBuffer = ByteBuffer
@@ -98,6 +102,7 @@ public class ParticleRenderer implements DrawableResponder {
         mParticlePositionBuffer.rewind();
         mParticleColorBuffer.rewind();
         mParticleWeightBuffer.rewind();
+        mParticleVelocityBuffer.rewind();
         mParticleRenderList.clear();
 
         ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
@@ -106,6 +111,8 @@ public class ParticleRenderer implements DrawableResponder {
             // grab the most current particle buffers
             ps.copyPositionBuffer(
                     0, worldParticleCount, mParticlePositionBuffer);
+            ps.copyVelocityBuffer(
+                    0, worldParticleCount, mParticleVelocityBuffer);
             ps.copyColorBuffer(
                     0, worldParticleCount, mParticleColorBuffer);
             ps.copyWeightBuffer(
@@ -163,6 +170,8 @@ public class ParticleRenderer implements DrawableResponder {
         // Set attribute arrays
         mWaterParticleMaterial.setVertexAttributeBuffer(
                 "aPosition", mParticlePositionBuffer, 0);
+        mWaterParticleMaterial.setVertexAttributeBuffer(
+                "aVelocity", mParticleVelocityBuffer, 0);
         mWaterParticleMaterial.setVertexAttributeBuffer(
                 "aColor", mParticleColorBuffer, 0);
         mWaterParticleMaterial.setVertexAttributeBuffer(
@@ -323,6 +332,9 @@ public class ParticleRenderer implements DrawableResponder {
                     "aPosition", 2, Material.AttrComponentType.FLOAT,
                     4, false, 0);
             mWaterParticleMaterial.addAttribute(
+                    "aVelocity", 2, Material.AttrComponentType.FLOAT,
+                    4, false, 0);
+            mWaterParticleMaterial.addAttribute(
                     "aColor", 4, Material.AttrComponentType.UNSIGNED_BYTE,
                     1, true, 0);
             mWaterParticleMaterial.addAttribute(
@@ -367,6 +379,7 @@ public class ParticleRenderer implements DrawableResponder {
         mParticlePositionBuffer.clear();
         mParticleColorBuffer.clear();
         mParticleWeightBuffer.clear();
+        mParticleVelocityBuffer.clear();
     }
 
     @Override
