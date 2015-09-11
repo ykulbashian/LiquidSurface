@@ -262,6 +262,8 @@ public class LiquidWorld implements DrawableResponder {
 
     @Override
     public void onDrawFrame(GL10 gl){
+        acquireWorld();
+
         // Draw the paper texture.
         TextureRenderer.getInstance().drawTexture(
                 mPaperTexture, Renderer.MAT4X4_IDENTITY, -1, 1, 1, -1,
@@ -273,6 +275,8 @@ public class LiquidWorld implements DrawableResponder {
         if (Renderer.DEBUG_DRAW) {
             mDebugRenderer.onDrawFrame(gl);
         }
+
+        releaseWorld();
     }
 
     @Override
