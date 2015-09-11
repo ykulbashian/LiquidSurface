@@ -21,7 +21,6 @@ attribute vec4 aVelocity; // in 2d worldspace
 attribute vec4 aColor;    // vertex color
 attribute float aWeight;  // particle weight
 uniform mat4 uTransform;  // transforms from worldspace to clip space
-uniform mat4 uTransformPerspective;  // transforms from worldspace to clip space
 uniform float uPointSize; // constant point size
 uniform vec3 uWeightParams; // Parameters for adding in particle weight.
                             // 0: Scale - decreases the range of values
@@ -34,7 +33,6 @@ varying vec4 vColor;      // output color for fragment shader
 void main() {
   gl_Position = uTransform * aPosition;
 
-  gl_Position = uTransformPerspective * gl_Position;
   gl_PointSize = uPointSize;
   vColor = aColor;
 
