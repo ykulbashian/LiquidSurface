@@ -101,8 +101,6 @@ public class LiquidWorld implements DrawableResponder {
             releaseWorld();
         }
 
-        ParticleSystems.getInstance().onSurfaceChanged(gl, width, height);
-
         if (Renderer.DEBUG_DRAW) {
             mDebugRenderer.onSurfaceChanged(gl, width, height);
         }
@@ -245,8 +243,6 @@ public class LiquidWorld implements DrawableResponder {
         if (Renderer.DEBUG_DRAW) {
             mDebugRenderer.onSurfaceCreated(gl, config);
         }
-
-        SolidWorld.getInstance().initTexture(context);
     }
 
     private void createBackground(Activity context) {
@@ -277,8 +273,6 @@ public class LiquidWorld implements DrawableResponder {
         if (Renderer.DEBUG_DRAW) {
             mDebugRenderer.onDrawFrame(gl);
         }
-
-        SolidWorld.getInstance().onDrawFrame(gl);
     }
 
     @Override

@@ -17,6 +17,8 @@
 package com.google.fpl.liquidfunpaint.renderer;
 
 import com.google.fpl.liquidfunpaint.LiquidWorld;
+import com.google.fpl.liquidfunpaint.ParticleSystems;
+import com.google.fpl.liquidfunpaint.SolidWorld;
 import com.google.fpl.liquidfunpaint.shader.ShaderProgram;
 import com.google.fpl.liquidfunpaint.util.DrawableResponder;
 import com.google.fpl.liquidfunpaint.util.Observable;
@@ -106,6 +108,8 @@ public class Renderer extends Observable<Float> implements DrawableResponder {
 
             // Draw particles
             LiquidWorld.getInstance().onDrawFrame(gl);
+
+            SolidWorld.getInstance().onDrawFrame(gl);
         }
     }
 
@@ -117,6 +121,8 @@ public class Renderer extends Observable<Float> implements DrawableResponder {
         GLES20.glViewport(0, 0, width, height);
 
         LiquidWorld.getInstance().onSurfaceChanged(gl, width, height);
+
+        ParticleSystems.getInstance().onSurfaceChanged(gl, width, height);
     }
 
     @Override
@@ -130,6 +136,8 @@ public class Renderer extends Observable<Float> implements DrawableResponder {
         TextureRenderer.getInstance().onSurfaceCreated();
 
         LiquidWorld.getInstance().onSurfaceCreated(mActivity, gl, config);
+
+        SolidWorld.getInstance().initTexture(mActivity);
     }
 
     public void pauseSimulation() {
