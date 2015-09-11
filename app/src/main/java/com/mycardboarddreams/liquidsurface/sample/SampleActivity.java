@@ -2,19 +2,25 @@ package com.mycardboarddreams.liquidsurface.sample;
 
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.google.fpl.liquidfunpaint.GroupOptions;
+import com.google.fpl.liquidfunpaint.LiquidWorld;
+import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.renderer.Renderer;
 import com.google.fpl.liquidfunpaint.SolidWorld;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 import com.mycardboarddreams.liquidsurface.LiquidTextureView;
 
 
-public class SampleActivity extends AppCompatActivity implements View.OnTouchListener{
+public class SampleActivity extends AppCompatActivity implements View.OnTouchListener, Runnable {
 
     LiquidTextureView ltv;
+
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +43,20 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
         ltv.createSolidShape(createCircle(getCenterPoint(), 100, 8));
 
         ltv.resumeParticles();
+
+        run();
+    }
+
+    @Override
+    public void run() {
+        handler.postDelayed(this, 2000);
+
+        float[] emptyBox = createBox(new Vector2f(100, 100), 200, 200);
+        float[] fillBox = createBox(new Vector2f(Renderer.getInstance().sScreenWidth, 300), 200, 200);
+
+        ltv.emptyShape(emptyBox);
+//        ltv.createLiquidShape(fillBox);
+
     }
 
     private Vector2f getCenterPoint(){
@@ -49,13 +69,15 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
 
     private void createLiquidCircle() {
 
-        ltv.createLiquidShape(createCircle(getCenterPoint(), 500, 8));
+        ltv.createLiquidShape(createCircle(getCenterPoint(), 600, 8));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         ltv.pauseParticles();
+
+        handler.removeCallbacksAndMessages(null);
     }
 
     @Override
@@ -63,9 +85,9 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
         int action = event.getAction();
         if(action == MotionEvent.ACTION_DOWN) {
             if(event.getX() > Renderer.getInstance().sScreenWidth/2)
-                SolidWorld.getInstance().spinWheel(-0.05f);
+                SolidWorld.getInstance().spinWheel(-0.5f);
             else
-                SolidWorld.getInstance().spinWheel(0.05f);
+                SolidWorld.getInstance().spinWheel(0.5f);
         } else if(action == MotionEvent.ACTION_UP){
             SolidWorld.getInstance().spinWheel(0);
         }
@@ -86,4 +108,21 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
         return vertices;
     }
 
+    private float[] createBox(Vector2f center, float width, float height){
+        float[] vertices = new float[4*2];
+
+        vertices[0] = center.x - width/2;
+        vertices[1] = center.y + height/2;
+
+        vertices[2] = center.x + width/2;
+        vertices[3] = center.y + height/2;
+
+        vertices[4] = center.x - width/2;
+        vertices[5] = center.y - height/2;
+
+        vertices[6] = center.x + width/2;
+        vertices[7] = center.y - height/2;
+
+        return vertices;
+    }
 }

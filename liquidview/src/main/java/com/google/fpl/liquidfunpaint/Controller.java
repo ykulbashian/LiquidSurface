@@ -86,17 +86,17 @@ public class Controller implements OnTouchListener, SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            float x = event.values[0];
-            float y = event.values[1];
-
-            World world = LiquidWorld.getInstance().acquireWorld();
-            try {
-                world.setGravity(
-                        mGravityVec[0] * x - mGravityVec[1] * y,
-                        mGravityVec[1] * x + mGravityVec[0] * y);
-            } finally {
-                LiquidWorld.getInstance().releaseWorld();
-            }
+//            float x = event.values[0];
+//            float y = event.values[1];
+//
+//            World world = LiquidWorld.getInstance().acquireWorld();
+//            try {
+//                world.setGravity(
+//                        mGravityVec[0] * x - mGravityVec[1] * y,
+//                        mGravityVec[1] * x + mGravityVec[0] * y);
+//            } finally {
+//                LiquidWorld.getInstance().releaseWorld();
+//            }
         }
     }
 
