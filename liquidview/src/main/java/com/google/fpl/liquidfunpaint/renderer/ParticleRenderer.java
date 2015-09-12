@@ -27,6 +27,7 @@ import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
 import com.google.fpl.liquidfunpaint.tool.Tool;
 import com.google.fpl.liquidfunpaint.util.DrawableResponder;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
+import com.google.fpl.liquidfunpaint.util.RenderHelper;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -246,59 +247,7 @@ public class ParticleRenderer implements DrawableResponder {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-
-        // Set up the transform
-        float ratio = (float) height / width;
-        Matrix.setIdentityM(mTransformFromTexture, 0);
-
-        if(height > width) // portrait
-            resizeTransformPortrait(ratio);
-        else // landscape
-            resizeTransformLandscape(ratio);
-
-        Matrix.setIdentityM(mPerspectiveTransform, 0);
-
-        float[] mViewMatrix = new float[16];
-        float[] mProjectionMatrix = new float[16];
-        float[] mTempMatrix = new float[16];
-        float[] mTransformFromWorld = new float[16];
-
-        Matrix.setIdentityM(mViewMatrix, 0);
-        Matrix.setIdentityM(mProjectionMatrix, 0);
-        Matrix.setIdentityM(mTempMatrix, 0);
-        Matrix.setIdentityM(mTransformFromWorld, 0);
-
-        if(height > width) // portrait
-            Matrix.frustumM(mProjectionMatrix, 0, 0.25f*ratio, -0.25f*ratio, -0.25f, 0.25f, 0.5f, 2);
-        else // landscape
-            Matrix.frustumM(mProjectionMatrix, 0, 0.25f, -0.25f, -0.25f / ratio, 0.25f / ratio, 0.5f, 2);
-
-        // Set the camera position (View matrix)
-        Matrix.setLookAtM(mViewMatrix, 0,
-                0, 0, -1,
-                0f, 0f, 0f,
-                0f, 1.0f, 0.0f);
-
-        // Calculate the projection and view transformation
-        Matrix.multiplyMM(mTempMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
-
-        Matrix.translateM(mTransformFromWorld, 0, -0.5f, -0.5f, 0);
-        Matrix.scaleM(
-                mTransformFromWorld,
-                0,
-                1 / LiquidWorld.getInstance().sRenderWorldWidth,
-                1 / LiquidWorld.getInstance().sRenderWorldHeight,
-                1);
-
-        Matrix.multiplyMM(mPerspectiveTransform, 0, mTempMatrix, 0, mTransformFromWorld, 0);
-    }
-
-    private void resizeTransformLandscape(float ratio){
-        Matrix.scaleM(mTransformFromTexture, 0, 1, 1/ratio, 1);
-    }
-
-    private void resizeTransformPortrait(float ratio){
-        Matrix.scaleM(mTransformFromTexture, 0, 1*ratio, 1, 1);
+        RenderHelper.createTransformMatrix(mPerspectiveTransform, mTransformFromTexture, height, width);
     }
 
     public void onSurfaceCreated(Context context) {

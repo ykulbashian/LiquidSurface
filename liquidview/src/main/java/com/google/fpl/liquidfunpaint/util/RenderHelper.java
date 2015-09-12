@@ -16,6 +16,10 @@
 */
 package com.google.fpl.liquidfunpaint.util;
 
+import android.opengl.Matrix;
+
+import com.google.fpl.liquidfunpaint.LiquidWorld;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -48,5 +52,53 @@ public class RenderHelper {
                 ByteBuffer.allocateDirect(SCREEN_QUAD_VERTEX_DATA.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         SCREEN_QUAD_VERTEX_BUFFER.put(SCREEN_QUAD_VERTEX_DATA).position(0);
+    }
+
+    public static void createTransformMatrix(float[] mPerspectiveTransform, float[] mTransformFromTexture, float height, float width){
+
+        // Set up the transform
+        float ratio = (float) height / width;
+        Matrix.setIdentityM(mTransformFromTexture, 0);
+
+        if(height > width) // portrait
+            Matrix.scaleM(mTransformFromTexture, 0, 1 * ratio, 1, 1);
+        else // landscape
+            Matrix.scaleM(mTransformFromTexture, 0, 1, 1 / ratio, 1);
+
+        Matrix.setIdentityM(mPerspectiveTransform, 0);
+
+        float[] mViewMatrix = new float[16];
+        float[] mProjectionMatrix = new float[16];
+        float[] mTempMatrix = new float[16];
+        float[] mTransformFromWorld = new float[16];
+
+        Matrix.setIdentityM(mViewMatrix, 0);
+        Matrix.setIdentityM(mProjectionMatrix, 0);
+        Matrix.setIdentityM(mTempMatrix, 0);
+        Matrix.setIdentityM(mTransformFromWorld, 0);
+
+        if(height > width) // portrait
+            Matrix.frustumM(mProjectionMatrix, 0, 0.25f*ratio, -0.25f*ratio, -0.25f, 0.25f, 0.5f, 2);
+        else // landscape
+            Matrix.frustumM(mProjectionMatrix, 0, 0.25f, -0.25f, -0.25f / ratio, 0.25f / ratio, 0.5f, 2);
+
+        // Set the camera position (View matrix)
+        Matrix.setLookAtM(mViewMatrix, 0,
+                0, 0, -1,
+                0f, 0f, 0f,
+                0f, 1.0f, 0.0f);
+
+        // Calculate the projection and view transformation
+        Matrix.multiplyMM(mTempMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+
+        Matrix.translateM(mTransformFromWorld, 0, -0.5f, -0.5f, 0);
+        Matrix.scaleM(
+                mTransformFromWorld,
+                0,
+                1 / LiquidWorld.getInstance().sRenderWorldWidth,
+                1 / LiquidWorld.getInstance().sRenderWorldHeight,
+                1);
+
+        Matrix.multiplyMM(mPerspectiveTransform, 0, mTempMatrix, 0, mTransformFromWorld, 0);
     }
 }
