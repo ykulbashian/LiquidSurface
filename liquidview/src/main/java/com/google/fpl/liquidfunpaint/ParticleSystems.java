@@ -52,6 +52,10 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> implements 
     public void reset(){
         mParticleRenderer.reset();
 
+        createParticleSystem(DEFAULT_PARTICLE_SYSTEM);
+    }
+
+    private void createParticleSystem(String key) {
         World world = LiquidWorld.getInstance().acquireWorld();
         try {
             // Create a new particle system; we only use one.
@@ -63,7 +67,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> implements 
             ParticleSystem particleSystem = world.createParticleSystem(psDef);
             particleSystem.setMaxParticleCount(MAX_PARTICLE_COUNT);
 
-            put(DEFAULT_PARTICLE_SYSTEM, particleSystem);
+            put(key, particleSystem);
             psDef.delete();
         } finally {
             LiquidWorld.getInstance().releaseWorld();
@@ -116,7 +120,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> implements 
 
     public void emptyShape(float[] normalizedVertices){
 
-        pGroup.applyLinearImpulse(new Vec2(10, -2));
+        pGroup.applyForce(new Vec2(500, -50));
 //        emptyShape(normalizedVertices, DEFAULT_PARTICLE_SYSTEM);
     }
 
@@ -149,6 +153,17 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> implements 
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+
+    }
+
+    @Override
+    public ParticleSystem get(Object key) {
+        if(containsKey(key))
+            return super.get(key);
+        else{
+            createParticleSystem(key.toString());
+            return get(key);
+        }
 
     }
 }
