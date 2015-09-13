@@ -11,7 +11,7 @@ import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
 import com.google.fpl.liquidfunpaint.renderer.Renderer;
 import com.google.fpl.liquidfunpaint.renderer.TextureRenderer;
 import com.google.fpl.liquidfunpaint.shader.Texture;
-import com.google.fpl.liquidfunpaint.util.DrawableResponder;
+import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
 import com.mycardboarddreams.liquidsurface.BuildConfig;
 
@@ -27,7 +27,7 @@ import javax.microedition.khronos.opengles.GL10;
 /**
  * Created by PC on 8/13/2015.
  */
-public class LiquidWorld implements DrawableResponder {
+public class LiquidWorld implements DrawableLayer {
     private World mWorld = null;
     private Lock mWorldLock = new ReentrantLock();
 

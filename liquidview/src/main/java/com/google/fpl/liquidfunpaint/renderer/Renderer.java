@@ -17,10 +17,9 @@
 package com.google.fpl.liquidfunpaint.renderer;
 
 import com.google.fpl.liquidfunpaint.LiquidWorld;
-import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.SolidWorld;
 import com.google.fpl.liquidfunpaint.shader.ShaderProgram;
-import com.google.fpl.liquidfunpaint.util.DrawableResponder;
+import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.Observable;
 
 import android.app.Activity;
@@ -37,7 +36,7 @@ import javax.microedition.khronos.opengles.GL10;
  * thread-safety is to called acquireWorld to obtain a thread-safe world
  * pointer, and releaseWorld when you are done with the object.
  */
-public class Renderer extends Observable<Float> implements DrawableResponder {
+public class Renderer extends Observable<Float> implements DrawableLayer {
     // Private constants
     private static final Renderer _instance = new Renderer();
     public static final boolean DEBUG_DRAW = false;

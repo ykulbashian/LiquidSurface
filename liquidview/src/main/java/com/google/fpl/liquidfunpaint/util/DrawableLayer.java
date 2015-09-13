@@ -5,6 +5,6 @@ import com.google.fpl.liquidfunpaint.GLTextureView;
 /**
  * Created by PC on 8/16/2015.
  */
-public interface DrawableResponder extends GLTextureView.Renderer{
+public interface DrawableLayer extends GLTextureView.Renderer{
     void reset();
 }

@@ -30,7 +30,7 @@ import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.Material.AttributeInfo;
 import com.google.fpl.liquidfunpaint.shader.ShaderProgram;
 import com.google.fpl.liquidfunpaint.shader.Texture;
-import com.google.fpl.liquidfunpaint.util.DrawableResponder;
+import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.mycardboarddreams.liquidsurface.R;
 
 import java.nio.ByteBuffer;
@@ -42,7 +42,7 @@ import javax.microedition.khronos.opengles.GL10;
 /**
  * DebugRenderer for LiquidFun, extending the b2Draw class.
  */
-public class DebugRenderer extends Draw implements DrawableResponder {
+public class DebugRenderer extends Draw implements DrawableLayer {
     private static final int DEBUG_CAPACITY = 20000;
     private static final float DEBUG_OPACITY = 0.8f;
     private static final float DEBUG_AXIS_SCALE = 0.3f;

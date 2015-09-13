@@ -25,14 +25,13 @@ import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
 import com.google.fpl.liquidfunpaint.tool.Tool;
-import com.google.fpl.liquidfunpaint.util.DrawableResponder;
+import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
 import com.google.fpl.liquidfunpaint.util.RenderHelper;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 import android.util.Log;
 
 import org.json.*;
@@ -53,7 +52,7 @@ import javax.microedition.khronos.opengles.GL10;
  * 3) Applies threshold.
  * This only executes on the GLSurfaceView thread.
  */
-public class ParticleRenderer implements DrawableResponder {
+public class ParticleRenderer implements DrawableLayer {
     private static final String TAG = "PtlRenderer";
     public static final String JSON_FILE = "materials/particlerenderer.json";
 

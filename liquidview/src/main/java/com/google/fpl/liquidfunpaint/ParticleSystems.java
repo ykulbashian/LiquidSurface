@@ -1,6 +1,5 @@
 package com.google.fpl.liquidfunpaint;
 
-import android.app.Activity;
 import android.graphics.Color;
 
 import com.google.fpl.liquidfun.ParticleColor;
@@ -12,13 +11,8 @@ import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.Vec2;
 import com.google.fpl.liquidfun.World;
-import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
-import com.google.fpl.liquidfunpaint.util.DrawableResponder;
 
 import java.util.HashMap;
-
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
 
 /**
  * Created by PC on 8/13/2015.
