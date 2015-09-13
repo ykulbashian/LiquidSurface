@@ -53,6 +53,8 @@ public class LiquidWorld implements DrawableResponder {
 
     protected DebugRenderer mDebugRenderer = null;
 
+    private ParticleRenderer mParticleRenderer;
+
     // Measure the frame rate
     long totalFrames = -10000;
     private int mFrames;
@@ -69,6 +71,7 @@ public class LiquidWorld implements DrawableResponder {
 
     public void init(Activity activity){
         mActivity = activity;
+        mParticleRenderer =  new ParticleRenderer(activity);
         createDebugRenderer(activity);
     }
 
@@ -104,6 +107,8 @@ public class LiquidWorld implements DrawableResponder {
         if (Renderer.DEBUG_DRAW) {
             mDebugRenderer.onSurfaceChanged(gl, width, height);
         }
+
+        mParticleRenderer.onSurfaceChanged(gl, width, height);
     }
 
     public boolean hasWorld(){
@@ -121,7 +126,7 @@ public class LiquidWorld implements DrawableResponder {
 
             SolidWorld.getInstance().createWorldBoundaries(mWorld);
 
-            ParticleSystems.getInstance().reset();
+            mParticleRenderer.reset();
 
             if (Renderer.DEBUG_DRAW) {
                 mWorld.setDebugDraw(mDebugRenderer);
@@ -238,7 +243,7 @@ public class LiquidWorld implements DrawableResponder {
     public void onSurfaceCreated(Activity context, GL10 gl, EGLConfig config) {
         createBackground(context);
 
-        ParticleSystems.getInstance().onSurfaceCreated(context);
+        mParticleRenderer.onSurfaceCreated(gl, config);
 
         if (Renderer.DEBUG_DRAW) {
             mDebugRenderer.onSurfaceCreated(gl, config);
@@ -270,7 +275,7 @@ public class LiquidWorld implements DrawableResponder {
                 Renderer.getInstance().sScreenWidth,
                 Renderer.getInstance().sScreenHeight);
 
-        ParticleSystems.getInstance().onDrawFrame(gl);
+        mParticleRenderer.onDrawFrame(gl);
 
         if (Renderer.DEBUG_DRAW) {
             mDebugRenderer.onDrawFrame(gl);

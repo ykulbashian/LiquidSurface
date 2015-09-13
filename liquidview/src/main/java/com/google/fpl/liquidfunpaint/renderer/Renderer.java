@@ -121,8 +121,6 @@ public class Renderer extends Observable<Float> implements DrawableResponder {
         GLES20.glViewport(0, 0, width, height);
 
         LiquidWorld.getInstance().onSurfaceChanged(gl, width, height);
-
-        ParticleSystems.getInstance().onSurfaceChanged(gl, width, height);
     }
 
     @Override

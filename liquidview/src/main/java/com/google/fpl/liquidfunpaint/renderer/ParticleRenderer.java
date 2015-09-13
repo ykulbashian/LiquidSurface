@@ -78,7 +78,11 @@ public class ParticleRenderer implements DrawableResponder {
     private List<ParticleGroup> mParticleRenderList =
             new ArrayList<ParticleGroup>(256);
 
-    public ParticleRenderer() {
+    private final Context mContext;
+
+    public ParticleRenderer(Context context) {
+        mContext = context.getApplicationContext();
+
         mParticlePositionBuffer = ByteBuffer
                 .allocateDirect(2 * 4 * ParticleSystems.MAX_PARTICLE_COUNT)
                 .order(ByteOrder.nativeOrder());
@@ -250,7 +254,8 @@ public class ParticleRenderer implements DrawableResponder {
         RenderHelper.createTransformMatrix(mPerspectiveTransform, mTransformFromTexture, height, width);
     }
 
-    public void onSurfaceCreated(Context context) {
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         // Create the render surfaces
         for (int i = 0; i < mRenderSurface.length; i++) {
             mRenderSurface[i] = new RenderSurface(FB_SIZE, FB_SIZE);
@@ -262,14 +267,14 @@ public class ParticleRenderer implements DrawableResponder {
 
         // Read in our specific json file
         String materialFile = FileHelper.loadAsset(
-                context.getAssets(), JSON_FILE);
+                mContext.getAssets(), JSON_FILE);
         try {
             JSONObject json = new JSONObject(materialFile);
 
             // Water particle material. We are utilizing the position and color
             // buffers returned from LiquidFun directly.
             mWaterParticleMaterial = new WaterParticleMaterial(
-                    context, json.getJSONObject("waterParticlePointSprite"));
+                    mContext, json.getJSONObject("waterParticlePointSprite"));
 
             // Initialize attributes specific to this material
             mWaterParticleMaterial.addAttribute(
@@ -291,7 +296,7 @@ public class ParticleRenderer implements DrawableResponder {
             // Non-water particle material. We are utilizing the position and
             // color buffers returned from LiquidFun directly.
             mParticleMaterial = new ParticleMaterial(
-                    context, json.getJSONObject("otherParticlePointSprite"));
+                    mContext, json.getJSONObject("otherParticlePointSprite"));
 
             // Initialize attributes specific to this material
             mParticleMaterial.addAttribute(
@@ -324,11 +329,6 @@ public class ParticleRenderer implements DrawableResponder {
         mParticleColorBuffer.clear();
         mParticleWeightBuffer.clear();
         mParticleVelocityBuffer.clear();
-    }
-
-    @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-
     }
 
 }

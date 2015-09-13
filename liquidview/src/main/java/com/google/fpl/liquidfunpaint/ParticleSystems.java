@@ -23,14 +23,12 @@ import javax.microedition.khronos.opengles.GL10;
 /**
  * Created by PC on 8/13/2015.
  */
-public class ParticleSystems extends HashMap<String, ParticleSystem> implements DrawableResponder {
+public class ParticleSystems extends HashMap<String, ParticleSystem> {
 
     public static final int MAX_PARTICLE_COUNT = 5000;
     public static final float PARTICLE_RADIUS = 0.06f;
     public static final float PARTICLE_REPULSIVE_STRENGTH = 0.0f;
 
-
-    private ParticleRenderer mParticleRenderer = new ParticleRenderer();
     ParticleGroup pGroup;
 
     protected static final Transform MAT_IDENTITY;
@@ -48,10 +46,8 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> implements 
         return sInstance;
     }
 
-    @Override
     public void reset(){
-        mParticleRenderer.reset();
-
+        clear();
         createParticleSystem(DEFAULT_PARTICLE_SYSTEM);
     }
 
@@ -135,25 +131,6 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> implements 
         } finally {
             LiquidWorld.getInstance().releaseParticleSystem();
         }
-    }
-
-    @Override
-    public void onSurfaceChanged(GL10 gl, int width, int height){
-        mParticleRenderer.onSurfaceChanged(gl, width, height);
-    }
-
-    public void onSurfaceCreated(Activity activity){
-        mParticleRenderer.onSurfaceCreated(activity);
-    }
-
-    @Override
-    public void onDrawFrame(GL10 gl) {
-        mParticleRenderer.onDrawFrame(gl);
-    }
-
-    @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-
     }
 
     @Override
