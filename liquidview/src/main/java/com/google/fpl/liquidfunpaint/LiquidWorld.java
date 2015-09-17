@@ -96,13 +96,7 @@ public class LiquidWorld implements DrawableLayer {
         sPhysicsWorldWidth = sRenderWorldWidth;
         sPhysicsWorldHeight = sRenderWorldHeight;
 
-        World world = acquireWorld();
-
-        try {
-            SolidWorld.getInstance().createWorldBoundaries(world);
-        } finally {
-            releaseWorld();
-        }
+        SolidWorld.getInstance().onSurfaceChanged(gl, width, height);
 
         if (Renderer.DEBUG_DRAW) {
             mDebugRenderer.onSurfaceChanged(gl, width, height);
@@ -123,8 +117,6 @@ public class LiquidWorld implements DrawableLayer {
             deleteWorld();
             mWorld = new World(0, 0);
             createDebugRenderer(mActivity);
-
-            SolidWorld.getInstance().createWorldBoundaries(mWorld);
 
             mParticleRenderer.reset();
 
@@ -147,7 +139,7 @@ public class LiquidWorld implements DrawableLayer {
                 mDebugRenderer = null;
             }
 
-            SolidWorld.getInstance().delete();
+            SolidWorld.getInstance().reset();
 
             if (world != null) {
                 world.delete();
@@ -240,8 +232,9 @@ public class LiquidWorld implements DrawableLayer {
         stepWorld(data);
     }
 
-    public void onSurfaceCreated(Activity context, GL10 gl, EGLConfig config) {
-        createBackground(context);
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        createBackground(mActivity);
 
         mParticleRenderer.onSurfaceCreated(gl, config);
 
@@ -284,8 +277,4 @@ public class LiquidWorld implements DrawableLayer {
         releaseWorld();
     }
 
-    @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-
-    }
 }

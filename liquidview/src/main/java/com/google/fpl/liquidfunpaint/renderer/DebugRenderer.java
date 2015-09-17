@@ -394,6 +394,7 @@ public class DebugRenderer extends Draw implements DrawableLayer {
 
     }
 
+    @Override
     public void reset() {
         mPolygonPositionBuffer.clear();
         mPolygonColorBuffer.clear();

@@ -132,9 +132,9 @@ public class Renderer extends Observable<Float> implements DrawableLayer {
 
         TextureRenderer.getInstance().onSurfaceCreated();
 
-        LiquidWorld.getInstance().onSurfaceCreated(mActivity, gl, config);
+        LiquidWorld.getInstance().onSurfaceCreated(gl, config);
 
-        SolidWorld.getInstance().initTexture(mActivity);
+        SolidWorld.getInstance().init(mActivity);
     }
 
     public void pauseSimulation() {

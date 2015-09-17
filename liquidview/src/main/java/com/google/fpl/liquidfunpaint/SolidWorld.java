@@ -1,5 +1,6 @@
 package com.google.fpl.liquidfunpaint;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
@@ -12,14 +13,16 @@ import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.renderer.Renderer;
 import com.google.fpl.liquidfunpaint.renderer.TextureRenderer;
 import com.google.fpl.liquidfunpaint.shader.Texture;
+import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.MathHelper;
 
+import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
  * Created by PC on 8/15/2015.
  */
-public class SolidWorld {
+public class SolidWorld implements DrawableLayer{
     private Body mCircleBody = null;
 
     private Body mBoundaryBody = null;
@@ -34,7 +37,7 @@ public class SolidWorld {
         return sInstance;
     }
 
-    public void initTexture(Context context){
+    public void init(Activity context){
         mBoatTexture = new Texture(context, TEXTURE_NAME);
     }
 
@@ -122,6 +125,23 @@ public class SolidWorld {
         }
     }
 
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+
+    }
+
+    @Override
+    public void onSurfaceChanged(GL10 gl, int width, int height) {
+
+        World world = LiquidWorld.getInstance().acquireWorld();
+
+        try {
+            SolidWorld.getInstance().createWorldBoundaries(world);
+        } finally {
+            LiquidWorld.getInstance().releaseWorld();
+        }
+    }
+
     public void onDrawFrame(GL10 gl){
         if(mCircleBody != null) {
             Vec2 center = MathHelper.normalizePosition(mCircleBody.getWorldCenter());
@@ -135,8 +155,8 @@ public class SolidWorld {
                     Renderer.getInstance().sScreenHeight);
         }
     }
-
-    public void delete(){
+    @Override
+    public void reset(){
 
         if (mBoundaryBody != null) {
             mBoundaryBody.delete();
@@ -153,4 +173,5 @@ public class SolidWorld {
             mCircleBody.applyTorque(direction, true);
         }
     }
+
 }

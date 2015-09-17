@@ -323,6 +323,7 @@ public class ParticleRenderer implements DrawableLayer {
         }
     }
 
+    @Override
     public void reset() {
         mParticlePositionBuffer.clear();
         mParticleColorBuffer.clear();
