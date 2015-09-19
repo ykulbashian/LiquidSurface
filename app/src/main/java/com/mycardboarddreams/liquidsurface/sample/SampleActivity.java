@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.google.fpl.liquidfunpaint.GroupOptions;
+import com.google.fpl.liquidfunpaint.ILiquidWorld;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.renderer.Renderer;
@@ -18,7 +19,7 @@ import com.mycardboarddreams.liquidsurface.LiquidTextureView;
 
 public class SampleActivity extends AppCompatActivity implements View.OnTouchListener, Runnable {
 
-    LiquidTextureView ltv;
+    ILiquidWorld ltv;
 
     private Handler handler = new Handler();
 
@@ -27,7 +28,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sample);
 
-        ltv = (LiquidTextureView) findViewById(R.id.liquid_texture_view);
+        ltv = (ILiquidWorld) findViewById(R.id.liquid_texture_view);
 
         ltv.setOnTouchListener(this);
     }
@@ -42,7 +43,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
 
         ltv.createSolidShape(createCircle(getCenterPoint(), 100, 8));
 
-        ltv.resumeParticles();
+        ltv.resumePhysics();
 
         run();
     }
@@ -75,7 +76,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
     @Override
     protected void onPause() {
         super.onPause();
-        ltv.pauseParticles();
+        ltv.pausePhysics();
 
         handler.removeCallbacksAndMessages(null);
     }

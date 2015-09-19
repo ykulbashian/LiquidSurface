@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.TextureView;
 
 import com.google.fpl.liquidfunpaint.GroupOptions;
+import com.google.fpl.liquidfunpaint.ILiquidWorld;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.renderer.Renderer;
@@ -15,7 +16,7 @@ import com.google.fpl.liquidfunpaint.SolidWorld;
 /**
  * Created by yervant on 3/25/2015.
  */
-public class LiquidTextureView extends TextureView {
+public class LiquidTextureView extends TextureView implements ILiquidWorld {
 
     /**
      * Load the native libraries
@@ -62,19 +63,22 @@ public class LiquidTextureView extends TextureView {
         mController = new RotatableController(activity);
     }
 
-    public void resumeParticles() {
+    @Override
+    public void resumePhysics() {
         mController.updateDownDirection((Activity) getContext());
         Renderer.getInstance().startSimulation();
         mController.onResume();
         thread.setPaused(false);
     }
 
-    public void pauseParticles(){
+    @Override
+    public void pausePhysics(){
         Renderer.getInstance().pauseSimulation();
         mController.onPause();
         thread.setPaused(true);
     }
 
+    @Override
     public void createLiquidShape(final float[] vertices){
 
         thread.addPhysicsCommand(new Runnable() {
@@ -85,6 +89,7 @@ public class LiquidTextureView extends TextureView {
         });
     }
 
+    @Override
     public void createSolidShape(final float[] vertices){
         thread.addPhysicsCommand(new Runnable() {
             @Override
@@ -94,6 +99,7 @@ public class LiquidTextureView extends TextureView {
         });
     }
 
+    @Override
     public void emptyShape(final float[] vertices){
         thread.addPhysicsCommand(new Runnable() {
             @Override
