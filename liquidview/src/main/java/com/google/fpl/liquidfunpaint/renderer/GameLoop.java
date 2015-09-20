@@ -138,6 +138,7 @@ public class GameLoop extends Observable<Float> implements DrawableLayer {
         GLES20.glViewport(0, 0, width, height);
 
         mLiquidWorld.onSurfaceChanged(gl, width, height);
+        mSolidWorld.onSurfaceChanged(gl, width, height);
     }
 
     @Override

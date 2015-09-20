@@ -53,6 +53,7 @@ public class LiquidWorld implements DrawableLayer {
     protected DebugRenderer mDebugRenderer = null;
 
     private ParticleRenderer mParticleRenderer;
+    private ParticleSystems mParticleSystems;
 
     // Measure the frame rate
     long totalFrames = -10000;
@@ -74,6 +75,8 @@ public class LiquidWorld implements DrawableLayer {
         mParticleRenderer = new ParticleRenderer();
         mParticleRenderer.init(activity);
 
+        mParticleSystems = ParticleSystems.getInstance();
+
         if (GameLoop.DEBUG_DRAW) {
             mDebugRenderer = new DebugRenderer();
             mDebugRenderer.init(activity);
@@ -93,8 +96,6 @@ public class LiquidWorld implements DrawableLayer {
 
         sPhysicsWorldWidth = sRenderWorldWidth;
         sPhysicsWorldHeight = sRenderWorldHeight;
-
-        SolidWorld.getInstance().onSurfaceChanged(gl, width, height);
 
         if (GameLoop.DEBUG_DRAW) {
             mDebugRenderer.onSurfaceChanged(gl, width, height);
@@ -137,7 +138,7 @@ public class LiquidWorld implements DrawableLayer {
             if (world != null) {
                 world.delete();
                 mWorld = null;
-                ParticleSystems.getInstance().clear();
+                mParticleSystems.clear();
             }
         } finally {
             releaseWorld();
@@ -169,7 +170,7 @@ public class LiquidWorld implements DrawableLayer {
      */
     public ParticleSystem acquireParticleSystem(String key) {
         mWorldLock.lock();
-        return ParticleSystems.getInstance().get(key);
+        return mParticleSystems.get(key);
     }
 
     public ParticleSystem acquireParticleSystem() {
