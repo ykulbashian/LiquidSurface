@@ -17,7 +17,7 @@ import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 /**
- * Created by PC on 5/18/2015.
+ * Created on 5/18/2015.
  */
 public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
     private static final int EGL_OPENGL_ES2_BIT = 4;

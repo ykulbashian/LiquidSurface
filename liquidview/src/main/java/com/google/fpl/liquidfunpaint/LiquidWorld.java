@@ -25,7 +25,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
- * Created by PC on 8/13/2015.
+ * Created on 8/13/2015.
  */
 public class LiquidWorld implements DrawableLayer {
     private World mWorld = null;

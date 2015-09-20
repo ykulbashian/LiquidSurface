@@ -7,7 +7,7 @@ import com.google.fpl.liquidfun.ParticleGroupFlag;
 import com.google.fpl.liquidfun.Vec2;
 
 /**
- * Created by PC on 5/27/2015.
+ * Created on 5/27/2015.
  */
 public enum GroupOptions {
 

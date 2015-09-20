@@ -17,7 +17,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
- * Created by abc on 15-09-19.
+ * Created on 15-09-19.
  */
 public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GLSurfaceView.Renderer {
 

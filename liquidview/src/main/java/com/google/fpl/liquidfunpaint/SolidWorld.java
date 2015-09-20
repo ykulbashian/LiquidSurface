@@ -18,7 +18,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
- * Created by PC on 8/15/2015.
+ * Created on 8/15/2015.
  */
 public class SolidWorld implements DrawableLayer{
     private Body mCircleBody = null;

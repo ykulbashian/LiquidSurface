@@ -14,7 +14,7 @@ import com.google.fpl.liquidfunpaint.SolidWorld;
 
 
 /**
- * Created by yervant on 3/25/2015.
+ * Created on 3/25/2015.
  */
 public class LiquidTextureView extends TextureView implements ILiquidWorld {
 

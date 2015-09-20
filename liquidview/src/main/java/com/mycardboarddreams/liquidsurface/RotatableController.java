@@ -14,7 +14,7 @@ import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.tool.Tool;
 
 /**
- * Created by PC on 5/24/2015.
+ * Created on 5/24/2015.
  */
 public class RotatableController implements View.OnTouchListener, SensorEventListener {
     private SensorManager mManager;

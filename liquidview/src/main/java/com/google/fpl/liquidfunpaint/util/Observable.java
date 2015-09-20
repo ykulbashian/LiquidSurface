@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by PC on 8/16/2015.
+ * Created on 8/16/2015.
  */
 public class Observable<T> {
 

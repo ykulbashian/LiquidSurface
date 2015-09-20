@@ -14,7 +14,7 @@ import com.google.fpl.liquidfun.World;
 import java.util.HashMap;
 
 /**
- * Created by PC on 8/13/2015.
+ * Created on 8/13/2015.
  */
 public class ParticleSystems extends HashMap<String, ParticleSystem> {
 
