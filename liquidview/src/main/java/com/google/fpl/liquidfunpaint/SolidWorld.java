@@ -1,6 +1,7 @@
 package com.google.fpl.liquidfunpaint;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.google.fpl.liquidfun.Body;
 import com.google.fpl.liquidfun.BodyDef;
@@ -37,7 +38,7 @@ public class SolidWorld implements DrawableLayer{
     }
 
     @Override
-    public void init(Activity context){
+    public void init(Context context){
         mBoatTexture = new Texture(context, TEXTURE_NAME);
     }
 

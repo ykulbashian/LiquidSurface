@@ -22,7 +22,7 @@ import com.google.fpl.liquidfunpaint.shader.ShaderProgram;
 import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.Observable;
 
-import android.app.Activity;
+import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
@@ -54,7 +54,7 @@ public class GameLoop extends Observable<Float> implements DrawableLayer {
     public int sScreenHeight = 1;
 
     /// Member variables
-    private Activity mActivity = null;
+    private Context mContext = null;
 
     // GameLoop class owns all Box2D objects, for thread-safety
     // Variables for thread synchronization
@@ -81,10 +81,10 @@ public class GameLoop extends Observable<Float> implements DrawableLayer {
     }
 
     @Override
-    public void init(Activity activity) {
-        mActivity = activity;
+    public void init(Context context) {
+        mContext = context;
 
-        LiquidWorld.getInstance().init(activity);
+        LiquidWorld.getInstance().init(context);
 
         reset();
 
@@ -140,13 +140,13 @@ public class GameLoop extends Observable<Float> implements DrawableLayer {
             throw new IllegalStateException("Init world before rendering");
         }
 
-        ShaderProgram.loadAllShaders(mActivity.getAssets());
+        ShaderProgram.loadAllShaders(mContext.getAssets());
 
         TextureRenderer.getInstance().onSurfaceCreated();
 
         LiquidWorld.getInstance().onSurfaceCreated(gl, config);
 
-        SolidWorld.getInstance().init(mActivity);
+        SolidWorld.getInstance().init(mContext);
     }
 
     public void pauseSimulation() {

@@ -7,7 +7,6 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
 import com.google.fpl.liquidfunpaint.GroupOptions;
-import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.SolidWorld;
 import com.google.fpl.liquidfunpaint.renderer.GameLoop;
@@ -53,7 +52,7 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
         if(isInEditMode())
             return;
 
-        GameLoop.getInstance().init((Activity) context);
+        GameLoop.getInstance().init(context);
 
         setEGLContextClientVersion(2);
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);

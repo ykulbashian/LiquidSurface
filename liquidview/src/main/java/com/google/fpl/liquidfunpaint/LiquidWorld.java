@@ -1,9 +1,8 @@
 package com.google.fpl.liquidfunpaint;
 
-import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
-import com.google.fpl.liquidfun.Draw;
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.renderer.DebugRenderer;
@@ -67,17 +66,17 @@ public class LiquidWorld implements DrawableLayer {
         return sInstance;
     }
 
-    private Activity mActivity;
+    private Context mContext;
 
     @Override
-    public void init(Activity activity){
-        mActivity = activity;
+    public void init(Context activity){
+        mContext = activity;
         mParticleRenderer = new ParticleRenderer();
         mParticleRenderer.init(activity);
         createDebugRenderer(activity);
     }
 
-    private void createDebugRenderer(Activity activity) {
+    private void createDebugRenderer(Context activity) {
         if (GameLoop.DEBUG_DRAW) {
             mDebugRenderer = new DebugRenderer();
             mDebugRenderer.init(activity);
@@ -118,7 +117,7 @@ public class LiquidWorld implements DrawableLayer {
         try {
             deleteWorld();
             mWorld = new World(0, 0);
-            createDebugRenderer(mActivity);
+            createDebugRenderer(mContext);
 
             mParticleRenderer.reset();
 
@@ -236,7 +235,7 @@ public class LiquidWorld implements DrawableLayer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        createBackground(mActivity);
+        createBackground(mContext);
 
         mParticleRenderer.onSurfaceCreated(gl, config);
 
@@ -245,7 +244,7 @@ public class LiquidWorld implements DrawableLayer {
         }
     }
 
-    private void createBackground(Activity context) {
+    private void createBackground(Context context) {
         // Read in our specific json file
         String materialFile = FileHelper.loadAsset(
                 context.getAssets(), ParticleRenderer.JSON_FILE);

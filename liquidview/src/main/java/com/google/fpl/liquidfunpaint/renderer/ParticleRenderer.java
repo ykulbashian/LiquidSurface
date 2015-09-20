@@ -81,7 +81,7 @@ public class ParticleRenderer implements DrawableLayer {
     private Context mContext;
 
     @Override
-    public void init(Activity context) {
+    public void init(Context context) {
         mContext = context.getApplicationContext();
 
         mParticlePositionBuffer = ByteBuffer

@@ -79,7 +79,7 @@ public class DebugRenderer extends Draw implements DrawableLayer {
     private Context mContext;
 
     @Override
-    public void init(Activity context) {
+    public void init(Context context) {
         mContext = context.getApplicationContext();
 
         mPolygonPositionBuffer = ByteBuffer.allocateDirect(DEBUG_CAPACITY)
