@@ -13,11 +13,9 @@ import com.google.fpl.liquidfunpaint.SolidWorld;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 
-public class SampleActivity extends AppCompatActivity implements View.OnTouchListener, Runnable {
+public class SampleActivity extends AppCompatActivity implements View.OnTouchListener {
 
     ILiquidWorld ltv;
-
-    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,20 +38,6 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
         ltv.createSolidShape(createCircle(getCenterPoint(), 100, 8));
 
         ltv.resumePhysics();
-
-        run();
-    }
-
-    @Override
-    public void run() {
-        handler.postDelayed(this, 2000);
-
-        float[] emptyBox = createBox(new Vector2f(100, 100), 200, 200);
-        float[] fillBox = createBox(new Vector2f(GameLoop.getInstance().sScreenWidth, 300), 200, 200);
-
-        ltv.eraseParticles(emptyBox);
-//        ltv.createLiquidShape(fillBox);
-
     }
 
     private Vector2f getCenterPoint(){
@@ -73,8 +57,6 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
     protected void onPause() {
         super.onPause();
         ltv.pausePhysics();
-
-        handler.removeCallbacksAndMessages(null);
     }
 
     @Override
