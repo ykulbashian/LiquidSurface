@@ -20,7 +20,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
 
     public static final int MAX_PARTICLE_COUNT = 5000;
     public static final float PARTICLE_RADIUS = 0.06f;
-    public static final float PARTICLE_REPULSIVE_STRENGTH = 0.0f;
+    public static final float PARTICLE_REPULSIVE_STRENGTH = 0.5f;
 
     ParticleGroup pGroup;
 
