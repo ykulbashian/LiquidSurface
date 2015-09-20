@@ -6,7 +6,6 @@ import android.util.AttributeSet;
 import android.view.TextureView;
 
 import com.google.fpl.liquidfunpaint.GroupOptions;
-import com.google.fpl.liquidfunpaint.ILiquidWorld;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.renderer.GameLoop;

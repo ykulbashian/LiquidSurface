@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.google.fpl.liquidfunpaint.ILiquidWorld;
+import com.mycardboarddreams.liquidsurface.ILiquidWorld;
 import com.google.fpl.liquidfunpaint.renderer.GameLoop;
 import com.google.fpl.liquidfunpaint.SolidWorld;
 import com.google.fpl.liquidfunpaint.util.Vector2f;

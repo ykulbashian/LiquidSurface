@@ -1,4 +1,4 @@
-package com.google.fpl.liquidfunpaint;
+package com.mycardboarddreams.liquidsurface;
 
 import android.view.View;
 
