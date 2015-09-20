@@ -25,6 +25,11 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
         ltv = (ILiquidWorld) findViewById(R.id.liquid_texture_view);
 
         ltv.setOnTouchListener(this);
+
+        ltv.clearAll();
+        ltv.createLiquidShape(createCircle(getCenterPoint(), 400, 8));
+
+        ltv.createSolidShape(createCircle(getCenterPoint(), 70, 8));
     }
 
     /**
@@ -33,12 +38,13 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
     @Override
     protected void onResume() {
         super.onResume();
-        ltv.clearAll();
-        ltv.createLiquidShape(createCircle(getCenterPoint(), 400, 8));
-
-        ltv.createSolidShape(createCircle(getCenterPoint(), 70, 8));
-
         ltv.resumePhysics();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ltv.pausePhysics();
     }
 
     private Vector2f getCenterPoint(){
@@ -47,16 +53,6 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
         getWindowManager().getDefaultDisplay().getSize(size);
         Vector2f center = new Vector2f(size.x / 2, size.y / 2);
         return center;
-    }
-
-    private void createLiquidCircle() {
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        ltv.pausePhysics();
     }
 
     @Override
