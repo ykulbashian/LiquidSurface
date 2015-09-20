@@ -60,6 +60,9 @@ public class GameLoop extends Observable<Float> implements DrawableLayer {
     // Variables for thread synchronization
     private volatile boolean mSimulation = false;
 
+    LiquidWorld mLiquidWorld;
+    SolidWorld mSolidWorld;
+
     final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
 
     static {
@@ -70,7 +73,7 @@ public class GameLoop extends Observable<Float> implements DrawableLayer {
 
     @Override
     protected void finalize() {
-        LiquidWorld.getInstance().deleteWorld();
+        mLiquidWorld.deleteWorld();
     }
 
     private GameLoop() {
@@ -84,7 +87,9 @@ public class GameLoop extends Observable<Float> implements DrawableLayer {
     public void init(Context context) {
         mContext = context;
 
-        LiquidWorld.getInstance().init(context);
+        mLiquidWorld = LiquidWorld.getInstance();
+        mLiquidWorld.init(context);
+        mSolidWorld = SolidWorld.getInstance();
 
         reset();
 
@@ -98,7 +103,8 @@ public class GameLoop extends Observable<Float> implements DrawableLayer {
     @Override
     public void reset() {
         clearPhysicsCommands();
-        LiquidWorld.getInstance().reset();
+        mLiquidWorld.reset();
+        mSolidWorld.reset();
     }
 
     @Override
@@ -112,15 +118,15 @@ public class GameLoop extends Observable<Float> implements DrawableLayer {
             setChanged();
             notifyObservers();
 
-            LiquidWorld.getInstance().update(TIME_STEP);
+            mLiquidWorld.update(TIME_STEP);
 
             GLES20.glClearColor(1, 1, 1, 1);
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
             // Draw particles
-            LiquidWorld.getInstance().onDrawFrame(gl);
+            mLiquidWorld.onDrawFrame(gl);
 
-            SolidWorld.getInstance().onDrawFrame(gl);
+            mSolidWorld.onDrawFrame(gl);
         }
     }
 
@@ -131,12 +137,12 @@ public class GameLoop extends Observable<Float> implements DrawableLayer {
 
         GLES20.glViewport(0, 0, width, height);
 
-        LiquidWorld.getInstance().onSurfaceChanged(gl, width, height);
+        mLiquidWorld.onSurfaceChanged(gl, width, height);
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        if (!LiquidWorld.getInstance().hasWorld()) {
+        if (!mLiquidWorld.hasWorld()) {
             throw new IllegalStateException("Init world before rendering");
         }
 
@@ -144,9 +150,9 @@ public class GameLoop extends Observable<Float> implements DrawableLayer {
 
         TextureRenderer.getInstance().onSurfaceCreated();
 
-        LiquidWorld.getInstance().onSurfaceCreated(gl, config);
+        mLiquidWorld.onSurfaceCreated(gl, config);
 
-        SolidWorld.getInstance().init(mContext);
+        mSolidWorld.init(mContext);
     }
 
     public void pauseSimulation() {
