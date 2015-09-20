@@ -22,6 +22,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.util.Log;
 
 import com.google.fpl.liquidfunpaint.util.FileHelper;
 
@@ -111,6 +112,10 @@ public class Texture {
         mName = assetName;
         generateTexture();
         Bitmap bitmap = FileHelper.loadBitmap(context.getAssets(), assetName);
+        if(bitmap == null || bitmap.isRecycled()) {
+            Log.e("", String.format("Unable to load bitmap texture %s in assets. Bitmap was null.", assetName));
+            return;
+        }
         loadTexture(bitmap, scale, wrapS, wrapT);
         bitmap.recycle();
     }
