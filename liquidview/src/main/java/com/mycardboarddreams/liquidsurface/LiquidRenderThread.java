@@ -45,8 +45,6 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
 
     public LiquidRenderThread(Activity context){
         targetFps = context.getResources().getInteger(R.integer.target_fps);
-
-        GameLoop.getInstance().init(context);
     }
 
     public void initialize(SurfaceTexture surface, int width, int height, float targetFramesPerSecond, boolean isPaused){

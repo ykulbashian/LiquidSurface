@@ -29,6 +29,7 @@ import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
 import com.google.fpl.liquidfunpaint.util.RenderHelper;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -77,9 +78,10 @@ public class ParticleRenderer implements DrawableLayer {
     private List<ParticleGroup> mParticleRenderList =
             new ArrayList<ParticleGroup>(256);
 
-    private final Context mContext;
+    private Context mContext;
 
-    public ParticleRenderer(Context context) {
+    @Override
+    public void init(Activity context) {
         mContext = context.getApplicationContext();
 
         mParticlePositionBuffer = ByteBuffer

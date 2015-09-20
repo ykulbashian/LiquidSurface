@@ -35,11 +35,12 @@ public class SolidWorld implements DrawableLayer{
         return sInstance;
     }
 
+    @Override
     public void init(Activity context){
         mBoatTexture = new Texture(context, TEXTURE_NAME);
     }
 
-    public void createWorldBoundaries(World world){
+    private void createWorldBoundaries(World world){
         float worldWidth = LiquidWorld.getInstance().sPhysicsWorldWidth;
         float worldHeight = LiquidWorld.getInstance().sPhysicsWorldHeight;
 

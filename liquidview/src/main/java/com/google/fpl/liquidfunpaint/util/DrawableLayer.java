@@ -1,5 +1,7 @@
 package com.google.fpl.liquidfunpaint.util;
 
+import android.app.Activity;
+
 import com.google.fpl.liquidfunpaint.GLTextureView;
 
 /**
@@ -7,4 +9,5 @@ import com.google.fpl.liquidfunpaint.GLTextureView;
  */
 public interface DrawableLayer extends GLTextureView.Renderer{
     void reset();
+    void init(Activity activity);
 }

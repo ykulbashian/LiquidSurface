@@ -57,6 +57,9 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
         Activity activity = (Activity)context;
 
         thread = new LiquidRenderThread(activity);
+
+        GameLoop.getInstance().init(activity);
+
         setSurfaceTextureListener(thread);
 
         mController = new RotatableController(activity);

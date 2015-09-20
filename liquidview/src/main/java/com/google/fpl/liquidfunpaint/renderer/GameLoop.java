@@ -80,6 +80,7 @@ public class GameLoop extends Observable<Float> implements DrawableLayer {
         return _instance;
     }
 
+    @Override
     public void init(Activity activity) {
         mActivity = activity;
 

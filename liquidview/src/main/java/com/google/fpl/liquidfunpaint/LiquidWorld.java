@@ -69,16 +69,18 @@ public class LiquidWorld implements DrawableLayer {
 
     private Activity mActivity;
 
+    @Override
     public void init(Activity activity){
         mActivity = activity;
-        mParticleRenderer =  new ParticleRenderer(activity);
+        mParticleRenderer = new ParticleRenderer();
+        mParticleRenderer.init(activity);
         createDebugRenderer(activity);
     }
 
     private void createDebugRenderer(Activity activity) {
         if (GameLoop.DEBUG_DRAW) {
-            mDebugRenderer = new DebugRenderer(activity);
-            mDebugRenderer.setFlags(Draw.SHAPE_BIT | Draw.PARTICLE_BIT);
+            mDebugRenderer = new DebugRenderer();
+            mDebugRenderer.init(activity);
         }
     }
 

@@ -16,6 +16,7 @@
 */
 package com.google.fpl.liquidfunpaint.renderer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -77,7 +78,8 @@ public class DebugRenderer extends Draw implements DrawableLayer {
 
     private Context mContext;
 
-    public DebugRenderer(Context context) {
+    @Override
+    public void init(Activity context) {
         mContext = context.getApplicationContext();
 
         mPolygonPositionBuffer = ByteBuffer.allocateDirect(DEBUG_CAPACITY)
@@ -96,6 +98,8 @@ public class DebugRenderer extends Draw implements DrawableLayer {
                 .order(ByteOrder.nativeOrder());
         mLineColorBuffer = ByteBuffer.allocateDirect(DEBUG_CAPACITY)
                 .order(ByteOrder.nativeOrder());
+
+        setFlags(Draw.SHAPE_BIT | Draw.PARTICLE_BIT);
     }
 
     /// Helper functions for adding color to a ByteBuffer
