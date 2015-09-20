@@ -17,6 +17,6 @@
         "alphaThreshold": 0.8
     },
     "paper": {
-        "uDiffuseTexture": "textures/tropical.jpg"
+        "uDiffuseTexture": "textures/canvas.png"
     }
 }

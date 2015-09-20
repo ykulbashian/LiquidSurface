@@ -41,5 +41,5 @@ void main() {
 
   // Modulate the color by weight, if the weight is above the cutoff.
   vColor.rgb *= ((weight > uWeightParams[2]) ? 1.0 / weight : 1.0);
-  vColor.rgba *= (aVelocity.x > 1.0 && weight < uWeightParams[2] + 0.2) ? 4.0 : 1.0;
+  vColor.rgb *= (aVelocity.x > 10.0 && weight < uWeightParams[2] + 0.2) ? aVelocity.x : 1.0;
 }
