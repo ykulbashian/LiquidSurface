@@ -81,7 +81,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
     @Override
     public void createLiquidShape(final float[] vertices){
 
-        thread.addPhysicsCommand(new Runnable() {
+        Renderer.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 ParticleSystems.getInstance().fillShape(normalizePositions(vertices), GroupOptions.LIQUID, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
@@ -91,7 +91,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
 
     @Override
     public void createSolidShape(final float[] vertices){
-        thread.addPhysicsCommand(new Runnable() {
+        Renderer.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 SolidWorld.getInstance().createSolidObject(normalizePositions(vertices));
@@ -101,7 +101,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
 
     @Override
     public void emptyShape(final float[] vertices){
-        thread.addPhysicsCommand(new Runnable() {
+        Renderer.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 ParticleSystems.getInstance().emptyShape(normalizePositions(vertices));

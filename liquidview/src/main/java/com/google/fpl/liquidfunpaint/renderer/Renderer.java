@@ -26,6 +26,9 @@ import android.app.Activity;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -56,6 +59,8 @@ public class Renderer extends Observable<Float> implements DrawableLayer {
     // Renderer class owns all Box2D objects, for thread-safety
     // Variables for thread synchronization
     private volatile boolean mSimulation = false;
+
+    final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
 
     static {
         MAT4X4_IDENTITY = new float[16];
@@ -91,12 +96,18 @@ public class Renderer extends Observable<Float> implements DrawableLayer {
      */
     @Override
     public void reset() {
+        clearPhysicsCommands();
         LiquidWorld.getInstance().reset();
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
         if (mSimulation) {
+
+            while (!pendingRunnables.isEmpty()) {
+                pendingRunnables.poll().run();
+            }
+
             setChanged();
             notifyObservers();
 
@@ -143,6 +154,14 @@ public class Renderer extends Observable<Float> implements DrawableLayer {
 
     public void startSimulation() {
         mSimulation = true;
+    }
+
+    public void addPhysicsCommand(Runnable runnable){
+        pendingRunnables.add(runnable);
+    }
+
+    public void clearPhysicsCommands(){
+        pendingRunnables.clear();
     }
 
 }

@@ -12,9 +12,6 @@ import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.SolidWorld;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -38,8 +35,6 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
     }
 
     private RotatableController mController;
-
-    final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
 
     public LiquidSurfaceView(Context context) {
         super(context);
@@ -88,7 +83,7 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
     @Override
     public void createLiquidShape(final float[] vertices){
 
-        pendingRunnables.add(new Runnable() {
+        com.google.fpl.liquidfunpaint.renderer.Renderer.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 ParticleSystems.getInstance().fillShape(normalizePositions(vertices), GroupOptions.LIQUID, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
@@ -98,7 +93,7 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
 
     @Override
     public void createSolidShape(final float[] vertices){
-        pendingRunnables.add(new Runnable() {
+        com.google.fpl.liquidfunpaint.renderer.Renderer.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 SolidWorld.getInstance().createSolidObject(normalizePositions(vertices));
@@ -108,7 +103,7 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
 
     @Override
     public void emptyShape(final float[] vertices){
-        pendingRunnables.add(new Runnable() {
+        com.google.fpl.liquidfunpaint.renderer.Renderer.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 ParticleSystems.getInstance().emptyShape(normalizePositions(vertices));
@@ -146,10 +141,6 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
 
     @Override
     public void onDrawFrame(GL10 gl) {
-
-        while (!pendingRunnables.isEmpty()) {
-            pendingRunnables.poll().run();
-        }
         com.google.fpl.liquidfunpaint.renderer.Renderer.getInstance().onDrawFrame(gl);
     }
 }

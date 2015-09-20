@@ -46,8 +46,6 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
 
     private int targetFps;
 
-    final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
-
     public LiquidRenderThread(Activity context){
         targetFps = context.getResources().getInteger(R.integer.target_fps);
 
@@ -109,10 +107,6 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
                     lastFrameTime = System.currentTimeMillis();
 
                     checkCurrent();
-
-                    while (!pendingRunnables.isEmpty()) {
-                        pendingRunnables.poll().run();
-                    }
 
                     Renderer.getInstance().onDrawFrame(mGl);
 
@@ -242,14 +236,6 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
         checkEglError();
     }
 
-    public void addPhysicsCommand(Runnable runnable){
-        pendingRunnables.add(runnable);
-    }
-
-    public void clearPhysicsCommands(){
-        pendingRunnables.clear();
-    }
-
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         startThread(surface, width, height, targetFps);
@@ -274,7 +260,6 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
 
     public void clearAllLiquid() {
         Renderer.getInstance().reset();
-        clearPhysicsCommands();
     }
 
 }
