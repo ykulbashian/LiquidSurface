@@ -10,6 +10,8 @@ import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.renderer.GameLoop;
 import com.google.fpl.liquidfunpaint.SolidWorld;
+import com.google.fpl.liquidfunpaint.util.MathHelper;
+import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 
 /**
@@ -81,53 +83,35 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
     }
 
     @Override
-    public void createLiquidShape(final float[] vertices){
+    public void createLiquidShape(final Vector2f[] vertices){
 
         GameLoop.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
-                ParticleSystems.getInstance().fillShape(normalizePositions(vertices), GroupOptions.LIQUID, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
+                ParticleSystems.getInstance().fillShape(MathHelper.normalizePositions(vertices, getWidth(), getHeight()),
+                        GroupOptions.LIQUID, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
             }
         });
     }
 
     @Override
-    public void createSolidShape(final float[] vertices){
+    public void createSolidShape(final Vector2f[] vertices){
         GameLoop.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
-                SolidWorld.getInstance().createSolidObject(normalizePositions(vertices));
+                SolidWorld.getInstance().createSolidObject(MathHelper.normalizePositions(vertices, getWidth(), getHeight()));
             }
         });
     }
 
     @Override
-    public void eraseParticles(final float[] vertices){
+    public void eraseParticles(final Vector2f[] vertices){
         GameLoop.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
-                ParticleSystems.getInstance().eraseParticles(normalizePositions(vertices));
+                ParticleSystems.getInstance().eraseParticles(MathHelper.normalizePositions(vertices, getWidth(), getHeight()));
             }
         });
     }
-
-    private float getWidthRatio(){
-        return LiquidWorld.getInstance().sRenderWorldWidth / getWidth();
-    }
-
-    private float getHeightRatio(){
-        return LiquidWorld.getInstance().sRenderWorldHeight / getHeight();
-    }
-
-    private float[] normalizePositions(float[] originalVertices){
-        float[] normalizedVerts = new float[originalVertices.length];
-
-        for(int i = 0; i < originalVertices.length; i++){
-            normalizedVerts[i] = originalVertices[i] * ((i % 2 == 0) ? getWidthRatio() : getHeightRatio());
-        }
-
-        return normalizedVerts;
-    }
-
 
 }

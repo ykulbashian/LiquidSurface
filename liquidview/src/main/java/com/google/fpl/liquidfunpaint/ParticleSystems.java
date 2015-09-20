@@ -10,6 +10,8 @@ import com.google.fpl.liquidfun.ParticleSystemDef;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.World;
+import com.google.fpl.liquidfunpaint.util.MathHelper;
+import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 import java.util.HashMap;
 
@@ -72,13 +74,14 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
     }
 
 
-    public void fillShape(float[] normalizedVertices, GroupOptions options, String key){
+    public void fillShape(Vector2f[] normalizedVertices, GroupOptions options, String key){
 
         if (normalizedVertices == null || normalizedVertices.length == 0 || normalizedVertices.length % 2 != 0)
             return;
 
         final PolygonShape polygon = new PolygonShape();
-        polygon.set(normalizedVertices, normalizedVertices.length / 2);
+        float[] points = MathHelper.convertVectToFloats(normalizedVertices);
+        polygon.set(points, normalizedVertices.length);
 
         ParticleColor pColor = new ParticleColor(
                 (short) Color.red(options.color),
@@ -107,15 +110,17 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
         pgd.delete();
     }
 
-    public void eraseParticles(float[] normalizedVertices){
+    public void eraseParticles(Vector2f[] normalizedVertices){
         eraseParticles(normalizedVertices, DEFAULT_PARTICLE_SYSTEM);
     }
 
-    public void eraseParticles(float[] normalizedVertices, String key){
+    public void eraseParticles(Vector2f[] normalizedVertices, String key){
         ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem(key);
         try {
             final PolygonShape polygon = new PolygonShape();
-            polygon.set(normalizedVertices, normalizedVertices.length / 2);
+            float[] points = MathHelper.convertVectToFloats(normalizedVertices);
+
+            polygon.set(points, normalizedVertices.length);
 
             ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
 

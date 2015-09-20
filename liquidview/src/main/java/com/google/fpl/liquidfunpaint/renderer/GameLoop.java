@@ -42,7 +42,7 @@ import javax.microedition.khronos.opengles.GL10;
 public class GameLoop extends Observable<Float> implements DrawableLayer {
     // Private constants
     private static final GameLoop _instance = new GameLoop();
-    public static final boolean DEBUG_DRAW = false;
+    public static final boolean DEBUG_DRAW = true;
 
     private static final float TIME_STEP = 1 / 60f; // 60 fps
 

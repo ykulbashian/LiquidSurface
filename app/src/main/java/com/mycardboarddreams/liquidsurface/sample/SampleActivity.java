@@ -35,7 +35,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
         super.onResume();
         createLiquidCircle();
 
-        ltv.createSolidShape(createCircle(getCenterPoint(), 100, 8));
+        ltv.createSolidShape(createCircle(getCenterPoint(), 70, 8));
 
         ltv.resumePhysics();
     }
@@ -50,7 +50,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
 
     private void createLiquidCircle() {
 
-        ltv.createLiquidShape(createCircle(getCenterPoint(), 600, 8));
+        ltv.createLiquidShape(createCircle(getCenterPoint(), 400, 8));
     }
 
     @Override
@@ -74,33 +74,29 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
         return true;
     }
 
-    private float[] createCircle(Vector2f center, float radius, int numPoints){
-        float[] vertices = new float[numPoints*2];
+    private Vector2f[] createCircle(Vector2f center, float radius, int numPoints){
+        Vector2f[] vertices = new Vector2f[numPoints];
 
-        float angle = 360f/numPoints;
+        double angle = 2*Math.PI/numPoints;
 
         for(int i = 0; i < numPoints; i++){
-            vertices[2*i] = center.x + (float) (radius*Math.cos(i*angle));
-            vertices[2*i + 1] = center.y + (float) (radius*Math.sin(i*angle));
+            vertices[i] = new Vector2f(center.x + (float) (radius*Math.cos(i*angle)),
+                                         center.y + (float) (radius*Math.sin(i*angle)));
         }
 
         return vertices;
     }
 
-    private float[] createBox(Vector2f center, float width, float height){
-        float[] vertices = new float[4*2];
+    private Vector2f[] createBox(Vector2f center, float width, float height){
+        Vector2f[] vertices = new Vector2f[4];
 
-        vertices[0] = center.x - width/2;
-        vertices[1] = center.y + height/2;
+        vertices[0] = new Vector2f(center.x - width/2, center.y + height/2);
 
-        vertices[2] = center.x + width/2;
-        vertices[3] = center.y + height/2;
+        vertices[1] = new Vector2f(center.x + width/2, center.y + height/2);
 
-        vertices[4] = center.x - width/2;
-        vertices[5] = center.y - height/2;
+        vertices[2] = new Vector2f(center.x - width/2, center.y - height/2);
 
-        vertices[6] = center.x + width/2;
-        vertices[7] = center.y - height/2;
+        vertices[3] = new Vector2f(center.x + width/2, center.y - height/2);
 
         return vertices;
     }

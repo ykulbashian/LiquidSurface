@@ -13,6 +13,7 @@ import com.google.fpl.liquidfunpaint.renderer.TextureRenderer;
 import com.google.fpl.liquidfunpaint.shader.Texture;
 import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.MathHelper;
+import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -97,7 +98,7 @@ public class SolidWorld implements DrawableLayer{
         boundaryPolygon.delete();
     }
 
-    public void createSolidObject(float[] vertices){
+    public void createSolidObject(Vector2f[] vertices){
         World world = LiquidWorld.getInstance().acquireWorld();
 
         try {
@@ -113,7 +114,7 @@ public class SolidWorld implements DrawableLayer{
             mCircleBody = world.createBody(bodyDef);
             mCircleBody.setType(BodyType.dynamicBody);
 
-            boundaryPolygon.set(vertices, vertices.length / 2);
+            boundaryPolygon.set(MathHelper.convertVectToFloats(vertices), vertices.length);
             mCircleBody.createFixture(boundaryPolygon, 0.1f);
 
             // Clean up native objects

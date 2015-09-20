@@ -30,4 +30,27 @@ public final class MathHelper {
         normal.setY(2*(pos.getY() - LiquidWorld.getInstance().sRenderWorldHeight/2)/LiquidWorld.getInstance().sRenderWorldHeight);
         return normal;
     }
+
+    public static float[] convertVectToFloats(Vector2f[] vecs){
+
+        float[] points = new float[vecs.length*2];
+        for(int i = 0; i < vecs.length; i++){
+            points[2*i] = vecs[i].x;
+            points[2*i + 1] = vecs[i].y;
+        }
+        return points;
+    }
+
+    public static Vector2f[] normalizePositions(Vector2f[] originalVertices, float viewWidth, float viewHeight){
+        float widthRatio = LiquidWorld.getInstance().sRenderWorldWidth / viewWidth;
+        float heightRatio = LiquidWorld.getInstance().sRenderWorldHeight / viewHeight;
+
+        Vector2f[] normalizedVerts = new Vector2f[originalVertices.length];
+
+        for(int i = 0; i < originalVertices.length; i++){
+            normalizedVerts[i] = new Vector2f(originalVertices[i].x * widthRatio, originalVertices[i].y * heightRatio);
+        }
+
+        return normalizedVerts;
+    }
 }
