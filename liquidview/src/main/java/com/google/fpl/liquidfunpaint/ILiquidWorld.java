@@ -11,7 +11,7 @@ public interface ILiquidWorld {
     void resumePhysics();
 
     void createSolidShape(float[] vertices);
-    void emptyShape(float[] vertices);
+    void eraseParticles(float[] vertices);
     void createLiquidShape(float[] vertices);
 
     void setOnTouchListener(View.OnTouchListener listener);

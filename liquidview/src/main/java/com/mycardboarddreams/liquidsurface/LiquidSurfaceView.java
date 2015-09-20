@@ -103,11 +103,11 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
     }
 
     @Override
-    public void emptyShape(final float[] vertices){
+    public void eraseParticles(final float[] vertices){
         GameLoop.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
-                ParticleSystems.getInstance().emptyShape(normalizePositions(vertices));
+                ParticleSystems.getInstance().eraseParticles(normalizePositions(vertices));
             }
         });
     }

@@ -51,7 +51,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
         float[] emptyBox = createBox(new Vector2f(100, 100), 200, 200);
         float[] fillBox = createBox(new Vector2f(GameLoop.getInstance().sScreenWidth, 300), 200, 200);
 
-        ltv.emptyShape(emptyBox);
+        ltv.eraseParticles(emptyBox);
 //        ltv.createLiquidShape(fillBox);
 
     }

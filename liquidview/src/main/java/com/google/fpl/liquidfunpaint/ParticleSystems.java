@@ -9,7 +9,6 @@ import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.ParticleSystemDef;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
-import com.google.fpl.liquidfun.Vec2;
 import com.google.fpl.liquidfun.World;
 
 import java.util.HashMap;
@@ -108,13 +107,11 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
         pgd.delete();
     }
 
-    public void emptyShape(float[] normalizedVertices){
-
-        pGroup.applyForce(new Vec2(500, -50));
-//        emptyShape(normalizedVertices, DEFAULT_PARTICLE_SYSTEM);
+    public void eraseParticles(float[] normalizedVertices){
+        eraseParticles(normalizedVertices, DEFAULT_PARTICLE_SYSTEM);
     }
 
-    public void emptyShape(float[] normalizedVertices, String key){
+    public void eraseParticles(float[] normalizedVertices, String key){
         ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem(key);
         try {
             final PolygonShape polygon = new PolygonShape();
