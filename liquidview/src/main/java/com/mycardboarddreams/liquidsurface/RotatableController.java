@@ -84,8 +84,8 @@ public class RotatableController implements View.OnTouchListener, SensorEventLis
                 float gravityX = mGravityVec[0] * x - mGravityVec[1] * y;
                 float gravityY = mGravityVec[1] * x + mGravityVec[0] * y;
                 world.setGravity(
-                        0,
-                        -10);
+                        gravityX,
+                        gravityY);
 
             } finally {
                 LiquidWorld.getInstance().releaseWorld();
