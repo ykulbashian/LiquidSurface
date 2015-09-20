@@ -114,4 +114,9 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
         });
     }
 
+    @Override
+    public void clearAll() {
+        GameLoop.getInstance().reset();
+    }
+
 }

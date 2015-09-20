@@ -94,6 +94,11 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
     }
 
     @Override
+    public void clearAll() {
+        GameLoop.getInstance().reset();
+    }
+
+    @Override
     public void createSolidShape(final Vector2f[] vertices){
         GameLoop.getInstance().addPhysicsCommand(new Runnable() {
             @Override

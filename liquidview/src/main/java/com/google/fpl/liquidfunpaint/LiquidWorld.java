@@ -73,10 +73,7 @@ public class LiquidWorld implements DrawableLayer {
         mContext = activity;
         mParticleRenderer = new ParticleRenderer();
         mParticleRenderer.init(activity);
-        createDebugRenderer(activity);
-    }
 
-    private void createDebugRenderer(Context activity) {
         if (GameLoop.DEBUG_DRAW) {
             mDebugRenderer = new DebugRenderer();
             mDebugRenderer.init(activity);
@@ -117,11 +114,11 @@ public class LiquidWorld implements DrawableLayer {
         try {
             deleteWorld();
             mWorld = new World(0, 0);
-            createDebugRenderer(mContext);
 
             mParticleRenderer.reset();
 
             if (GameLoop.DEBUG_DRAW) {
+                mDebugRenderer.reset();
                 mWorld.setDebugDraw(mDebugRenderer);
             }
 
@@ -134,11 +131,6 @@ public class LiquidWorld implements DrawableLayer {
         World world = acquireWorld();
 
         try {
-
-            if (mDebugRenderer != null) {
-                mDebugRenderer.delete();
-                mDebugRenderer = null;
-            }
 
             SolidWorld.getInstance().reset();
 

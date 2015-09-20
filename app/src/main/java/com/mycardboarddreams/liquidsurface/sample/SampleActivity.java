@@ -33,7 +33,8 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
     @Override
     protected void onResume() {
         super.onResume();
-        createLiquidCircle();
+        ltv.clearAll();
+        ltv.createLiquidShape(createCircle(getCenterPoint(), 400, 8));
 
         ltv.createSolidShape(createCircle(getCenterPoint(), 70, 8));
 
@@ -50,7 +51,6 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
 
     private void createLiquidCircle() {
 
-        ltv.createLiquidShape(createCircle(getCenterPoint(), 400, 8));
     }
 
     @Override

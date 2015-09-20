@@ -16,5 +16,7 @@ public interface ILiquidWorld {
     void eraseParticles(Vector2f[] vertices);
     void createLiquidShape(Vector2f[] vertices);
 
+    void clearAll();
+
     void setOnTouchListener(View.OnTouchListener listener);
 }
