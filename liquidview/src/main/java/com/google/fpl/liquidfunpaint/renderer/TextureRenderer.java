@@ -93,7 +93,7 @@ public class TextureRenderer {
             Texture texture, float transform[],
             float left, float bottom, float right, float top, int width, int height) {
         drawTexture(
-                texture, transform, Renderer.MAT4X4_IDENTITY,
+                texture, transform, GameLoop.MAT4X4_IDENTITY,
                 left, bottom, right, top, 1.0f, false, width, height);
     }
 
@@ -123,7 +123,7 @@ public class TextureRenderer {
         if (noScale) {
             // We first calculate the actual screen dimensions to be drawn.
             // left/bottom/right/top spans [-1, 1], so (right - left) / 2 will
-            // give us the % of Renderer.sScreenWidth we will be drawing on.
+            // give us the % of GameLoop.sScreenWidth we will be drawing on.
             // Then we calculate the ratio of the texture's width to the
             // previous value to get how much the texture's UVs should be
             // scaled. The UV will be scaled inverse proportionally.

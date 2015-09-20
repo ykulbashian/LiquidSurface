@@ -7,14 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.google.fpl.liquidfunpaint.GroupOptions;
 import com.google.fpl.liquidfunpaint.ILiquidWorld;
-import com.google.fpl.liquidfunpaint.LiquidWorld;
-import com.google.fpl.liquidfunpaint.ParticleSystems;
-import com.google.fpl.liquidfunpaint.renderer.Renderer;
+import com.google.fpl.liquidfunpaint.renderer.GameLoop;
 import com.google.fpl.liquidfunpaint.SolidWorld;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
-import com.mycardboarddreams.liquidsurface.LiquidTextureView;
 
 
 public class SampleActivity extends AppCompatActivity implements View.OnTouchListener, Runnable {
@@ -53,7 +49,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
         handler.postDelayed(this, 2000);
 
         float[] emptyBox = createBox(new Vector2f(100, 100), 200, 200);
-        float[] fillBox = createBox(new Vector2f(Renderer.getInstance().sScreenWidth, 300), 200, 200);
+        float[] fillBox = createBox(new Vector2f(GameLoop.getInstance().sScreenWidth, 300), 200, 200);
 
         ltv.emptyShape(emptyBox);
 //        ltv.createLiquidShape(fillBox);
@@ -85,7 +81,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
     public boolean onTouch(View v, MotionEvent event) {
         int action = event.getAction();
         if(action == MotionEvent.ACTION_DOWN) {
-            if(event.getX() > Renderer.getInstance().sScreenWidth/2)
+            if(event.getX() > GameLoop.getInstance().sScreenWidth/2)
                 SolidWorld.getInstance().spinWheel(-0.5f);
             else
                 SolidWorld.getInstance().spinWheel(0.5f);

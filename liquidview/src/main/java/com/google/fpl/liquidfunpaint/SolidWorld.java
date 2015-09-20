@@ -1,8 +1,6 @@
 package com.google.fpl.liquidfunpaint;
 
 import android.app.Activity;
-import android.content.Context;
-import android.util.Log;
 
 import com.google.fpl.liquidfun.Body;
 import com.google.fpl.liquidfun.BodyDef;
@@ -10,7 +8,7 @@ import com.google.fpl.liquidfun.BodyType;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Vec2;
 import com.google.fpl.liquidfun.World;
-import com.google.fpl.liquidfunpaint.renderer.Renderer;
+import com.google.fpl.liquidfunpaint.renderer.GameLoop;
 import com.google.fpl.liquidfunpaint.renderer.TextureRenderer;
 import com.google.fpl.liquidfunpaint.shader.Texture;
 import com.google.fpl.liquidfunpaint.util.DrawableLayer;
@@ -146,13 +144,13 @@ public class SolidWorld implements DrawableLayer{
         if(mCircleBody != null) {
             Vec2 center = MathHelper.normalizePosition(mCircleBody.getWorldCenter());
             TextureRenderer.getInstance().drawTexture(
-                    mBoatTexture, Renderer.MAT4X4_IDENTITY,
+                    mBoatTexture, GameLoop.MAT4X4_IDENTITY,
                     (center.getX()) - 0.1f,
                     (center.getY()),
                     (center.getX()) + 0.1f,
                     (center.getY()) - 0.2f,
-                    Renderer.getInstance().sScreenWidth,
-                    Renderer.getInstance().sScreenHeight);
+                    GameLoop.getInstance().sScreenWidth,
+                    GameLoop.getInstance().sScreenHeight);
         }
     }
     @Override

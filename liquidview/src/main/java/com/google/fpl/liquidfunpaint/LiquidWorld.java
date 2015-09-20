@@ -8,7 +8,7 @@ import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.renderer.DebugRenderer;
 import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
-import com.google.fpl.liquidfunpaint.renderer.Renderer;
+import com.google.fpl.liquidfunpaint.renderer.GameLoop;
 import com.google.fpl.liquidfunpaint.renderer.TextureRenderer;
 import com.google.fpl.liquidfunpaint.shader.Texture;
 import com.google.fpl.liquidfunpaint.util.DrawableLayer;
@@ -48,7 +48,7 @@ public class LiquidWorld implements DrawableLayer {
 
     private Texture mPaperTexture;
 
-    private static final String TAG = "Renderer";
+    private static final String TAG = "GameLoop";
     private static final int ONE_SEC = 1000000000;
 
     protected DebugRenderer mDebugRenderer = null;
@@ -76,7 +76,7 @@ public class LiquidWorld implements DrawableLayer {
     }
 
     private void createDebugRenderer(Activity activity) {
-        if (Renderer.DEBUG_DRAW) {
+        if (GameLoop.DEBUG_DRAW) {
             mDebugRenderer = new DebugRenderer(activity);
             mDebugRenderer.setFlags(Draw.SHAPE_BIT | Draw.PARTICLE_BIT);
         }
@@ -98,7 +98,7 @@ public class LiquidWorld implements DrawableLayer {
 
         SolidWorld.getInstance().onSurfaceChanged(gl, width, height);
 
-        if (Renderer.DEBUG_DRAW) {
+        if (GameLoop.DEBUG_DRAW) {
             mDebugRenderer.onSurfaceChanged(gl, width, height);
         }
 
@@ -120,7 +120,7 @@ public class LiquidWorld implements DrawableLayer {
 
             mParticleRenderer.reset();
 
-            if (Renderer.DEBUG_DRAW) {
+            if (GameLoop.DEBUG_DRAW) {
                 mWorld.setDebugDraw(mDebugRenderer);
             }
 
@@ -238,7 +238,7 @@ public class LiquidWorld implements DrawableLayer {
 
         mParticleRenderer.onSurfaceCreated(gl, config);
 
-        if (Renderer.DEBUG_DRAW) {
+        if (GameLoop.DEBUG_DRAW) {
             mDebugRenderer.onSurfaceCreated(gl, config);
         }
     }
@@ -264,13 +264,13 @@ public class LiquidWorld implements DrawableLayer {
 
         // Draw the paper texture.
         TextureRenderer.getInstance().drawTexture(
-                mPaperTexture, Renderer.MAT4X4_IDENTITY, -1, 1, 1, -1,
-                Renderer.getInstance().sScreenWidth,
-                Renderer.getInstance().sScreenHeight);
+                mPaperTexture, GameLoop.MAT4X4_IDENTITY, -1, 1, 1, -1,
+                GameLoop.getInstance().sScreenWidth,
+                GameLoop.getInstance().sScreenHeight);
 
         mParticleRenderer.onDrawFrame(gl);
 
-        if (Renderer.DEBUG_DRAW) {
+        if (GameLoop.DEBUG_DRAW) {
             mDebugRenderer.onDrawFrame(gl);
         }
 

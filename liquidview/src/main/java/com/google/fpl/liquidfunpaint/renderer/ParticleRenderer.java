@@ -129,8 +129,8 @@ public class ParticleRenderer implements DrawableLayer {
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
             GLES20.glViewport(
                     0, 0,
-                    Renderer.getInstance().sScreenWidth,
-                    Renderer.getInstance().sScreenHeight);
+                    GameLoop.getInstance().sScreenWidth,
+                    GameLoop.getInstance().sScreenHeight);
 
             // Copy the water particles to screen
             mWaterScreenRenderer.draw(mTransformFromTexture);

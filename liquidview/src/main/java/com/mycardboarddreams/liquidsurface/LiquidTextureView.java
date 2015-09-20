@@ -9,7 +9,7 @@ import com.google.fpl.liquidfunpaint.GroupOptions;
 import com.google.fpl.liquidfunpaint.ILiquidWorld;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
-import com.google.fpl.liquidfunpaint.renderer.Renderer;
+import com.google.fpl.liquidfunpaint.renderer.GameLoop;
 import com.google.fpl.liquidfunpaint.SolidWorld;
 
 
@@ -66,14 +66,14 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
     @Override
     public void resumePhysics() {
         mController.updateDownDirection((Activity) getContext());
-        Renderer.getInstance().startSimulation();
+        GameLoop.getInstance().startSimulation();
         mController.onResume();
         thread.setPaused(false);
     }
 
     @Override
     public void pausePhysics(){
-        Renderer.getInstance().pauseSimulation();
+        GameLoop.getInstance().pauseSimulation();
         mController.onPause();
         thread.setPaused(true);
     }
@@ -81,7 +81,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
     @Override
     public void createLiquidShape(final float[] vertices){
 
-        Renderer.getInstance().addPhysicsCommand(new Runnable() {
+        GameLoop.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 ParticleSystems.getInstance().fillShape(normalizePositions(vertices), GroupOptions.LIQUID, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
@@ -91,7 +91,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
 
     @Override
     public void createSolidShape(final float[] vertices){
-        Renderer.getInstance().addPhysicsCommand(new Runnable() {
+        GameLoop.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 SolidWorld.getInstance().createSolidObject(normalizePositions(vertices));
@@ -101,7 +101,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
 
     @Override
     public void emptyShape(final float[] vertices){
-        Renderer.getInstance().addPhysicsCommand(new Runnable() {
+        GameLoop.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 ParticleSystems.getInstance().emptyShape(normalizePositions(vertices));

@@ -11,6 +11,7 @@ import com.google.fpl.liquidfunpaint.ILiquidWorld;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.SolidWorld;
+import com.google.fpl.liquidfunpaint.renderer.GameLoop;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -51,7 +52,7 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
         if(isInEditMode())
             return;
 
-        com.google.fpl.liquidfunpaint.renderer.Renderer.getInstance().init((Activity) context);
+        GameLoop.getInstance().init((Activity) context);
 
         setEGLContextClientVersion(2);
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
@@ -70,20 +71,20 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
     @Override
     public void resumePhysics() {
         mController.updateDownDirection((Activity) getContext());
-        com.google.fpl.liquidfunpaint.renderer.Renderer.getInstance().startSimulation();
+        GameLoop.getInstance().startSimulation();
         mController.onResume();
     }
 
     @Override
     public void pausePhysics(){
-        com.google.fpl.liquidfunpaint.renderer.Renderer.getInstance().pauseSimulation();
+        GameLoop.getInstance().pauseSimulation();
         mController.onPause();
     }
 
     @Override
     public void createLiquidShape(final float[] vertices){
 
-        com.google.fpl.liquidfunpaint.renderer.Renderer.getInstance().addPhysicsCommand(new Runnable() {
+        GameLoop.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 ParticleSystems.getInstance().fillShape(normalizePositions(vertices), GroupOptions.LIQUID, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
@@ -93,7 +94,7 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
 
     @Override
     public void createSolidShape(final float[] vertices){
-        com.google.fpl.liquidfunpaint.renderer.Renderer.getInstance().addPhysicsCommand(new Runnable() {
+        GameLoop.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 SolidWorld.getInstance().createSolidObject(normalizePositions(vertices));
@@ -103,7 +104,7 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
 
     @Override
     public void emptyShape(final float[] vertices){
-        com.google.fpl.liquidfunpaint.renderer.Renderer.getInstance().addPhysicsCommand(new Runnable() {
+        GameLoop.getInstance().addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 ParticleSystems.getInstance().emptyShape(normalizePositions(vertices));
@@ -131,16 +132,16 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        com.google.fpl.liquidfunpaint.renderer.Renderer.getInstance().onSurfaceCreated(gl, config);
+        GameLoop.getInstance().onSurfaceCreated(gl, config);
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        com.google.fpl.liquidfunpaint.renderer.Renderer.getInstance().onSurfaceChanged(gl, width, height);
+        GameLoop.getInstance().onSurfaceChanged(gl, width, height);
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        com.google.fpl.liquidfunpaint.renderer.Renderer.getInstance().onDrawFrame(gl);
+        GameLoop.getInstance().onDrawFrame(gl);
     }
 }

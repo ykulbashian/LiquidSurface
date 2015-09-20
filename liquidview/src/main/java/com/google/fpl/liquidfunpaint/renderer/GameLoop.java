@@ -33,15 +33,15 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
- * Renderer class. Contains the game update and render loop.
+ * GameLoop class. Contains the game update and render loop.
  *
  * This also contains the pointer to the LiquidFun world. The convention for
  * thread-safety is to called acquireWorld to obtain a thread-safe world
  * pointer, and releaseWorld when you are done with the object.
  */
-public class Renderer extends Observable<Float> implements DrawableLayer {
+public class GameLoop extends Observable<Float> implements DrawableLayer {
     // Private constants
-    private static final Renderer _instance = new Renderer();
+    private static final GameLoop _instance = new GameLoop();
     public static final boolean DEBUG_DRAW = false;
 
     private static final float TIME_STEP = 1 / 60f; // 60 fps
@@ -56,7 +56,7 @@ public class Renderer extends Observable<Float> implements DrawableLayer {
     /// Member variables
     private Activity mActivity = null;
 
-    // Renderer class owns all Box2D objects, for thread-safety
+    // GameLoop class owns all Box2D objects, for thread-safety
     // Variables for thread synchronization
     private volatile boolean mSimulation = false;
 
@@ -73,10 +73,10 @@ public class Renderer extends Observable<Float> implements DrawableLayer {
         LiquidWorld.getInstance().deleteWorld();
     }
 
-    private Renderer() {
+    private GameLoop() {
     }
 
-    public static Renderer getInstance() {
+    public static GameLoop getInstance() {
         return _instance;
     }
 

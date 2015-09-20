@@ -160,7 +160,7 @@ public class DebugRenderer extends Draw implements DrawableLayer {
         addColorToBuffer(mCircleColorBuffer, color);
 
         float pointSize =
-                Math.max(1.0f, Renderer.getInstance().sScreenWidth *
+                Math.max(1.0f, GameLoop.getInstance().sScreenWidth *
                         (2.0f * radius / LiquidWorld.getInstance().sRenderWorldWidth));
         mCirclePointSizeBuffer.putFloat(pointSize);
     }
@@ -191,7 +191,7 @@ public class DebugRenderer extends Draw implements DrawableLayer {
         mCircleColorBuffer.put(colors);
 
         float pointSize =
-                Math.max(1.0f, Renderer.getInstance().sScreenWidth *
+                Math.max(1.0f, GameLoop.getInstance().sScreenWidth *
                         (2.0f * radius / LiquidWorld.getInstance().sRenderWorldWidth));
         for (int i = 0; i < count; ++i) {
             mCirclePointSizeBuffer.putFloat(pointSize);
@@ -249,8 +249,8 @@ public class DebugRenderer extends Draw implements DrawableLayer {
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
             GLES20.glViewport(
                     0, 0,
-                    Renderer.getInstance().sScreenWidth,
-                    Renderer.getInstance().sScreenHeight);
+                    GameLoop.getInstance().sScreenWidth,
+                    GameLoop.getInstance().sScreenHeight);
             drawPolygons(mTransformFromWorld);
             drawCircles(mTransformFromWorld);
             drawSegments(mTransformFromWorld);
