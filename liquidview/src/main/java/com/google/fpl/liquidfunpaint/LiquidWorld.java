@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.fpl.liquidfun.ParticleSystem;
-import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.renderer.DebugRenderer;
 import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
@@ -115,29 +114,6 @@ public class LiquidWorld implements DrawableLayer {
         }
     }
 
-    /**
-     * Acquire the particle system for thread-safe operations.
-     * Uses the same lock as LiquidWorld, as all LiquidFun operations should be
-     * synchronized. For example, if we are in the middle of LiquidWorld.sync(), we
-     * don't want to call ParticleSystem.createParticleGroup() at the same
-     * time.
-     */
-    public ParticleSystem acquireParticleSystem(String key) {
-        WorldLock.getInstance().lock();
-        return mParticleSystems.get(key);
-    }
-
-    public ParticleSystem acquireParticleSystem() {
-        return acquireParticleSystem(ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
-    }
-
-    /**
-     * Release the world after thread-safe operations.
-     */
-    public void releaseParticleSystem() {
-        WorldLock.getInstance().unlock();
-    }
-
     void showFrameRate() {
         if (BuildConfig.DEBUG) {
             long time = System.nanoTime();
@@ -159,12 +135,6 @@ public class LiquidWorld implements DrawableLayer {
             mFrames++;
             totalFrames++;
         }
-    }
-
-    public void update(Float data) {
-        showFrameRate();
-
-        WorldLock.getInstance().stepWorld(data);
     }
 
     @Override
@@ -196,6 +166,7 @@ public class LiquidWorld implements DrawableLayer {
     @Override
     public void onDrawFrame(GL10 gl){
         WorldLock.getInstance().acquireWorld();
+
         update(TIME_STEP);
 
         // Draw the paper texture.
@@ -211,6 +182,12 @@ public class LiquidWorld implements DrawableLayer {
         }
 
         WorldLock.getInstance().releaseWorld();
+    }
+
+    public void update(Float data) {
+        showFrameRate();
+
+        WorldLock.getInstance().stepWorld(data);
     }
 
 }

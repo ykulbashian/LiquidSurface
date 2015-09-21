@@ -28,6 +28,8 @@ import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.Vec2;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
+import com.google.fpl.liquidfunpaint.ParticleSystems;
+import com.google.fpl.liquidfunpaint.WorldLock;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 import java.nio.ByteBuffer;
@@ -358,7 +360,8 @@ public abstract class Tool {
                     radius);
         }
 
-        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
+        WorldLock.getInstance().acquireWorld();
+        ParticleSystem ps = ParticleSystems.getInstance().get();
         try {
             if (mOperations.contains(ToolOperation.REMOVE_PARTICLES)) {
                 buffer.position(pInfo.getBufferStart());
@@ -388,7 +391,7 @@ public abstract class Tool {
                 pgd.delete();
             }
         } finally {
-            LiquidWorld.getInstance().releaseParticleSystem();
+            WorldLock.getInstance().releaseWorld();
         }
     }
 

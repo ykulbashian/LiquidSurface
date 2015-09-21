@@ -24,6 +24,8 @@ import com.google.fpl.liquidfun.Fixture;
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.QueryCallback;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
+import com.google.fpl.liquidfunpaint.ParticleSystems;
+import com.google.fpl.liquidfunpaint.WorldLock;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.google.fpl.liquidfunpaint.util.Observable;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
@@ -137,14 +139,15 @@ public class MoveTool extends Tool implements Observable.Observer<Float> {
     @Override
     protected void updatePointerInfo(PointerInfo pInfo, Vector2f worldPoint) {
         if (pInfo.isNewPointer()) {
-            ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
+            WorldLock.getInstance().acquireWorld();
+            ParticleSystem ps = ParticleSystems.getInstance().get();
             try {
                 mCb.set(this, pInfo);
                 mShape.setPosition(worldPoint.x, worldPoint.y);
                 mShape.setRadius(mBrushSize / 2);
                 ps.queryShapeAABB(mCb, mShape, MAT_IDENTITY);
             } finally {
-                LiquidWorld.getInstance().releaseParticleSystem();
+                WorldLock.getInstance().releaseWorld();
             }
         }
     }
@@ -204,7 +207,8 @@ public class MoveTool extends Tool implements Observable.Observer<Float> {
         // limited by LiquidFun so the particles won't snap to finger.
         float velocityScale = 1 / arg;
 
-        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
+        WorldLock.getInstance().acquireWorld();
+        ParticleSystem ps = ParticleSystems.getInstance().get();
         try {
             for (int i = 0; i < mPointerResultList.size(); ++i) {
                 Vector<ParticleQueryResult> particleList =
@@ -237,7 +241,7 @@ public class MoveTool extends Tool implements Observable.Observer<Float> {
                 }
             }
         } finally {
-            LiquidWorld.getInstance().releaseParticleSystem();
+            WorldLock.getInstance().releaseWorld();
         }
     }
 }

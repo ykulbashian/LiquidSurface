@@ -21,6 +21,7 @@ import com.google.fpl.liquidfun.ParticleGroup;
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
+import com.google.fpl.liquidfunpaint.WorldLock;
 import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
@@ -109,7 +110,8 @@ public class ParticleRenderer implements DrawableLayer {
         mParticleVelocityBuffer.rewind();
         mParticleRenderList.clear();
 
-        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
+        WorldLock.getInstance().acquireWorld();
+        ParticleSystem ps = ParticleSystems.getInstance().get();
         try {
             int worldParticleCount = ps.getParticleCount();
             // grab the most current particle buffers
@@ -139,7 +141,7 @@ public class ParticleRenderer implements DrawableLayer {
             // Copy the other particles to screen
             mScreenRenderer.draw(mTransformFromTexture);
         } finally {
-            LiquidWorld.getInstance().releaseParticleSystem();
+            WorldLock.getInstance().releaseWorld();
         }
     }
 
@@ -187,7 +189,8 @@ public class ParticleRenderer implements DrawableLayer {
                 1, false, mPerspectiveTransform, 0);
 
         // Go through each particle group
-        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
+        WorldLock.getInstance().acquireWorld();
+        ParticleSystem ps = ParticleSystems.getInstance().get();
         try {
             ParticleGroup currGroup = ps.getParticleGroupList();
 
@@ -203,7 +206,7 @@ public class ParticleRenderer implements DrawableLayer {
                 currGroup = currGroup.getNext();
             }
         } finally {
-            LiquidWorld.getInstance().releaseParticleSystem();
+            WorldLock.getInstance().releaseWorld();
         }
 
         mWaterParticleMaterial.endRender();
@@ -233,14 +236,14 @@ public class ParticleRenderer implements DrawableLayer {
                 mParticleMaterial.getUniformLocation("uTransform"),
                 1, false, mPerspectiveTransform, 0);
 
-        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem();
+        WorldLock.getInstance().acquireWorld();
         try {
             // Go through all the particleGroups in the render list
             for (ParticleGroup currGroup : mParticleRenderList) {
                 drawParticleGroup(currGroup);
             }
         } finally {
-            LiquidWorld.getInstance().releaseParticleSystem();
+            WorldLock.getInstance().releaseWorld();
         }
 
         mParticleMaterial.endRender();

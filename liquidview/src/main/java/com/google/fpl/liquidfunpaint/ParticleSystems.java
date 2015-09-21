@@ -98,14 +98,15 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
 
         pgd.setShape(polygon);
 
-        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem(key);
+        WorldLock.getInstance().acquireWorld();
+        ParticleSystem ps = get(key);
         try {
             ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
 
             pGroup = ps.createParticleGroup(pgd);
 
         } finally {
-            LiquidWorld.getInstance().releaseParticleSystem();
+            WorldLock.getInstance().releaseWorld();
         }
         pgd.delete();
     }
@@ -115,7 +116,9 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
     }
 
     public void eraseParticles(Vector2f[] normalizedVertices, String key){
-        ParticleSystem ps = LiquidWorld.getInstance().acquireParticleSystem(key);
+        WorldLock.getInstance().acquireWorld();
+
+        ParticleSystem ps = get(key);
         try {
             final PolygonShape polygon = new PolygonShape();
             float[] points = MathHelper.convertVectToFloats(normalizedVertices);
@@ -125,7 +128,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
             ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
 
         } finally {
-            LiquidWorld.getInstance().releaseParticleSystem();
+            WorldLock.getInstance().releaseWorld();
         }
     }
 
@@ -138,5 +141,9 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
             return get(key);
         }
 
+    }
+
+    public ParticleSystem get(){
+        return get(DEFAULT_PARTICLE_SYSTEM);
     }
 }

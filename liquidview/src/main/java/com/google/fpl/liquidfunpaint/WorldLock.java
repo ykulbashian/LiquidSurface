@@ -94,6 +94,14 @@ public class WorldLock {
         mWorldLock.unlock();
     }
 
+    /**
+     * Acquire the particle system for thread-safe operations.
+     * Uses the same lock as LiquidWorld, as all LiquidFun operations should be
+     * synchronized. For example, if we are in the middle of LiquidWorld.sync(), we
+     * don't want to call ParticleSystem.createParticleGroup() at the same
+     * time.
+     */
+
     public void setGravity(float gravityX, float gravityY){
 
         World world = WorldLock.getInstance().acquireWorld();
