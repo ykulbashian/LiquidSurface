@@ -12,7 +12,7 @@ import com.google.fpl.liquidfunpaint.SolidWorld;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 
-public class SampleActivity extends AppCompatActivity implements View.OnTouchListener {
+public class SampleActivity extends AppCompatActivity {
 
     ILiquidWorld ltv;
 
@@ -22,8 +22,6 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
         setContentView(R.layout.activity_sample);
 
         ltv = (ILiquidWorld) findViewById(R.id.liquid_texture_view);
-
-        ltv.setOnTouchListener(this);
 
         ltv.clearAll();
         ltv.createLiquidShape(createCircle(getCenterPoint(), 400, 8));
@@ -52,21 +50,6 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
         getWindowManager().getDefaultDisplay().getSize(size);
         Vector2f center = new Vector2f(size.x / 2, size.y / 2);
         return center;
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        int action = event.getAction();
-        if(action == MotionEvent.ACTION_DOWN) {
-            if(event.getX() > PhysicsLoop.getInstance().sScreenWidth/2)
-                SolidWorld.getInstance().spinWheel(-0.5f);
-            else
-                SolidWorld.getInstance().spinWheel(0.5f);
-        } else if(action == MotionEvent.ACTION_UP){
-            SolidWorld.getInstance().spinWheel(0);
-        }
-
-        return true;
     }
 
     private Vector2f[] createCircle(Vector2f center, float radius, int numPoints){

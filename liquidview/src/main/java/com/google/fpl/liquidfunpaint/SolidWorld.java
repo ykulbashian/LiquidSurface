@@ -180,10 +180,4 @@ public class SolidWorld implements DrawableLayer{
         bodies.clear();
     }
 
-    public void spinWheel(float direction){
-        if(bodies.size() > 0 && bodies.get(0) != null){
-            bodies.get(0).applyTorque(direction, true);
-        }
-    }
-
 }
