@@ -2,13 +2,12 @@ package com.mycardboarddreams.liquidsurface.sample;
 
 import android.graphics.Point;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.mycardboarddreams.liquidsurface.ILiquidWorld;
-import com.google.fpl.liquidfunpaint.renderer.GameLoop;
 import com.google.fpl.liquidfunpaint.SolidWorld;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
@@ -59,7 +58,7 @@ public class SampleActivity extends AppCompatActivity implements View.OnTouchLis
     public boolean onTouch(View v, MotionEvent event) {
         int action = event.getAction();
         if(action == MotionEvent.ACTION_DOWN) {
-            if(event.getX() > GameLoop.getInstance().sScreenWidth/2)
+            if(event.getX() > PhysicsLoop.getInstance().sScreenWidth/2)
                 SolidWorld.getInstance().spinWheel(-0.5f);
             else
                 SolidWorld.getInstance().spinWheel(0.5f);

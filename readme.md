@@ -101,7 +101,7 @@ and change the following line:
 
 ### Debug
 If you want to debug the liquid physics, open the Renderer class
-**_(com.google.fpl.liquidfunpaint.renderer.GameLoop)_**
+**_(com.google.fpl.liquidfunpaint.renderer.PhysicsLoop)_**
 and set the following line:
 
 ```java

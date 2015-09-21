@@ -24,7 +24,7 @@ import com.google.fpl.liquidfun.Fixture;
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.QueryCallback;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
-import com.google.fpl.liquidfunpaint.renderer.GameLoop;
+import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.google.fpl.liquidfunpaint.util.Observable;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
@@ -175,12 +175,12 @@ public class MoveTool extends Tool implements Observable.Observer<Float> {
 
     @Override
     public void deactivate() {
-        GameLoop.getInstance().deleteObserver(this);
+        PhysicsLoop.getInstance().deleteObserver(this);
     }
 
     @Override
     public void activate() {
-        GameLoop.getInstance().addObserver(this);
+        PhysicsLoop.getInstance().addObserver(this);
     }
 
     /**

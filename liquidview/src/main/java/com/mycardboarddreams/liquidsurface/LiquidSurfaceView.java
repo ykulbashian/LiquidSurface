@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import com.google.fpl.liquidfunpaint.GroupOptions;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.SolidWorld;
-import com.google.fpl.liquidfunpaint.renderer.GameLoop;
+import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.google.fpl.liquidfunpaint.util.MathHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
@@ -35,6 +35,7 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
         }
     }
 
+    private PhysicsLoop mPhysicsLoop;
     private RotatableController mController;
 
     public LiquidSurfaceView(Context context) {
@@ -51,8 +52,9 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
 
         if(isInEditMode())
             return;
-
-        GameLoop.getInstance().init(context);
+        
+        mPhysicsLoop = PhysicsLoop.getInstance();
+        mPhysicsLoop.init(context);
 
         setEGLContextClientVersion(2);
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
@@ -71,20 +73,20 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
     @Override
     public void resumePhysics() {
         mController.updateDownDirection((Activity) getContext());
-        GameLoop.getInstance().startSimulation();
+        mPhysicsLoop.startSimulation();
         mController.onResume();
     }
 
     @Override
     public void pausePhysics(){
-        GameLoop.getInstance().pauseSimulation();
+        mPhysicsLoop.pauseSimulation();
         mController.onPause();
     }
 
     @Override
     public void createLiquidShape(final Vector2f[] vertices){
 
-        GameLoop.getInstance().addPhysicsCommand(new Runnable() {
+        mPhysicsLoop.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 ParticleSystems.getInstance().fillShape(MathHelper.normalizePositions(vertices, getWidth(), getHeight()),
@@ -95,12 +97,12 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
 
     @Override
     public void clearAll() {
-        GameLoop.getInstance().reset();
+        mPhysicsLoop.reset();
     }
 
     @Override
     public void createSolidShape(final Vector2f[] vertices){
-        GameLoop.getInstance().addPhysicsCommand(new Runnable() {
+        mPhysicsLoop.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 SolidWorld.getInstance().createSolidObject(MathHelper.normalizePositions(vertices, getWidth(), getHeight()));
@@ -110,7 +112,7 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
 
     @Override
     public void eraseParticles(final Vector2f[] vertices){
-        GameLoop.getInstance().addPhysicsCommand(new Runnable() {
+        mPhysicsLoop.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 ParticleSystems.getInstance().eraseParticles(MathHelper.normalizePositions(vertices, getWidth(), getHeight()));
@@ -120,16 +122,16 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        GameLoop.getInstance().onSurfaceCreated(gl, config);
+        mPhysicsLoop.onSurfaceCreated(gl, config);
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        GameLoop.getInstance().onSurfaceChanged(gl, width, height);
+        mPhysicsLoop.onSurfaceChanged(gl, width, height);
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        GameLoop.getInstance().onDrawFrame(gl);
+        mPhysicsLoop.onDrawFrame(gl);
     }
 }

@@ -6,9 +6,8 @@ import android.util.AttributeSet;
 import android.view.TextureView;
 
 import com.google.fpl.liquidfunpaint.GroupOptions;
-import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
-import com.google.fpl.liquidfunpaint.renderer.GameLoop;
+import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.google.fpl.liquidfunpaint.SolidWorld;
 import com.google.fpl.liquidfunpaint.util.MathHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
@@ -33,6 +32,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
         }
     }
 
+    private PhysicsLoop mPhysicsLoop;
     private LiquidRenderThread thread;
 
     private RotatableController mController;
@@ -60,7 +60,8 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
 
         thread = new LiquidRenderThread(activity);
 
-        GameLoop.getInstance().init(activity);
+        mPhysicsLoop = PhysicsLoop.getInstance();
+        mPhysicsLoop.init(activity);
 
         setSurfaceTextureListener(thread);
 
@@ -70,14 +71,14 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
     @Override
     public void resumePhysics() {
         mController.updateDownDirection((Activity) getContext());
-        GameLoop.getInstance().startSimulation();
+        mPhysicsLoop.startSimulation();
         mController.onResume();
         thread.setPaused(false);
     }
 
     @Override
     public void pausePhysics(){
-        GameLoop.getInstance().pauseSimulation();
+        mPhysicsLoop.pauseSimulation();
         mController.onPause();
         thread.setPaused(true);
     }
@@ -85,7 +86,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
     @Override
     public void createLiquidShape(final Vector2f[] vertices){
 
-        GameLoop.getInstance().addPhysicsCommand(new Runnable() {
+        mPhysicsLoop.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 ParticleSystems.getInstance().fillShape(MathHelper.normalizePositions(vertices, getWidth(), getHeight()),
@@ -96,7 +97,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
 
     @Override
     public void createSolidShape(final Vector2f[] vertices){
-        GameLoop.getInstance().addPhysicsCommand(new Runnable() {
+        mPhysicsLoop.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 SolidWorld.getInstance().createSolidObject(MathHelper.normalizePositions(vertices, getWidth(), getHeight()));
@@ -106,7 +107,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
 
     @Override
     public void eraseParticles(final Vector2f[] vertices){
-        GameLoop.getInstance().addPhysicsCommand(new Runnable() {
+        mPhysicsLoop.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 ParticleSystems.getInstance().eraseParticles(MathHelper.normalizePositions(vertices, getWidth(), getHeight()));
@@ -116,7 +117,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
 
     @Override
     public void clearAll() {
-        GameLoop.getInstance().reset();
+        mPhysicsLoop.reset();
     }
 
 }

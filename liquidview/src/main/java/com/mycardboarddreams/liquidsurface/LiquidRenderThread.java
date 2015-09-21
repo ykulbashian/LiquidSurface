@@ -6,7 +6,7 @@ import android.opengl.GLUtils;
 import android.util.Log;
 import android.view.TextureView;
 
-import com.google.fpl.liquidfunpaint.renderer.GameLoop;
+import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -89,8 +89,8 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
             initGL();
             checkGlError();
 
-            GameLoop.getInstance().onSurfaceCreated(mGl, eglConfig);
-            GameLoop.getInstance().onSurfaceChanged(mGl, surfaceWidth, surfaceHeight);
+            PhysicsLoop.getInstance().onSurfaceCreated(mGl, eglConfig);
+            PhysicsLoop.getInstance().onSurfaceChanged(mGl, surfaceWidth, surfaceHeight);
 
             long lastFrameTime = System.currentTimeMillis();
 
@@ -103,7 +103,7 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
 
                     checkCurrent();
 
-                    GameLoop.getInstance().onDrawFrame(mGl);
+                    PhysicsLoop.getInstance().onDrawFrame(mGl);
 
                     checkGlError();
                     if (!mEgl.eglSwapBuffers(mEglDisplay, mEglSurface)) {
@@ -239,7 +239,7 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
     @Override
     public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
         setDimensions(width, height);
-        GameLoop.getInstance().onSurfaceChanged(mGl, width, height);
+        PhysicsLoop.getInstance().onSurfaceChanged(mGl, width, height);
     }
 
     @Override
@@ -254,7 +254,7 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
     }
 
     public void clearAllLiquid() {
-        GameLoop.getInstance().reset();
+        PhysicsLoop.getInstance().reset();
     }
 
 }

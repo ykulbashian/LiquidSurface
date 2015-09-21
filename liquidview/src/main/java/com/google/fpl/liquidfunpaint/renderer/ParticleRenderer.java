@@ -29,7 +29,6 @@ import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
 import com.google.fpl.liquidfunpaint.util.RenderHelper;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.opengl.GLES20;
@@ -131,8 +130,8 @@ public class ParticleRenderer implements DrawableLayer {
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
             GLES20.glViewport(
                     0, 0,
-                    GameLoop.getInstance().sScreenWidth,
-                    GameLoop.getInstance().sScreenHeight);
+                    PhysicsLoop.getInstance().sScreenWidth,
+                    PhysicsLoop.getInstance().sScreenHeight);
 
             // Copy the water particles to screen
             mWaterScreenRenderer.draw(mTransformFromTexture);
