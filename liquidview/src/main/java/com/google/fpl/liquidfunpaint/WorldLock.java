@@ -124,10 +124,6 @@ public class WorldLock {
      * time.
      */
 
-    public ParticleSystem getParticleSystem(){
-        return ParticleSystems.getInstance().get();
-    }
-
     public ParticleSystem createParticleSystem(){
         lock();
 

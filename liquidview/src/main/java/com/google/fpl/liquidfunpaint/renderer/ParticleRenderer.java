@@ -111,7 +111,7 @@ public class ParticleRenderer implements DrawableLayer {
         mParticleRenderList.clear();
 
         WorldLock.getInstance().lock();
-        ParticleSystem ps = ParticleSystems.getInstance().get();
+        ParticleSystem ps = ParticleSystems.getInstance().get().particleSystem;
         try {
             int worldParticleCount = ps.getParticleCount();
             // grab the most current particle buffers
@@ -189,7 +189,7 @@ public class ParticleRenderer implements DrawableLayer {
                 1, false, mPerspectiveTransform, 0);
 
         // Go through each particle group
-        ParticleSystem ps = ParticleSystems.getInstance().get();
+        ParticleSystem ps = ParticleSystems.getInstance().get().particleSystem;
 
         ParticleGroup currGroup = ps.getParticleGroupList();
 

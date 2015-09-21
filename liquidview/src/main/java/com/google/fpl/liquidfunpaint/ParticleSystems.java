@@ -6,10 +6,8 @@ import com.google.fpl.liquidfun.ParticleColor;
 import com.google.fpl.liquidfun.ParticleGroup;
 import com.google.fpl.liquidfun.ParticleGroupDef;
 import com.google.fpl.liquidfun.ParticleSystem;
-import com.google.fpl.liquidfun.ParticleSystemDef;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
-import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.util.MathHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
@@ -18,7 +16,7 @@ import java.util.HashMap;
 /**
  * Created on 8/13/2015.
  */
-public class ParticleSystems extends HashMap<String, ParticleSystem> {
+public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
 
     ParticleGroup pGroup;
 
@@ -38,7 +36,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
     }
 
     public void reset(){
-        for(ParticleSystem system : values())
+        for(DrawableParticleSystem system : values())
             system.delete();
 
         clear();
@@ -46,12 +44,13 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
     }
 
     private void createParticleSystem(String key) {
-        put(key, WorldLock.getInstance().createParticleSystem());
+        ParticleSystem particleSystem = WorldLock.getInstance().createParticleSystem();
+        put(key, new DrawableParticleSystem(particleSystem));
     }
 
     public int getParticleCount(){
         int count = 0;
-        for(ParticleSystem system : values()){
+        for(DrawableParticleSystem system : values()){
             count += system.getParticleCount();
         }
         return count;
@@ -83,7 +82,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
         pgd.setShape(polygon);
 
         WorldLock.getInstance().lock();
-        ParticleSystem ps = get(key);
+        ParticleSystem ps = get(key).particleSystem;
         try {
             ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
 
@@ -106,7 +105,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
         polygon.set(points, normalizedVertices.length);
 
         WorldLock.getInstance().lock();
-        ParticleSystem ps = get(key);
+        ParticleSystem ps = get(key).particleSystem;
         try {
             ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
 
@@ -116,7 +115,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
     }
 
     @Override
-    public ParticleSystem get(Object key) {
+    public DrawableParticleSystem get(Object key) {
         if(containsKey(key))
             return super.get(key);
         else{
@@ -126,7 +125,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
 
     }
 
-    public ParticleSystem get(){
+    public DrawableParticleSystem get(){
         return get(DEFAULT_PARTICLE_SYSTEM);
     }
 }

@@ -361,7 +361,7 @@ public abstract class Tool {
         }
 
         WorldLock.getInstance().lock();
-        ParticleSystem ps = ParticleSystems.getInstance().get();
+        ParticleSystem ps = ParticleSystems.getInstance().get().particleSystem;
         try {
             if (mOperations.contains(ToolOperation.REMOVE_PARTICLES)) {
                 buffer.position(pInfo.getBufferStart());

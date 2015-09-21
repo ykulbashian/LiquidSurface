@@ -140,7 +140,7 @@ public class MoveTool extends Tool implements Observable.Observer<Float> {
     protected void updatePointerInfo(PointerInfo pInfo, Vector2f worldPoint) {
         if (pInfo.isNewPointer()) {
             WorldLock.getInstance().lock();
-            ParticleSystem ps = ParticleSystems.getInstance().get();
+            ParticleSystem ps = ParticleSystems.getInstance().get().particleSystem;
             try {
                 mCb.set(this, pInfo);
                 mShape.setPosition(worldPoint.x, worldPoint.y);
@@ -208,7 +208,7 @@ public class MoveTool extends Tool implements Observable.Observer<Float> {
         float velocityScale = 1 / arg;
 
         WorldLock.getInstance().lock();
-        ParticleSystem ps = ParticleSystems.getInstance().get();
+        ParticleSystem ps = ParticleSystems.getInstance().get().particleSystem;
         try {
             for (int i = 0; i < mPointerResultList.size(); ++i) {
                 Vector<ParticleQueryResult> particleList =
