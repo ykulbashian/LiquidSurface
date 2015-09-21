@@ -70,16 +70,16 @@ public class LiquidWorld implements DrawableLayer {
     private Context mContext;
 
     @Override
-    public void init(Context activity){
-        mContext = activity;
+    public void init(Context context){
+        mContext = context.getApplicationContext();
         mParticleRenderer = new ParticleRenderer();
-        mParticleRenderer.init(activity);
+        mParticleRenderer.init(context);
 
         mParticleSystems = ParticleSystems.getInstance();
 
         if (PhysicsLoop.DEBUG_DRAW) {
             mDebugRenderer = new DebugRenderer();
-            mDebugRenderer.init(activity);
+            mDebugRenderer.init(context);
         }
     }
 

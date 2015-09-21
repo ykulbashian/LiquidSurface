@@ -90,6 +90,7 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
         mLiquidWorld = LiquidWorld.getInstance();
         mLiquidWorld.init(context);
         mSolidWorld = SolidWorld.getInstance();
+        mSolidWorld.init(mContext);
 
         reset();
 
@@ -152,8 +153,7 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
         TextureRenderer.getInstance().onSurfaceCreated();
 
         mLiquidWorld.onSurfaceCreated(gl, config);
-
-        mSolidWorld.init(mContext);
+        mSolidWorld.onSurfaceCreated(gl, config);
     }
 
     public void pauseSimulation() {

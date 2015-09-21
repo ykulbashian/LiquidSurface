@@ -39,10 +39,11 @@ public class SolidWorld implements DrawableLayer{
     public static SolidWorld getInstance(){
         return sInstance;
     }
+    private Context mContext;
 
     @Override
     public void init(Context context){
-        mBoatTexture = new Texture(context, TEXTURE_NAME);
+        mContext = context.getApplicationContext();
     }
 
     private void createWorldBoundaries(World world){
@@ -133,12 +134,12 @@ public class SolidWorld implements DrawableLayer{
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        mBoatTexture = new Texture(mContext, TEXTURE_NAME);
 
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-
         World world = LiquidWorld.getInstance().acquireWorld();
 
         try {
