@@ -55,6 +55,7 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
     }
 
     public synchronized void setPaused(boolean isPaused){
+        Log.d(TAG, String.format("Setting LiquidRenderThread paused to %s", isPaused));
         paused = isPaused;
     }
 
@@ -64,6 +65,7 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
 
     public void stopThread(){
         if(thread != null){
+            Log.d(TAG, "Stopping and joining LiquidRenderThread");
             running = false;
             try {
                 thread.join();
@@ -77,6 +79,7 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
     }
 
     public void startThread(SurfaceTexture surface, int width, int height, float framesPerSec){
+        Log.d(TAG, "Starting LiquidRenderThread thread");
         thread = new RenderThread();
         initialize(surface, width, height, framesPerSec, false);
         thread.start();
@@ -244,7 +247,6 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        clearAllLiquid();
         stopThread();
         return false;
     }
