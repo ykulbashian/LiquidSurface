@@ -139,7 +139,7 @@ public class MoveTool extends Tool implements Observable.Observer<Float> {
     @Override
     protected void updatePointerInfo(PointerInfo pInfo, Vector2f worldPoint) {
         if (pInfo.isNewPointer()) {
-            WorldLock.getInstance().acquireWorld();
+            WorldLock.getInstance().lock();
             ParticleSystem ps = ParticleSystems.getInstance().get();
             try {
                 mCb.set(this, pInfo);
@@ -147,7 +147,7 @@ public class MoveTool extends Tool implements Observable.Observer<Float> {
                 mShape.setRadius(mBrushSize / 2);
                 ps.queryShapeAABB(mCb, mShape, MAT_IDENTITY);
             } finally {
-                WorldLock.getInstance().releaseWorld();
+                WorldLock.getInstance().unlock();
             }
         }
     }
@@ -207,7 +207,7 @@ public class MoveTool extends Tool implements Observable.Observer<Float> {
         // limited by LiquidFun so the particles won't snap to finger.
         float velocityScale = 1 / arg;
 
-        WorldLock.getInstance().acquireWorld();
+        WorldLock.getInstance().lock();
         ParticleSystem ps = ParticleSystems.getInstance().get();
         try {
             for (int i = 0; i < mPointerResultList.size(); ++i) {
@@ -241,7 +241,7 @@ public class MoveTool extends Tool implements Observable.Observer<Float> {
                 }
             }
         } finally {
-            WorldLock.getInstance().releaseWorld();
+            WorldLock.getInstance().unlock();
         }
     }
 }

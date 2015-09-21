@@ -33,7 +33,7 @@ public class WorldLock {
      * Acquire the world for thread-safe operations.
      */
     public World acquireWorld() {
-        mWorldLock.lock();
+        lock();
         return mWorld;
     }
 
@@ -45,7 +45,7 @@ public class WorldLock {
      * Release the world after thread-safe operations.
      */
     public void releaseWorld() {
-        mWorldLock.unlock();
+        unlock();
     }
 
     public void createWorld(){
@@ -62,36 +62,49 @@ public class WorldLock {
     }
 
     public void deleteWorld() {
-        World world = acquireWorld();
+        lock();
 
         try {
 
             SolidWorld.getInstance().reset();
 
-            if (world != null) {
-                world.delete();
+            if (mWorld != null) {
+                mWorld.delete();
                 mWorld = null;
                 ParticleSystems.getInstance().clear();
             }
         } finally {
-            releaseWorld();
+            unlock();
         }
     }
 
     void stepWorld(float dt){
 
-        World world = acquireWorld();
+        lock();
         try {
-            world.step(
+            mWorld.step(
                     dt, VELOCITY_ITERATIONS,
                     POSITION_ITERATIONS, PARTICLE_ITERATIONS);
         } finally {
-            releaseWorld();
+            unlock();
         }
     }
 
     public void unlock() {
         mWorldLock.unlock();
+    }
+
+    public void setGravity(float gravityX, float gravityY){
+
+       lock();
+        try {
+            mWorld.setGravity(
+                    gravityX,
+                    gravityY);
+
+        } finally {
+            unlock();
+        }
     }
 
     /**
@@ -101,17 +114,4 @@ public class WorldLock {
      * don't want to call ParticleSystem.createParticleGroup() at the same
      * time.
      */
-
-    public void setGravity(float gravityX, float gravityY){
-
-        World world = WorldLock.getInstance().acquireWorld();
-        try {
-            world.setGravity(
-                    gravityX,
-                    gravityY);
-
-        } finally {
-            WorldLock.getInstance().releaseWorld();
-        }
-    }
 }

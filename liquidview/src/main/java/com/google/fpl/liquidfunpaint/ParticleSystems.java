@@ -98,7 +98,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
 
         pgd.setShape(polygon);
 
-        WorldLock.getInstance().acquireWorld();
+        WorldLock.getInstance().lock();
         ParticleSystem ps = get(key);
         try {
             ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
@@ -106,7 +106,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
             pGroup = ps.createParticleGroup(pgd);
 
         } finally {
-            WorldLock.getInstance().releaseWorld();
+            WorldLock.getInstance().unlock();
         }
         pgd.delete();
     }
@@ -116,7 +116,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
     }
 
     public void eraseParticles(Vector2f[] normalizedVertices, String key){
-        WorldLock.getInstance().acquireWorld();
+        WorldLock.getInstance().lock();
 
         ParticleSystem ps = get(key);
         try {
@@ -128,7 +128,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
             ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
 
         } finally {
-            WorldLock.getInstance().releaseWorld();
+            WorldLock.getInstance().unlock();
         }
     }
 

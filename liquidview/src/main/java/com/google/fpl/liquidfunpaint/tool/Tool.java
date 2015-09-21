@@ -360,7 +360,7 @@ public abstract class Tool {
                     radius);
         }
 
-        WorldLock.getInstance().acquireWorld();
+        WorldLock.getInstance().lock();
         ParticleSystem ps = ParticleSystems.getInstance().get();
         try {
             if (mOperations.contains(ToolOperation.REMOVE_PARTICLES)) {
@@ -391,7 +391,7 @@ public abstract class Tool {
                 pgd.delete();
             }
         } finally {
-            WorldLock.getInstance().releaseWorld();
+            WorldLock.getInstance().unlock();
         }
     }
 

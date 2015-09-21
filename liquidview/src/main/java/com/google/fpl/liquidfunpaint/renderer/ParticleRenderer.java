@@ -110,7 +110,7 @@ public class ParticleRenderer implements DrawableLayer {
         mParticleVelocityBuffer.rewind();
         mParticleRenderList.clear();
 
-        WorldLock.getInstance().acquireWorld();
+        WorldLock.getInstance().lock();
         ParticleSystem ps = ParticleSystems.getInstance().get();
         try {
             int worldParticleCount = ps.getParticleCount();
@@ -141,7 +141,7 @@ public class ParticleRenderer implements DrawableLayer {
             // Copy the other particles to screen
             mScreenRenderer.draw(mTransformFromTexture);
         } finally {
-            WorldLock.getInstance().releaseWorld();
+            WorldLock.getInstance().unlock();
         }
     }
 
@@ -189,7 +189,7 @@ public class ParticleRenderer implements DrawableLayer {
                 1, false, mPerspectiveTransform, 0);
 
         // Go through each particle group
-        WorldLock.getInstance().acquireWorld();
+        WorldLock.getInstance().lock();
         ParticleSystem ps = ParticleSystems.getInstance().get();
         try {
             ParticleGroup currGroup = ps.getParticleGroupList();
@@ -206,7 +206,7 @@ public class ParticleRenderer implements DrawableLayer {
                 currGroup = currGroup.getNext();
             }
         } finally {
-            WorldLock.getInstance().releaseWorld();
+            WorldLock.getInstance().unlock();
         }
 
         mWaterParticleMaterial.endRender();
@@ -236,14 +236,14 @@ public class ParticleRenderer implements DrawableLayer {
                 mParticleMaterial.getUniformLocation("uTransform"),
                 1, false, mPerspectiveTransform, 0);
 
-        WorldLock.getInstance().acquireWorld();
+        WorldLock.getInstance().lock();
         try {
             // Go through all the particleGroups in the render list
             for (ParticleGroup currGroup : mParticleRenderList) {
                 drawParticleGroup(currGroup);
             }
         } finally {
-            WorldLock.getInstance().releaseWorld();
+            WorldLock.getInstance().unlock();
         }
 
         mParticleMaterial.endRender();

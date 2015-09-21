@@ -44,7 +44,6 @@ public class LiquidWorld implements DrawableLayer {
     protected DebugRenderer mDebugRenderer = null;
 
     private ParticleRenderer mParticleRenderer;
-    private ParticleSystems mParticleSystems;
 
     // Measure the frame rate
     long totalFrames = -10000;
@@ -65,8 +64,6 @@ public class LiquidWorld implements DrawableLayer {
         mContext = context.getApplicationContext();
         mParticleRenderer = new ParticleRenderer();
         mParticleRenderer.init(context);
-
-        mParticleSystems = ParticleSystems.getInstance();
 
         if (PhysicsLoop.DEBUG_DRAW) {
             mDebugRenderer = new DebugRenderer();
@@ -165,9 +162,11 @@ public class LiquidWorld implements DrawableLayer {
 
     @Override
     public void onDrawFrame(GL10 gl){
-        WorldLock.getInstance().acquireWorld();
+        WorldLock.getInstance().lock();
 
-        update(TIME_STEP);
+        showFrameRate();
+
+        WorldLock.getInstance().stepWorld(TIME_STEP);
 
         // Draw the paper texture.
         TextureRenderer.getInstance().drawTexture(
@@ -181,13 +180,7 @@ public class LiquidWorld implements DrawableLayer {
             mDebugRenderer.onDrawFrame(gl);
         }
 
-        WorldLock.getInstance().releaseWorld();
-    }
-
-    public void update(Float data) {
-        showFrameRate();
-
-        WorldLock.getInstance().stepWorld(data);
+        WorldLock.getInstance().unlock();
     }
 
 }
