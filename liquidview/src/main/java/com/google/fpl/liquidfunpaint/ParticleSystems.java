@@ -20,10 +20,6 @@ import java.util.HashMap;
  */
 public class ParticleSystems extends HashMap<String, ParticleSystem> {
 
-    public static final int MAX_PARTICLE_COUNT = 5000;
-    public static final float PARTICLE_RADIUS = 0.06f;
-    public static final float PARTICLE_REPULSIVE_STRENGTH = 0.5f;
-
     ParticleGroup pGroup;
 
     protected static final Transform MAT_IDENTITY;
@@ -42,27 +38,15 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
     }
 
     public void reset(){
+        for(ParticleSystem system : values())
+            system.delete();
+
         clear();
         createParticleSystem(DEFAULT_PARTICLE_SYSTEM);
     }
 
     private void createParticleSystem(String key) {
-        World world = WorldLock.getInstance().acquireWorld();
-        try {
-            // Create a new particle system; we only use one.
-            ParticleSystemDef psDef = new ParticleSystemDef();
-            psDef.setRadius(PARTICLE_RADIUS);
-            psDef.setRepulsiveStrength(PARTICLE_REPULSIVE_STRENGTH);
-            psDef.setElasticStrength(2.0f);
-            psDef.setDensity(0.5f);
-            ParticleSystem particleSystem = world.createParticleSystem(psDef);
-            particleSystem.setMaxParticleCount(MAX_PARTICLE_COUNT);
-
-            put(key, particleSystem);
-            psDef.delete();
-        } finally {
-            WorldLock.getInstance().releaseWorld();
-        }
+        put(key, WorldLock.getInstance().createParticleSystem());
     }
 
     public int getParticleCount(){
@@ -116,15 +100,14 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
     }
 
     public void eraseParticles(Vector2f[] normalizedVertices, String key){
-        WorldLock.getInstance().lock();
+        final PolygonShape polygon = new PolygonShape();
+        float[] points = MathHelper.convertVectToFloats(normalizedVertices);
 
+        polygon.set(points, normalizedVertices.length);
+
+        WorldLock.getInstance().lock();
         ParticleSystem ps = get(key);
         try {
-            final PolygonShape polygon = new PolygonShape();
-            float[] points = MathHelper.convertVectToFloats(normalizedVertices);
-
-            polygon.set(points, normalizedVertices.length);
-
             ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
 
         } finally {

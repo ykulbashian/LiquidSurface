@@ -76,7 +76,7 @@ public class ParticleRenderer implements DrawableLayer {
     private ByteBuffer mParticleWeightBuffer;
 
     private List<ParticleGroup> mParticleRenderList =
-            new ArrayList<ParticleGroup>(256);
+            new ArrayList<>(256);
 
     private Context mContext;
 
@@ -85,16 +85,16 @@ public class ParticleRenderer implements DrawableLayer {
         mContext = context.getApplicationContext();
 
         mParticlePositionBuffer = ByteBuffer
-                .allocateDirect(2 * 4 * ParticleSystems.MAX_PARTICLE_COUNT)
+                .allocateDirect(2 * 4 * WorldLock.MAX_PARTICLE_COUNT)
                 .order(ByteOrder.nativeOrder());
         mParticleVelocityBuffer = ByteBuffer
-                .allocateDirect(2 * 4 * ParticleSystems.MAX_PARTICLE_COUNT)
+                .allocateDirect(2 * 4 * WorldLock.MAX_PARTICLE_COUNT)
                 .order(ByteOrder.nativeOrder());
         mParticleColorBuffer = ByteBuffer
-                .allocateDirect(4 * ParticleSystems.MAX_PARTICLE_COUNT)
+                .allocateDirect(4 * WorldLock.MAX_PARTICLE_COUNT)
                 .order(ByteOrder.nativeOrder());
         mParticleWeightBuffer = ByteBuffer
-                .allocateDirect(4 * ParticleSystems.MAX_PARTICLE_COUNT)
+                .allocateDirect(4 * WorldLock.MAX_PARTICLE_COUNT)
                 .order(ByteOrder.nativeOrder());
     }
 
@@ -189,24 +189,20 @@ public class ParticleRenderer implements DrawableLayer {
                 1, false, mPerspectiveTransform, 0);
 
         // Go through each particle group
-        WorldLock.getInstance().lock();
         ParticleSystem ps = ParticleSystems.getInstance().get();
-        try {
-            ParticleGroup currGroup = ps.getParticleGroupList();
 
-            while (currGroup != null) {
-                // Only draw water particles in this pass; queue other groups
-                if (currGroup.getGroupFlags() ==
-                        Tool.getTool(Tool.ToolType.WATER).getParticleGroupFlags()) {
-                    drawParticleGroup(currGroup);
-                } else {
-                    mParticleRenderList.add(currGroup);
-                }
+        ParticleGroup currGroup = ps.getParticleGroupList();
 
-                currGroup = currGroup.getNext();
+        while (currGroup != null) {
+            // Only draw water particles in this pass; queue other groups
+            if (currGroup.getGroupFlags() ==
+                    Tool.getTool(Tool.ToolType.WATER).getParticleGroupFlags()) {
+                drawParticleGroup(currGroup);
+            } else {
+                mParticleRenderList.add(currGroup);
             }
-        } finally {
-            WorldLock.getInstance().unlock();
+
+            currGroup = currGroup.getNext();
         }
 
         mWaterParticleMaterial.endRender();
@@ -236,14 +232,9 @@ public class ParticleRenderer implements DrawableLayer {
                 mParticleMaterial.getUniformLocation("uTransform"),
                 1, false, mPerspectiveTransform, 0);
 
-        WorldLock.getInstance().lock();
-        try {
-            // Go through all the particleGroups in the render list
-            for (ParticleGroup currGroup : mParticleRenderList) {
-                drawParticleGroup(currGroup);
-            }
-        } finally {
-            WorldLock.getInstance().unlock();
+        // Go through all the particleGroups in the render list
+        for (ParticleGroup currGroup : mParticleRenderList) {
+            drawParticleGroup(currGroup);
         }
 
         mParticleMaterial.endRender();

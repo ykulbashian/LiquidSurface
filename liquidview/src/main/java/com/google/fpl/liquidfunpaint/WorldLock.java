@@ -1,5 +1,7 @@
 package com.google.fpl.liquidfunpaint;
 
+import com.google.fpl.liquidfun.ParticleSystem;
+import com.google.fpl.liquidfun.ParticleSystemDef;
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.renderer.DebugRenderer;
 
@@ -15,6 +17,10 @@ public class WorldLock {
     private static final int VELOCITY_ITERATIONS = 6;
     private static final int POSITION_ITERATIONS = 2;
     private static final int PARTICLE_ITERATIONS = 5;
+
+    public static final int MAX_PARTICLE_COUNT = 5000;
+    public static final float PARTICLE_RADIUS = 0.06f;
+    public static final float PARTICLE_REPULSIVE_STRENGTH = 0.5f;
 
     private World mWorld = null;
     private Lock mWorldLock = new ReentrantLock();
@@ -53,8 +59,14 @@ public class WorldLock {
     }
 
     public void resetWorld(){
-        deleteWorld();
-        createWorld();
+        lock();
+
+        try {
+            deleteWorld();
+            createWorld();
+        } finally {
+            unlock();
+        }
     }
 
     public void setDebugDraw(DebugRenderer renderer){
@@ -65,20 +77,17 @@ public class WorldLock {
         lock();
 
         try {
-
-            SolidWorld.getInstance().reset();
-
             if (mWorld != null) {
                 mWorld.delete();
                 mWorld = null;
-                ParticleSystems.getInstance().clear();
             }
+
         } finally {
             unlock();
         }
     }
 
-    void stepWorld(float dt){
+    public void stepWorld(float dt){
 
         lock();
         try {
@@ -114,4 +123,29 @@ public class WorldLock {
      * don't want to call ParticleSystem.createParticleGroup() at the same
      * time.
      */
+
+    public ParticleSystem getParticleSystem(){
+        return ParticleSystems.getInstance().get();
+    }
+
+    public ParticleSystem createParticleSystem(){
+        lock();
+
+        try {
+            // Create a new particle system; we only use one.
+            ParticleSystemDef psDef = new ParticleSystemDef();
+            psDef.setRadius(PARTICLE_RADIUS);
+            psDef.setRepulsiveStrength(PARTICLE_REPULSIVE_STRENGTH);
+            psDef.setElasticStrength(2.0f);
+            psDef.setDensity(0.5f);
+            ParticleSystem particleSystem = mWorld.createParticleSystem(psDef);
+            particleSystem.setMaxParticleCount(MAX_PARTICLE_COUNT);
+
+            psDef.delete();
+
+            return particleSystem;
+        } finally {
+            unlock();
+        }
+    }
 }

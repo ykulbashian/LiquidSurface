@@ -99,6 +99,9 @@ public class LiquidWorld implements DrawableLayer {
         try {
             WorldLock.getInstance().resetWorld();
 
+            SolidWorld.getInstance().reset();
+            ParticleSystems.getInstance().reset();
+
             mParticleRenderer.reset();
 
             if (PhysicsLoop.DEBUG_DRAW) {
