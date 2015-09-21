@@ -17,9 +17,6 @@ import com.mycardboarddreams.liquidsurface.BuildConfig;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -27,8 +24,8 @@ import javax.microedition.khronos.opengles.GL10;
  * Created on 8/13/2015.
  */
 public class LiquidWorld implements DrawableLayer {
-    private World mWorld = null;
-    private Lock mWorldLock = new ReentrantLock();
+
+    private static final float TIME_STEP = 1 / 60f; // 60 fps
 
     public static final float WORLD_SPAN = 3f;
     public float sPhysicsWorldWidth = WORLD_SPAN;
@@ -36,11 +33,6 @@ public class LiquidWorld implements DrawableLayer {
 
     public float sRenderWorldWidth = WORLD_SPAN;
     public float sRenderWorldHeight = WORLD_SPAN;
-
-    // Parameters for world simulation
-    private static final int VELOCITY_ITERATIONS = 6;
-    private static final int POSITION_ITERATIONS = 2;
-    private static final int PARTICLE_ITERATIONS = 5;
 
     private static final String PAPER_MATERIAL_NAME = "paper";
     private static final String DIFFUSE_TEXTURE_NAME = "uDiffuseTexture";
@@ -104,61 +96,23 @@ public class LiquidWorld implements DrawableLayer {
         mParticleRenderer.onSurfaceChanged(gl, width, height);
     }
 
-    public boolean hasWorld(){
-        return mWorld != null;
-    }
-
     @Override
     public void reset(){
 
-        acquireWorld();
+        WorldLock.getInstance().acquireWorld();
         try {
-            deleteWorld();
-            mWorld = new World(0, 0);
+            WorldLock.getInstance().resetWorld();
 
             mParticleRenderer.reset();
 
             if (PhysicsLoop.DEBUG_DRAW) {
                 mDebugRenderer.reset();
-                mWorld.setDebugDraw(mDebugRenderer);
+                WorldLock.getInstance().setDebugDraw(mDebugRenderer);
             }
 
         } finally {
-            releaseWorld();
+            WorldLock.getInstance().releaseWorld();
         }
-    }
-
-    public void deleteWorld() {
-        World world = acquireWorld();
-
-        try {
-
-            SolidWorld.getInstance().reset();
-
-            if (world != null) {
-                world.delete();
-                mWorld = null;
-                mParticleSystems.clear();
-            }
-        } finally {
-            releaseWorld();
-        }
-    }
-
-
-    /**
-     * Acquire the world for thread-safe operations.
-     */
-    public World acquireWorld() {
-        mWorldLock.lock();
-        return mWorld;
-    }
-
-    /**
-     * Release the world after thread-safe operations.
-     */
-    public void releaseWorld() {
-        mWorldLock.unlock();
     }
 
     /**
@@ -169,7 +123,7 @@ public class LiquidWorld implements DrawableLayer {
      * time.
      */
     public ParticleSystem acquireParticleSystem(String key) {
-        mWorldLock.lock();
+        WorldLock.getInstance().lock();
         return mParticleSystems.get(key);
     }
 
@@ -181,20 +135,7 @@ public class LiquidWorld implements DrawableLayer {
      * Release the world after thread-safe operations.
      */
     public void releaseParticleSystem() {
-        mWorldLock.unlock();
-    }
-
-
-    void stepWorld(float dt){
-
-        World world = acquireWorld();
-        try {
-            world.step(
-                    dt, VELOCITY_ITERATIONS,
-                    POSITION_ITERATIONS, PARTICLE_ITERATIONS);
-        } finally {
-            releaseWorld();
-        }
+        WorldLock.getInstance().unlock();
     }
 
     void showFrameRate() {
@@ -223,7 +164,7 @@ public class LiquidWorld implements DrawableLayer {
     public void update(Float data) {
         showFrameRate();
 
-        stepWorld(data);
+        WorldLock.getInstance().stepWorld(data);
     }
 
     @Override
@@ -254,7 +195,8 @@ public class LiquidWorld implements DrawableLayer {
 
     @Override
     public void onDrawFrame(GL10 gl){
-        acquireWorld();
+        WorldLock.getInstance().acquireWorld();
+        update(TIME_STEP);
 
         // Draw the paper texture.
         TextureRenderer.getInstance().drawTexture(
@@ -268,7 +210,7 @@ public class LiquidWorld implements DrawableLayer {
             mDebugRenderer.onDrawFrame(gl);
         }
 
-        releaseWorld();
+        WorldLock.getInstance().releaseWorld();
     }
 
 }

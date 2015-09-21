@@ -47,7 +47,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
     }
 
     private void createParticleSystem(String key) {
-        World world = LiquidWorld.getInstance().acquireWorld();
+        World world = WorldLock.getInstance().acquireWorld();
         try {
             // Create a new particle system; we only use one.
             ParticleSystemDef psDef = new ParticleSystemDef();
@@ -61,7 +61,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
             put(key, particleSystem);
             psDef.delete();
         } finally {
-            LiquidWorld.getInstance().releaseWorld();
+            WorldLock.getInstance().releaseWorld();
         }
     }
 

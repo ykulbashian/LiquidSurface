@@ -26,6 +26,7 @@ import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.Vec2;
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
+import com.google.fpl.liquidfunpaint.WorldLock;
 import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.Material.AttributeInfo;
 import com.google.fpl.liquidfunpaint.shader.ShaderProgram;
@@ -242,7 +243,7 @@ public class DebugRenderer extends Draw implements DrawableLayer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        World world = LiquidWorld.getInstance().acquireWorld();
+        World world = WorldLock.getInstance().acquireWorld();
         try {
             reset();
 
@@ -258,7 +259,7 @@ public class DebugRenderer extends Draw implements DrawableLayer {
             drawCircles(mTransformFromWorld);
             drawSegments(mTransformFromWorld);
         } finally {
-            LiquidWorld.getInstance().releaseWorld();
+            WorldLock.getInstance().releaseWorld();
         }
     }
 

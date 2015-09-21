@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.LiquidWorld;
+import com.google.fpl.liquidfunpaint.WorldLock;
 import com.google.fpl.liquidfunpaint.tool.Tool;
 
 /**
@@ -79,17 +80,11 @@ public class RotatableController implements View.OnTouchListener, SensorEventLis
             float x = event.values[0];
             float y = event.values[1];
 
-            World world = LiquidWorld.getInstance().acquireWorld();
-            try {
-                float gravityX = mGravityVec[0] * x - mGravityVec[1] * y;
-                float gravityY = mGravityVec[1] * x + mGravityVec[0] * y;
-                world.setGravity(
-                        gravityX,
-                        gravityY);
-
-            } finally {
-                LiquidWorld.getInstance().releaseWorld();
-            }
+            float gravityX = mGravityVec[0] * x - mGravityVec[1] * y;
+            float gravityY = mGravityVec[1] * x + mGravityVec[0] * y;
+            WorldLock.getInstance().setGravity(
+                                            gravityX,
+                                            gravityY);
         }
     }
 

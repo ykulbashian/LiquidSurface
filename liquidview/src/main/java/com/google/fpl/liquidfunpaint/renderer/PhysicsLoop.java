@@ -18,6 +18,7 @@ package com.google.fpl.liquidfunpaint.renderer;
 
 import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.SolidWorld;
+import com.google.fpl.liquidfunpaint.WorldLock;
 import com.google.fpl.liquidfunpaint.shader.ShaderProgram;
 import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.Observable;
@@ -43,8 +44,6 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
     // Private constants
     private static final PhysicsLoop _instance = new PhysicsLoop();
     public static final boolean DEBUG_DRAW = true;
-
-    private static final float TIME_STEP = 1 / 60f; // 60 fps
 
     // Public static constants; variables for reuse
     public static final float MAT4X4_IDENTITY[];
@@ -73,7 +72,7 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
 
     @Override
     protected void finalize() {
-        mLiquidWorld.deleteWorld();
+        WorldLock.getInstance().deleteWorld();
     }
 
     private PhysicsLoop() {
@@ -119,8 +118,6 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
             setChanged();
             notifyObservers();
 
-            mLiquidWorld.update(TIME_STEP);
-
             GLES20.glClearColor(1, 1, 1, 1);
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
@@ -144,7 +141,7 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        if (!mLiquidWorld.hasWorld()) {
+        if (!WorldLock.getInstance().hasWorld()) {
             throw new IllegalStateException("Init world before rendering");
         }
 

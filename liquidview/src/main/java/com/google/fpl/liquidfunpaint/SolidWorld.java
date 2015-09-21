@@ -104,7 +104,7 @@ public class SolidWorld implements DrawableLayer{
     }
 
     public void createSolidObject(Vector2f[] vertices){
-        World world = LiquidWorld.getInstance().acquireWorld();
+        World world = WorldLock.getInstance().acquireWorld();
 
         try {
             Body body = null;
@@ -128,7 +128,7 @@ public class SolidWorld implements DrawableLayer{
             bodyDef.delete();
             boundaryPolygon.delete();
         } finally {
-            LiquidWorld.getInstance().releaseWorld();
+            WorldLock.getInstance().releaseWorld();
         }
     }
 
@@ -140,12 +140,12 @@ public class SolidWorld implements DrawableLayer{
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        World world = LiquidWorld.getInstance().acquireWorld();
+        World world = WorldLock.getInstance().acquireWorld();
 
         try {
             createWorldBoundaries(world);
         } finally {
-            LiquidWorld.getInstance().releaseWorld();
+            WorldLock.getInstance().releaseWorld();
         }
     }
 
