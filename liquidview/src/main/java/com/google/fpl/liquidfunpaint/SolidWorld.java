@@ -29,10 +29,10 @@ public class SolidWorld implements DrawableLayer{
     private final List<Body> bodies = new ArrayList<>();
 
     private Body mBoundaryBody = null;
-    private Texture mBoatTexture;
+    private Texture mSmileyTexture;
 
     private static final float BOUNDARY_THICKNESS = 20.0f;
-    private static final String TEXTURE_NAME = "textures/kayak.png";
+    private static final String TEXTURE_NAME = "textures/smiley.png";
 
     private static SolidWorld sInstance = new SolidWorld();
 
@@ -134,7 +134,7 @@ public class SolidWorld implements DrawableLayer{
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        mBoatTexture = new Texture(mContext, TEXTURE_NAME);
+        mSmileyTexture = new Texture(mContext, TEXTURE_NAME);
 
     }
 
@@ -154,7 +154,7 @@ public class SolidWorld implements DrawableLayer{
             if (body != null) {
                 Vec2 center = MathHelper.normalizePosition(body.getWorldCenter());
                 TextureRenderer.getInstance().drawTexture(
-                        mBoatTexture, PhysicsLoop.MAT4X4_IDENTITY,
+                        mSmileyTexture, PhysicsLoop.MAT4X4_IDENTITY,
                         (center.getX()) - 0.1f,
                         (center.getY()),
                         (center.getX()) + 0.1f,
