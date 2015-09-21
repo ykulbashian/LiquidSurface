@@ -74,7 +74,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystem> {
     }
 
 
-    public void fillShape(Vector2f[] normalizedVertices, GroupOptions options, String key){
+    public void fillShape(Vector2f[] normalizedVertices, LiquidPaint options, String key){
 
         if (normalizedVertices == null || normalizedVertices.length == 0 || normalizedVertices.length % 2 != 0)
             return;

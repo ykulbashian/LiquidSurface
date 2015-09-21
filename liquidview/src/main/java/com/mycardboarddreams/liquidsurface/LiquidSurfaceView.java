@@ -6,7 +6,7 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
-import com.google.fpl.liquidfunpaint.GroupOptions;
+import com.google.fpl.liquidfunpaint.LiquidPaint;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.SolidWorld;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
@@ -85,14 +85,20 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
 
     @Override
     public void createLiquidShape(final Vector2f[] vertices){
+        createLiquidShape(vertices, LiquidPaint.LIQUID());
+    }
+
+    @Override
+    public void createLiquidShape(final Vector2f[] vertices, final LiquidPaint options) {
 
         mPhysicsLoop.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 ParticleSystems.getInstance().fillShape(MathHelper.normalizePositions(vertices, getWidth(), getHeight()),
-                        GroupOptions.LIQUID, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
+                        options, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
             }
         });
+
     }
 
     @Override

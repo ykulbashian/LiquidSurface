@@ -5,7 +5,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.TextureView;
 
-import com.google.fpl.liquidfunpaint.GroupOptions;
+import com.google.fpl.liquidfunpaint.LiquidPaint;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.google.fpl.liquidfunpaint.SolidWorld;
@@ -85,14 +85,19 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
 
     @Override
     public void createLiquidShape(final Vector2f[] vertices){
+        createLiquidShape(vertices, LiquidPaint.LIQUID());
+    }
 
+    @Override
+    public void createLiquidShape(final Vector2f[] vertices, final LiquidPaint paint){
         mPhysicsLoop.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
                 ParticleSystems.getInstance().fillShape(MathHelper.normalizePositions(vertices, getWidth(), getHeight()),
-                        GroupOptions.LIQUID, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
+                        paint, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
             }
         });
+
     }
 
     @Override

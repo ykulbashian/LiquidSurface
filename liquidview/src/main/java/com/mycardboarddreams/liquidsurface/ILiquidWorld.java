@@ -2,6 +2,7 @@ package com.mycardboarddreams.liquidsurface;
 
 import android.view.View;
 
+import com.google.fpl.liquidfunpaint.LiquidPaint;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 /**
@@ -15,6 +16,7 @@ public interface ILiquidWorld {
     void createSolidShape(Vector2f[] vertices);
     void eraseParticles(Vector2f[] vertices);
     void createLiquidShape(Vector2f[] vertices);
+    void createLiquidShape(Vector2f[] vertices, LiquidPaint options);
 
     void clearAll();
 
