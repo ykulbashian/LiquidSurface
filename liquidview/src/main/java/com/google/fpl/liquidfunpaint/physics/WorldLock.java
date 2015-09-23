@@ -64,6 +64,8 @@ public class WorldLock {
         try {
             deleteWorld();
             createWorld();
+
+            ParticleSystems.getInstance().reset();
         } finally {
             unlock();
         }

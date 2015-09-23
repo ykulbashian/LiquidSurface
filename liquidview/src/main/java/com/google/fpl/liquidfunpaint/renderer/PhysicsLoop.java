@@ -18,14 +18,17 @@ package com.google.fpl.liquidfunpaint.renderer;
 
 import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.SolidWorld;
+import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
 import com.google.fpl.liquidfunpaint.physics.WorldLock;
 import com.google.fpl.liquidfunpaint.shader.ShaderProgram;
 import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.Observable;
+import com.mycardboarddreams.liquidsurface.BuildConfig;
 
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.util.Log;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -45,6 +48,9 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
     private static final PhysicsLoop _instance = new PhysicsLoop();
     public static final boolean DEBUG_DRAW = true;
 
+    private static final String TAG = "PhysicsLoop";
+    private static final int ONE_SEC = 1000000000;
+
     // Public static constants; variables for reuse
     public static final float MAT4X4_IDENTITY[];
 
@@ -63,6 +69,12 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
     SolidWorld mSolidWorld;
 
     final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
+
+    // Measure the frame rate
+    long totalFrames = -10000;
+    private int mFrames;
+    private long mStartTime;
+    private long mTime;
 
     static {
         MAT4X4_IDENTITY = new float[16];
@@ -103,6 +115,7 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
     @Override
     public void reset() {
         clearPhysicsCommands();
+        WorldLock.getInstance().resetWorld();
         mLiquidWorld.reset();
         mSolidWorld.reset();
     }
@@ -122,6 +135,8 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
             // Draw particles
+            showFrameRate();
+
             mLiquidWorld.onDrawFrame(gl);
 
             mSolidWorld.onDrawFrame(gl);
@@ -169,4 +184,27 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
         pendingRunnables.clear();
     }
 
+
+    void showFrameRate() {
+        if (BuildConfig.DEBUG) {
+            long time = System.nanoTime();
+            if (time - mTime > ONE_SEC) {
+                if (totalFrames < 0) {
+                    totalFrames = 0;
+                    mStartTime = time - 1;
+                }
+                final float fps = mFrames / ((float) time - mTime) * ONE_SEC;
+                float avefps = totalFrames / ((float) time - mStartTime) * ONE_SEC;
+                final int count = ParticleSystems.getInstance().getParticleCount();
+                Log.d(TAG, fps + " fps (Now)");
+                Log.d(TAG, avefps + " fps (Average)");
+                Log.d(TAG, count + " particles");
+                mTime = time;
+                mFrames = 0;
+
+            }
+            mFrames++;
+            totalFrames++;
+        }
+    }
 }

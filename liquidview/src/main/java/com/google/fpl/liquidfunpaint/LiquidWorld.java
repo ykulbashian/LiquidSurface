@@ -3,7 +3,6 @@ package com.google.fpl.liquidfunpaint;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
 import com.google.fpl.liquidfunpaint.physics.WorldLock;
 import com.google.fpl.liquidfunpaint.renderer.DebugRenderer;
 import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
@@ -12,7 +11,6 @@ import com.google.fpl.liquidfunpaint.renderer.TextureRenderer;
 import com.google.fpl.liquidfunpaint.shader.Texture;
 import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
-import com.mycardboarddreams.liquidsurface.BuildConfig;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,18 +37,11 @@ public class LiquidWorld implements DrawableLayer {
 
     private Texture mPaperTexture;
 
-    private static final String TAG = "PhysicsLoop";
-    private static final int ONE_SEC = 1000000000;
+    private static final String TAG = "LiquidWorld";
 
     protected DebugRenderer mDebugRenderer = null;
 
     private ParticleRenderer mParticleRenderer;
-
-    // Measure the frame rate
-    long totalFrames = -10000;
-    private int mFrames;
-    private long mStartTime;
-    private long mTime;
 
     private static LiquidWorld sInstance = new LiquidWorld();
 
@@ -100,10 +91,6 @@ public class LiquidWorld implements DrawableLayer {
 
         worldLock.lock();
         try {
-            worldLock.resetWorld();
-
-            SolidWorld.getInstance().reset();
-            ParticleSystems.getInstance().reset();
 
             mParticleRenderer.reset();
 
@@ -114,29 +101,6 @@ public class LiquidWorld implements DrawableLayer {
 
         } finally {
             worldLock.releaseWorld();
-        }
-    }
-
-    void showFrameRate() {
-        if (BuildConfig.DEBUG) {
-            long time = System.nanoTime();
-            if (time - mTime > ONE_SEC) {
-                if (totalFrames < 0) {
-                    totalFrames = 0;
-                    mStartTime = time - 1;
-                }
-                final float fps = mFrames / ((float) time - mTime) * ONE_SEC;
-                float avefps = totalFrames / ((float) time - mStartTime) * ONE_SEC;
-                final int count = ParticleSystems.getInstance().getParticleCount();
-                Log.d(TAG, fps + " fps (Now)");
-                Log.d(TAG, avefps + " fps (Average)");
-                Log.d(TAG, count + " particles");
-                mTime = time;
-                mFrames = 0;
-
-            }
-            mFrames++;
-            totalFrames++;
         }
     }
 
@@ -169,8 +133,6 @@ public class LiquidWorld implements DrawableLayer {
     @Override
     public void onDrawFrame(GL10 gl){
         WorldLock.getInstance().lock();
-
-        showFrameRate();
 
         WorldLock.getInstance().stepWorld(TIME_STEP);
 
