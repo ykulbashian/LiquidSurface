@@ -96,9 +96,11 @@ public class LiquidWorld implements DrawableLayer {
     @Override
     public void reset(){
 
-        WorldLock.getInstance().acquireWorld();
+        WorldLock worldLock = WorldLock.getInstance();
+
+        worldLock.lock();
         try {
-            WorldLock.getInstance().resetWorld();
+            worldLock.resetWorld();
 
             SolidWorld.getInstance().reset();
             ParticleSystems.getInstance().reset();
@@ -107,11 +109,11 @@ public class LiquidWorld implements DrawableLayer {
 
             if (PhysicsLoop.DEBUG_DRAW) {
                 mDebugRenderer.reset();
-                WorldLock.getInstance().setDebugDraw(mDebugRenderer);
+                worldLock.setDebugDraw(mDebugRenderer);
             }
 
         } finally {
-            WorldLock.getInstance().releaseWorld();
+            worldLock.releaseWorld();
         }
     }
 

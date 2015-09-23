@@ -20,6 +20,7 @@ package com.google.fpl.liquidfunpaint.renderer;
 import com.google.fpl.liquidfun.ParticleGroup;
 import com.google.fpl.liquidfun.ParticleGroupFlag;
 import com.google.fpl.liquidfun.ParticleSystem;
+import com.google.fpl.liquidfunpaint.DrawableParticleSystem;
 import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
 import com.google.fpl.liquidfunpaint.physics.WorldLock;
 import com.google.fpl.liquidfunpaint.shader.Material;
@@ -74,6 +75,8 @@ public class ParticleRenderer implements DrawableLayer {
 
     private Context mContext;
 
+    private String materialFile;
+
     @Override
     public void init(Context context) {
         mContext = context.getApplicationContext();
@@ -90,6 +93,11 @@ public class ParticleRenderer implements DrawableLayer {
         mParticleWeightBuffer = ByteBuffer
                 .allocateDirect(4 * WorldLock.MAX_PARTICLE_COUNT)
                 .order(ByteOrder.nativeOrder());
+
+
+        // Read in our specific json file
+        materialFile = FileHelper.loadAsset(
+                mContext.getAssets(), JSON_FILE);
     }
 
     /**
@@ -104,7 +112,8 @@ public class ParticleRenderer implements DrawableLayer {
         mParticleVelocityBuffer.rewind();
 
         WorldLock.getInstance().lock();
-        ParticleSystem ps = ParticleSystems.getInstance().get().particleSystem;
+        DrawableParticleSystem dps = ParticleSystems.getInstance().get();
+        ParticleSystem ps = dps.particleSystem;
         try {
             int worldParticleCount = ps.getParticleCount();
             // grab the most current particle buffers
@@ -120,7 +129,7 @@ public class ParticleRenderer implements DrawableLayer {
             GLES20.glClearColor(0, 0, 0, 0);
 
             // Draw the particles
-            drawParticles(ps);
+            drawParticles(dps);
 
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
             GLES20.glViewport(
@@ -138,9 +147,9 @@ public class ParticleRenderer implements DrawableLayer {
         }
     }
 
-    private void drawParticles(ParticleSystem ps) {
-        drawWaterParticles(ps);
-        drawNonWaterParticles(ps);
+    private void drawParticles(DrawableParticleSystem dps) {
+        drawWaterParticles(dps);
+        drawNonWaterParticles(dps);
     }
 
     /**
@@ -159,9 +168,9 @@ public class ParticleRenderer implements DrawableLayer {
     /**
      * Draw all the water particles, and save all the other particle groups
      * into a list. We draw these to temp mRenderSurface[0].
-     * @param ps
+     * @param dps
      */
-    private void drawWaterParticles(ParticleSystem ps) {
+    private void drawWaterParticles(DrawableParticleSystem dps) {
         // Draw all water particles to temp render surface 0
         mRenderSurface[0].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
@@ -183,7 +192,7 @@ public class ParticleRenderer implements DrawableLayer {
                 1, false, mPerspectiveTransform, 0);
 
         // Go through each particle group
-        ParticleGroup currGroup = ps.getParticleGroupList();
+        ParticleGroup currGroup = dps.particleSystem.getParticleGroupList();
 
         while (currGroup != null) {
             // Only draw water particles in this pass; queue other groups
@@ -203,9 +212,9 @@ public class ParticleRenderer implements DrawableLayer {
 
     /**
      * Draw all saved ParticleGroups to temp mRenderSurface[1].
-     * @param ps
+     * @param dps
      */
-    private void drawNonWaterParticles(ParticleSystem ps) {
+    private void drawNonWaterParticles(DrawableParticleSystem dps) {
         // Draw all non-water particles to temp render surface 1
         mRenderSurface[1].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
@@ -223,7 +232,7 @@ public class ParticleRenderer implements DrawableLayer {
                 1, false, mPerspectiveTransform, 0);
 
         // Go through all the particleGroups in the render list
-        ParticleGroup currGroup = ps.getParticleGroupList();
+        ParticleGroup currGroup = dps.particleSystem.getParticleGroupList();
 
         while (currGroup != null) {
             if (currGroup.getGroupFlags() != ParticleGroupFlag.particleGroupCanBeEmpty) {
@@ -256,9 +265,6 @@ public class ParticleRenderer implements DrawableLayer {
         // Create the blur renderer
         mBlurRenderer = new BlurRenderer();
 
-        // Read in our specific json file
-        String materialFile = FileHelper.loadAsset(
-                mContext.getAssets(), JSON_FILE);
         try {
             JSONObject json = new JSONObject(materialFile);
 

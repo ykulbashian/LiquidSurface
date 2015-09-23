@@ -26,9 +26,6 @@ public class DrawableParticleSystem {
     public ByteBuffer mParticleVelocityBuffer;
     public ByteBuffer mParticleWeightBuffer;
 
-    private List<ParticleGroup> mParticleRenderList =
-            new ArrayList<ParticleGroup>(256);
-
     public DrawableParticleSystem(ParticleSystem pSystem){
         particleSystem = pSystem;
 
@@ -51,8 +48,6 @@ public class DrawableParticleSystem {
     }
 
     public void onDrawFrame(){
-
-        mParticleRenderList.clear();
 
         mParticlePositionBuffer.rewind();
         mParticleColorBuffer.rewind();
@@ -98,8 +93,6 @@ public class DrawableParticleSystem {
             // Only draw water particles in this pass; queue other groups
             if (currGroup.getGroupFlags() == ParticleGroupFlag.particleGroupCanBeEmpty) {
                 drawParticleGroup(currGroup);
-            } else {
-                mParticleRenderList.add(currGroup);
             }
 
             currGroup = currGroup.getNext();
@@ -109,28 +102,34 @@ public class DrawableParticleSystem {
     }
 
 
-    public void renderNonWaterParticles(ParticleMaterial mNonWaterParticleMaterial,
+    public void renderNonWaterParticles(ParticleMaterial mParticleMaterial,
                                         float[] mPerspectiveTransform){
 
-        mNonWaterParticleMaterial.beginRender();
+        mParticleMaterial.beginRender();
 
         // Set attribute arrays
-        mNonWaterParticleMaterial.setVertexAttributeBuffer(
+        mParticleMaterial.setVertexAttributeBuffer(
                 "aPosition", mParticlePositionBuffer, 0);
-        mNonWaterParticleMaterial.setVertexAttributeBuffer(
+        mParticleMaterial.setVertexAttributeBuffer(
                 "aColor", mParticleColorBuffer, 0);
 
         // Set uniforms
         GLES20.glUniformMatrix4fv(
-                mNonWaterParticleMaterial.getUniformLocation("uTransform"),
+                mParticleMaterial.getUniformLocation("uTransform"),
                 1, false, mPerspectiveTransform, 0);
 
         // Go through all the particleGroups in the render list
-        for (ParticleGroup currGroup : mParticleRenderList) {
-            drawParticleGroup(currGroup);
+        ParticleGroup currGroup = particleSystem.getParticleGroupList();
+
+        while (currGroup != null) {
+            if (currGroup.getGroupFlags() != ParticleGroupFlag.particleGroupCanBeEmpty) {
+                drawParticleGroup(currGroup);
+            }
+
+            currGroup = currGroup.getNext();
         }
 
-        mNonWaterParticleMaterial.endRender();
+        mParticleMaterial.endRender();
     }
 
     /**
