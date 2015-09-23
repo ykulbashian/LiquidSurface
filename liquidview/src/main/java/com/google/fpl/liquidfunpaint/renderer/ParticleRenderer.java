@@ -79,15 +79,8 @@ public class ParticleRenderer implements DrawableLayer {
      */
     @Override
     public void onDrawFrame(GL10 gl) {
-
-        WorldLock.getInstance().lock();
-
-        try {
-            for(DrawableParticleSystem dps : ParticleSystems.getInstance().values())
-                drawParticleSystemToScreen(dps);
-        } finally {
-            WorldLock.getInstance().unlock();
-        }
+        for(DrawableParticleSystem dps : ParticleSystems.getInstance().values())
+            drawParticleSystemToScreen(dps);
     }
 
     private void drawParticleSystemToScreen(DrawableParticleSystem dps) {

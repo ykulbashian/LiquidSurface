@@ -3,8 +3,6 @@ package com.google.fpl.liquidfunpaint;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.fpl.liquidfunpaint.physics.WorldLock;
-import com.google.fpl.liquidfunpaint.renderer.DebugRenderer;
 import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.google.fpl.liquidfunpaint.renderer.TextureRenderer;
@@ -22,8 +20,6 @@ import javax.microedition.khronos.opengles.GL10;
  * Created on 8/13/2015.
  */
 public class LiquidWorld implements DrawableLayer {
-
-    private static final float TIME_STEP = 1 / 60f; // 60 fps
 
     public static final float WORLD_SPAN = 3f;
     public float sPhysicsWorldWidth = WORLD_SPAN;
@@ -75,17 +71,7 @@ public class LiquidWorld implements DrawableLayer {
 
     @Override
     public void reset(){
-
-        WorldLock worldLock = WorldLock.getInstance();
-
-        worldLock.lock();
-        try {
-
-            mParticleRenderer.reset();
-
-        } finally {
-            worldLock.releaseWorld();
-        }
+        mParticleRenderer.reset();
     }
 
     @Override
@@ -112,9 +98,6 @@ public class LiquidWorld implements DrawableLayer {
 
     @Override
     public void onDrawFrame(GL10 gl){
-        WorldLock.getInstance().lock();
-
-        WorldLock.getInstance().stepWorld(TIME_STEP);
 
         // Draw the paper texture.
         TextureRenderer.getInstance().drawTexture(
@@ -123,8 +106,6 @@ public class LiquidWorld implements DrawableLayer {
                 PhysicsLoop.getInstance().sScreenHeight);
 
         mParticleRenderer.onDrawFrame(gl);
-
-        WorldLock.getInstance().unlock();
     }
 
 }

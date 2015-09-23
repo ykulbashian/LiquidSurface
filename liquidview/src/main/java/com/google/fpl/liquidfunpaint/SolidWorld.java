@@ -47,7 +47,9 @@ public class SolidWorld implements DrawableLayer{
         mContext = context.getApplicationContext();
     }
 
-    private void createWorldBoundaries(World world){
+    private void createWorldBoundaries(){
+        World world = WorldLock.getInstance().getWorld();
+
         float worldWidth = LiquidWorld.getInstance().sPhysicsWorldWidth;
         float worldHeight = LiquidWorld.getInstance().sPhysicsWorldHeight;
 
@@ -141,13 +143,7 @@ public class SolidWorld implements DrawableLayer{
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        World world = WorldLock.getInstance().acquireWorld();
-
-        try {
-            createWorldBoundaries(world);
-        } finally {
-            WorldLock.getInstance().releaseWorld();
-        }
+        createWorldBoundaries();
     }
 
     public void onDrawFrame(GL10 gl){

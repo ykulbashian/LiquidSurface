@@ -43,6 +43,10 @@ public class WorldLock {
         return mWorld;
     }
 
+    public World getWorld(){
+        return mWorld;
+    }
+
     public void lock(){
         mWorldLock.lock();
     }

@@ -48,6 +48,8 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
     private static final PhysicsLoop _instance = new PhysicsLoop();
     public static final boolean DEBUG_DRAW = true;
 
+    private static final float TIME_STEP = 1 / 60f; // 60 fps
+
     private static final String TAG = "PhysicsLoop";
     private static final int ONE_SEC = 1000000000;
 
@@ -67,6 +69,8 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
 
     LiquidWorld mLiquidWorld;
     SolidWorld mSolidWorld;
+
+    WorldLock mWorldLock;
 
     final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
 
@@ -90,6 +94,7 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
     }
 
     private PhysicsLoop() {
+        mWorldLock = WorldLock.getInstance();
     }
 
     public static PhysicsLoop getInstance() {
@@ -122,13 +127,20 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
     @Override
     public void reset() {
         clearPhysicsCommands();
-        WorldLock.getInstance().resetWorld();
-        mLiquidWorld.reset();
-        mSolidWorld.reset();
 
-        if (DEBUG_DRAW) {
-            mDebugRenderer.reset();
-            WorldLock.getInstance().setDebugDraw(mDebugRenderer);
+        mWorldLock.lock();
+        try {
+            mWorldLock.resetWorld();
+            mLiquidWorld.reset();
+            mSolidWorld.reset();
+
+            if (DEBUG_DRAW) {
+                mDebugRenderer.reset();
+                mWorldLock.setDebugDraw(mDebugRenderer);
+            }
+
+        } finally {
+            mWorldLock.releaseWorld();
         }
     }
 
@@ -149,13 +161,22 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
             // Draw particles
             showFrameRate();
 
-            mLiquidWorld.onDrawFrame(gl);
+            mWorldLock.lock();
 
-            mSolidWorld.onDrawFrame(gl);
+            try {
+                mWorldLock.stepWorld(TIME_STEP);
 
-            if (DEBUG_DRAW) {
-                mDebugRenderer.onDrawFrame(gl);
+                mLiquidWorld.onDrawFrame(gl);
+
+                mSolidWorld.onDrawFrame(gl);
+
+                if (DEBUG_DRAW) {
+                    mDebugRenderer.onDrawFrame(gl);
+                }
+            } finally {
+                mWorldLock.unlock();
             }
+
         }
     }
 
@@ -166,17 +187,23 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
 
         GLES20.glViewport(0, 0, width, height);
 
-        mLiquidWorld.onSurfaceChanged(gl, width, height);
-        mSolidWorld.onSurfaceChanged(gl, width, height);
+        mWorldLock.lock();
 
-        if (DEBUG_DRAW) {
-            mDebugRenderer.onSurfaceChanged(gl, width, height);
+        try {
+            mLiquidWorld.onSurfaceChanged(gl, width, height);
+            mSolidWorld.onSurfaceChanged(gl, width, height);
+
+            if (DEBUG_DRAW) {
+                mDebugRenderer.onSurfaceChanged(gl, width, height);
+            }
+        } finally {
+            mWorldLock.unlock();
         }
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        if (!WorldLock.getInstance().hasWorld()) {
+        if (!mWorldLock.hasWorld()) {
             throw new IllegalStateException("Init world before rendering");
         }
 
@@ -184,11 +211,17 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
 
         TextureRenderer.getInstance().onSurfaceCreated();
 
-        mLiquidWorld.onSurfaceCreated(gl, config);
-        mSolidWorld.onSurfaceCreated(gl, config);
+        mWorldLock.lock();
 
-        if (DEBUG_DRAW) {
-            mDebugRenderer.onSurfaceCreated(gl, config);
+        try {
+            mLiquidWorld.onSurfaceCreated(gl, config);
+            mSolidWorld.onSurfaceCreated(gl, config);
+
+            if (DEBUG_DRAW) {
+                mDebugRenderer.onSurfaceCreated(gl, config);
+            }
+        } finally {
+            mWorldLock.unlock();
         }
     }
 
