@@ -148,10 +148,6 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
     public void onDrawFrame(GL10 gl) {
         if (mSimulation) {
 
-            while (!pendingRunnables.isEmpty()) {
-                pendingRunnables.poll().run();
-            }
-
             setChanged();
             notifyObservers();
 
@@ -164,6 +160,10 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
             mWorldLock.lock();
 
             try {
+                while (!pendingRunnables.isEmpty()) {
+                    pendingRunnables.poll().run();
+                }
+
                 mWorldLock.stepWorld(TIME_STEP);
 
                 mLiquidWorld.onDrawFrame(gl);

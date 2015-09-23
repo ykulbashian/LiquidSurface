@@ -107,32 +107,28 @@ public class SolidWorld implements DrawableLayer{
     }
 
     public void createSolidObject(Vector2f[] vertices){
-        World world = WorldLock.getInstance().acquireWorld();
+        World world = WorldLock.getInstance().getWorld();
 
-        try {
-            Body body = null;
-            // clean up previous Body if exists
-            if (body != null) {
-                world.destroyBody(body);
-            }
-
-            // Create native objects
-            BodyDef bodyDef = new BodyDef();
-            PolygonShape boundaryPolygon = new PolygonShape();
-
-            body = world.createBody(bodyDef);
-            bodies.add(body);
-            body.setType(BodyType.dynamicBody);
-
-            boundaryPolygon.set(MathHelper.convertVectToFloats(vertices), vertices.length);
-            body.createFixture(boundaryPolygon, 0.1f);
-
-            // Clean up native objects
-            bodyDef.delete();
-            boundaryPolygon.delete();
-        } finally {
-            WorldLock.getInstance().releaseWorld();
+        Body body = null;
+        // clean up previous Body if exists
+        if (body != null) {
+            world.destroyBody(body);
         }
+
+        // Create native objects
+        BodyDef bodyDef = new BodyDef();
+        PolygonShape boundaryPolygon = new PolygonShape();
+
+        body = world.createBody(bodyDef);
+        bodies.add(body);
+        body.setType(BodyType.dynamicBody);
+
+        boundaryPolygon.set(MathHelper.convertVectToFloats(vertices), vertices.length);
+        body.createFixture(boundaryPolygon, 0.1f);
+
+        // Clean up native objects
+        bodyDef.delete();
+        boundaryPolygon.delete();
     }
 
     @Override

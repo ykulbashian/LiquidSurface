@@ -65,16 +65,12 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
 
         ParticleGroupDef pgd = options.createParticleGroupDef(polygon);
 
-        WorldLock.getInstance().lock();
         ParticleSystem ps = get(key).particleSystem;
-        try {
-            ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
 
-            pGroup = ps.createParticleGroup(pgd);
+        ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
 
-        } finally {
-            WorldLock.getInstance().unlock();
-        }
+        pGroup = ps.createParticleGroup(pgd);
+
         pgd.delete();
     }
 
@@ -92,14 +88,8 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
     public void eraseParticles(Vector2f[] normalizedVertices, String key){
         final PolygonShape polygon = createPolygonShape(normalizedVertices);
 
-        WorldLock.getInstance().lock();
         ParticleSystem ps = get(key).particleSystem;
-        try {
-            ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
-
-        } finally {
-            WorldLock.getInstance().unlock();
-        }
+        ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
     }
 
     @Override
