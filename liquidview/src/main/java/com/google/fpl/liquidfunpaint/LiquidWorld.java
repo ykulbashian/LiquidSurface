@@ -39,8 +39,6 @@ public class LiquidWorld implements DrawableLayer {
 
     private static final String TAG = "LiquidWorld";
 
-    protected DebugRenderer mDebugRenderer = null;
-
     private ParticleRenderer mParticleRenderer;
 
     private static LiquidWorld sInstance = new LiquidWorld();
@@ -56,11 +54,6 @@ public class LiquidWorld implements DrawableLayer {
         mContext = context.getApplicationContext();
         mParticleRenderer = new ParticleRenderer();
         mParticleRenderer.init(context);
-
-        if (PhysicsLoop.DEBUG_DRAW) {
-            mDebugRenderer = new DebugRenderer();
-            mDebugRenderer.init(context);
-        }
     }
 
     @Override
@@ -77,10 +70,6 @@ public class LiquidWorld implements DrawableLayer {
         sPhysicsWorldWidth = sRenderWorldWidth;
         sPhysicsWorldHeight = sRenderWorldHeight;
 
-        if (PhysicsLoop.DEBUG_DRAW) {
-            mDebugRenderer.onSurfaceChanged(gl, width, height);
-        }
-
         mParticleRenderer.onSurfaceChanged(gl, width, height);
     }
 
@@ -94,11 +83,6 @@ public class LiquidWorld implements DrawableLayer {
 
             mParticleRenderer.reset();
 
-            if (PhysicsLoop.DEBUG_DRAW) {
-                mDebugRenderer.reset();
-                worldLock.setDebugDraw(mDebugRenderer);
-            }
-
         } finally {
             worldLock.releaseWorld();
         }
@@ -109,10 +93,6 @@ public class LiquidWorld implements DrawableLayer {
         createBackground(mContext);
 
         mParticleRenderer.onSurfaceCreated(gl, config);
-
-        if (PhysicsLoop.DEBUG_DRAW) {
-            mDebugRenderer.onSurfaceCreated(gl, config);
-        }
     }
 
     private void createBackground(Context context) {
@@ -143,10 +123,6 @@ public class LiquidWorld implements DrawableLayer {
                 PhysicsLoop.getInstance().sScreenHeight);
 
         mParticleRenderer.onDrawFrame(gl);
-
-        if (PhysicsLoop.DEBUG_DRAW) {
-            mDebugRenderer.onDrawFrame(gl);
-        }
 
         WorldLock.getInstance().unlock();
     }

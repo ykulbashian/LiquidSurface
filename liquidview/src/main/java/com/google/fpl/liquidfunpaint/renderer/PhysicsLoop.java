@@ -70,6 +70,8 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
 
     final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
 
+    protected DebugRenderer mDebugRenderer = null;
+
     // Measure the frame rate
     long totalFrames = -10000;
     private int mFrames;
@@ -103,6 +105,11 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
         mSolidWorld = SolidWorld.getInstance();
         mSolidWorld.init(mContext);
 
+        if (DEBUG_DRAW) {
+            mDebugRenderer = new DebugRenderer();
+            mDebugRenderer.init(context);
+        }
+
         reset();
 
         startSimulation();
@@ -118,6 +125,11 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
         WorldLock.getInstance().resetWorld();
         mLiquidWorld.reset();
         mSolidWorld.reset();
+
+        if (DEBUG_DRAW) {
+            mDebugRenderer.reset();
+            WorldLock.getInstance().setDebugDraw(mDebugRenderer);
+        }
     }
 
     @Override
@@ -140,6 +152,10 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
             mLiquidWorld.onDrawFrame(gl);
 
             mSolidWorld.onDrawFrame(gl);
+
+            if (DEBUG_DRAW) {
+                mDebugRenderer.onDrawFrame(gl);
+            }
         }
     }
 
@@ -152,6 +168,10 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
 
         mLiquidWorld.onSurfaceChanged(gl, width, height);
         mSolidWorld.onSurfaceChanged(gl, width, height);
+
+        if (DEBUG_DRAW) {
+            mDebugRenderer.onSurfaceChanged(gl, width, height);
+        }
     }
 
     @Override
@@ -166,6 +186,10 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
 
         mLiquidWorld.onSurfaceCreated(gl, config);
         mSolidWorld.onSurfaceCreated(gl, config);
+
+        if (DEBUG_DRAW) {
+            mDebugRenderer.onSurfaceCreated(gl, config);
+        }
     }
 
     public void pauseSimulation() {
