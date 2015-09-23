@@ -68,11 +68,6 @@ public class ParticleRenderer implements DrawableLayer {
     private final float[] mTransformFromTexture = new float[16];
     private final float[] mPerspectiveTransform = new float[16];
 
-    private ByteBuffer mParticleColorBuffer;
-    private ByteBuffer mParticlePositionBuffer;
-    private ByteBuffer mParticleVelocityBuffer;
-    private ByteBuffer mParticleWeightBuffer;
-
     private Context mContext;
 
     private String materialFile;
@@ -80,20 +75,6 @@ public class ParticleRenderer implements DrawableLayer {
     @Override
     public void init(Context context) {
         mContext = context.getApplicationContext();
-
-        mParticlePositionBuffer = ByteBuffer
-                .allocateDirect(2 * 4 * WorldLock.MAX_PARTICLE_COUNT)
-                .order(ByteOrder.nativeOrder());
-        mParticleVelocityBuffer = ByteBuffer
-                .allocateDirect(2 * 4 * WorldLock.MAX_PARTICLE_COUNT)
-                .order(ByteOrder.nativeOrder());
-        mParticleColorBuffer = ByteBuffer
-                .allocateDirect(4 * WorldLock.MAX_PARTICLE_COUNT)
-                .order(ByteOrder.nativeOrder());
-        mParticleWeightBuffer = ByteBuffer
-                .allocateDirect(4 * WorldLock.MAX_PARTICLE_COUNT)
-                .order(ByteOrder.nativeOrder());
-
 
         // Read in our specific json file
         materialFile = FileHelper.loadAsset(
@@ -105,28 +86,12 @@ public class ParticleRenderer implements DrawableLayer {
      */
     @Override
     public void onDrawFrame(GL10 gl) {
-        // Per frame resets of buffers
-        mParticlePositionBuffer.rewind();
-        mParticleColorBuffer.rewind();
-        mParticleWeightBuffer.rewind();
-        mParticleVelocityBuffer.rewind();
 
         WorldLock.getInstance().lock();
         DrawableParticleSystem dps = ParticleSystems.getInstance().get();
-        ParticleSystem ps = dps.particleSystem;
-        try {
-            int worldParticleCount = ps.getParticleCount();
-            // grab the most current particle buffers
-            ps.copyPositionBuffer(
-                    0, worldParticleCount, mParticlePositionBuffer);
-            ps.copyVelocityBuffer(
-                    0, worldParticleCount, mParticleVelocityBuffer);
-            ps.copyColorBuffer(
-                    0, worldParticleCount, mParticleColorBuffer);
-            ps.copyWeightBuffer(
-                    0, worldParticleCount, mParticleWeightBuffer);
 
-            GLES20.glClearColor(0, 0, 0, 0);
+        try {
+            dps.onDrawFrame();
 
             // Draw the particles
             drawParticles(dps);
@@ -153,19 +118,6 @@ public class ParticleRenderer implements DrawableLayer {
     }
 
     /**
-     * Issue the correct draw call for the ParticleGroup that is passed in.
-     */
-    private void drawParticleGroup(ParticleGroup pg) {
-        // Get the buffer offsets
-        int particleCount = pg.getParticleCount();
-        int instanceOffset = pg.getBufferIndex();
-
-        // Draw!
-        GLES20.glDrawArrays(
-                GLES20.GL_POINTS, instanceOffset, particleCount);
-    }
-
-    /**
      * Draw all the water particles, and save all the other particle groups
      * into a list. We draw these to temp mRenderSurface[0].
      * @param dps
@@ -174,36 +126,7 @@ public class ParticleRenderer implements DrawableLayer {
         // Draw all water particles to temp render surface 0
         mRenderSurface[0].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
-        mWaterParticleMaterial.beginRender();
-
-        // Set attribute arrays
-        mWaterParticleMaterial.setVertexAttributeBuffer(
-                "aPosition", mParticlePositionBuffer, 0);
-        mWaterParticleMaterial.setVertexAttributeBuffer(
-                "aVelocity", mParticleVelocityBuffer, 0);
-        mWaterParticleMaterial.setVertexAttributeBuffer(
-                "aColor", mParticleColorBuffer, 0);
-        mWaterParticleMaterial.setVertexAttributeBuffer(
-                "aWeight", mParticleWeightBuffer, 0);
-
-        // Set uniforms
-        GLES20.glUniformMatrix4fv(
-                mWaterParticleMaterial.getUniformLocation("uTransform"),
-                1, false, mPerspectiveTransform, 0);
-
-        // Go through each particle group
-        ParticleGroup currGroup = dps.particleSystem.getParticleGroupList();
-
-        while (currGroup != null) {
-            // Only draw water particles in this pass; queue other groups
-            if (currGroup.getGroupFlags() == ParticleGroupFlag.particleGroupCanBeEmpty) {
-                drawParticleGroup(currGroup);
-            }
-
-            currGroup = currGroup.getNext();
-        }
-
-        mWaterParticleMaterial.endRender();
+        dps.renderWaterParticles(mWaterParticleMaterial, mPerspectiveTransform);
 
         mRenderSurface[0].endRender();
 
@@ -218,31 +141,7 @@ public class ParticleRenderer implements DrawableLayer {
         // Draw all non-water particles to temp render surface 1
         mRenderSurface[1].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
-        mParticleMaterial.beginRender();
-
-        // Set attribute arrays
-        mParticleMaterial.setVertexAttributeBuffer(
-                "aPosition", mParticlePositionBuffer, 0);
-        mParticleMaterial.setVertexAttributeBuffer(
-                "aColor", mParticleColorBuffer, 0);
-
-        // Set uniforms
-        GLES20.glUniformMatrix4fv(
-                mParticleMaterial.getUniformLocation("uTransform"),
-                1, false, mPerspectiveTransform, 0);
-
-        // Go through all the particleGroups in the render list
-        ParticleGroup currGroup = dps.particleSystem.getParticleGroupList();
-
-        while (currGroup != null) {
-            if (currGroup.getGroupFlags() != ParticleGroupFlag.particleGroupCanBeEmpty) {
-                drawParticleGroup(currGroup);
-            }
-
-            currGroup = currGroup.getNext();
-        }
-
-        mParticleMaterial.endRender();
+        dps.renderNonWaterParticles(mParticleMaterial, mPerspectiveTransform);
 
         mRenderSurface[1].endRender();
 
@@ -268,43 +167,9 @@ public class ParticleRenderer implements DrawableLayer {
         try {
             JSONObject json = new JSONObject(materialFile);
 
-            // Water particle material. We are utilizing the position and color
-            // buffers returned from LiquidFun directly.
-            mWaterParticleMaterial = new WaterParticleMaterial(
-                    mContext, json.getJSONObject("waterParticlePointSprite"));
+            initializeWaterParticleMaterial(json);
 
-            // Initialize attributes specific to this material
-            mWaterParticleMaterial.addAttribute(
-                    "aPosition", 2, Material.AttrComponentType.FLOAT,
-                    4, false, 0);
-            mWaterParticleMaterial.addAttribute(
-                    "aVelocity", 2, Material.AttrComponentType.FLOAT,
-                    4, false, 0);
-            mWaterParticleMaterial.addAttribute(
-                    "aColor", 4, Material.AttrComponentType.UNSIGNED_BYTE,
-                    1, true, 0);
-            mWaterParticleMaterial.addAttribute(
-                    "aWeight", 1, Material.AttrComponentType.FLOAT,
-                    1, false, 0);
-            mWaterParticleMaterial.setBlendFunc(
-                    Material.BlendFactor.ONE,
-                    Material.BlendFactor.ONE_MINUS_SRC_ALPHA);
-
-            // Non-water particle material. We are utilizing the position and
-            // color buffers returned from LiquidFun directly.
-            mParticleMaterial = new ParticleMaterial(
-                    mContext, json.getJSONObject("otherParticlePointSprite"));
-
-            // Initialize attributes specific to this material
-            mParticleMaterial.addAttribute(
-                    "aPosition", 2, Material.AttrComponentType.FLOAT,
-                    4, false, 0);
-            mParticleMaterial.addAttribute(
-                    "aColor", 4, Material.AttrComponentType.UNSIGNED_BYTE,
-                    1, true, 0);
-            mParticleMaterial.setBlendFunc(
-                    Material.BlendFactor.ONE,
-                    Material.BlendFactor.ONE_MINUS_SRC_ALPHA);
+            initializeNonWaterParticleMaterial(json);
 
             // Scrolling texture when we copy water particles from FBO to screen
             mWaterScreenRenderer = new ScreenRenderer(
@@ -321,12 +186,52 @@ public class ParticleRenderer implements DrawableLayer {
         }
     }
 
+    private void initializeWaterParticleMaterial(JSONObject json) throws JSONException {
+        // Water particle material. We are utilizing the position and color
+        // buffers returned from LiquidFun directly.
+        mWaterParticleMaterial = new WaterParticleMaterial(
+                mContext, json.getJSONObject("waterParticlePointSprite"));
+
+        // Initialize attributes specific to this material
+        mWaterParticleMaterial.addAttribute(
+                "aPosition", 2, Material.AttrComponentType.FLOAT,
+                4, false, 0);
+        mWaterParticleMaterial.addAttribute(
+                "aVelocity", 2, Material.AttrComponentType.FLOAT,
+                4, false, 0);
+        mWaterParticleMaterial.addAttribute(
+                "aColor", 4, Material.AttrComponentType.UNSIGNED_BYTE,
+                1, true, 0);
+        mWaterParticleMaterial.addAttribute(
+                "aWeight", 1, Material.AttrComponentType.FLOAT,
+                1, false, 0);
+        mWaterParticleMaterial.setBlendFunc(
+                Material.BlendFactor.ONE,
+                Material.BlendFactor.ONE_MINUS_SRC_ALPHA);
+    }
+
+    private void initializeNonWaterParticleMaterial(JSONObject json) throws JSONException {
+        // Non-water particle material. We are utilizing the position and
+        // color buffers returned from LiquidFun directly.
+        mParticleMaterial = new ParticleMaterial(
+                mContext, json.getJSONObject("otherParticlePointSprite"));
+
+        // Initialize attributes specific to this material
+        mParticleMaterial.addAttribute(
+                "aPosition", 2, Material.AttrComponentType.FLOAT,
+                4, false, 0);
+        mParticleMaterial.addAttribute(
+                "aColor", 4, Material.AttrComponentType.UNSIGNED_BYTE,
+                1, true, 0);
+        mParticleMaterial.setBlendFunc(
+                Material.BlendFactor.ONE,
+                Material.BlendFactor.ONE_MINUS_SRC_ALPHA);
+    }
+
     @Override
     public void reset() {
-        mParticlePositionBuffer.clear();
-        mParticleColorBuffer.clear();
-        mParticleWeightBuffer.clear();
-        mParticleVelocityBuffer.clear();
+        DrawableParticleSystem dps = ParticleSystems.getInstance().get();
+        dps.reset();
     }
 
 }

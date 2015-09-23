@@ -64,6 +64,8 @@ public class DrawableParticleSystem {
                 0, worldParticleCount, mParticleColorBuffer);
         particleSystem.copyWeightBuffer(
                 0, worldParticleCount, mParticleWeightBuffer);
+
+        GLES20.glClearColor(0, 0, 0, 0);
     }
 
     public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial,
