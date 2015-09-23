@@ -17,9 +17,6 @@
 
 package com.google.fpl.liquidfunpaint.renderer;
 
-import com.google.fpl.liquidfun.ParticleGroup;
-import com.google.fpl.liquidfun.ParticleGroupFlag;
-import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfunpaint.DrawableParticleSystem;
 import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
 import com.google.fpl.liquidfunpaint.physics.WorldLock;
@@ -36,9 +33,6 @@ import android.opengl.GLES20;
 import android.util.Log;
 
 import org.json.*;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -77,8 +71,7 @@ public class ParticleRenderer implements DrawableLayer {
         mContext = context.getApplicationContext();
 
         // Read in our specific json file
-        materialFile = FileHelper.loadAsset(
-                mContext.getAssets(), JSON_FILE);
+        materialFile = FileHelper.loadAsset(mContext.getAssets(), JSON_FILE);
     }
 
     /**
@@ -88,28 +81,32 @@ public class ParticleRenderer implements DrawableLayer {
     public void onDrawFrame(GL10 gl) {
 
         WorldLock.getInstance().lock();
-        DrawableParticleSystem dps = ParticleSystems.getInstance().get();
 
         try {
-            dps.onDrawFrame();
-
-            // Draw the particles
-            drawParticles(dps);
-
-            GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-            GLES20.glViewport(
-                    0, 0,
-                    PhysicsLoop.getInstance().sScreenWidth,
-                    PhysicsLoop.getInstance().sScreenHeight);
-
-            // Copy the water particles to screen
-            mWaterScreenRenderer.draw(mTransformFromTexture);
-
-            // Copy the other particles to screen
-            mScreenRenderer.draw(mTransformFromTexture);
+            for(DrawableParticleSystem dps : ParticleSystems.getInstance().values())
+                drawParticleSystemToScreen(dps);
         } finally {
             WorldLock.getInstance().unlock();
         }
+    }
+
+    private void drawParticleSystemToScreen(DrawableParticleSystem dps) {
+        dps.onDrawFrame();
+
+        // Draw the particles
+        drawParticles(dps);
+
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        GLES20.glViewport(
+                0, 0,
+                PhysicsLoop.getInstance().sScreenWidth,
+                PhysicsLoop.getInstance().sScreenHeight);
+
+        // Copy the water particles to screen
+        mWaterScreenRenderer.draw(mTransformFromTexture);
+
+        // Copy the other particles to screen
+        mScreenRenderer.draw(mTransformFromTexture);
     }
 
     private void drawParticles(DrawableParticleSystem dps) {
@@ -182,7 +179,7 @@ public class ParticleRenderer implements DrawableLayer {
                     mRenderSurface[1].getTexture());
 
         } catch (JSONException ex) {
-            Log.e(TAG, "Cannot parse" + JSON_FILE + "\n" + ex.getMessage());
+            Log.e(TAG, "Cannot parse " + JSON_FILE + "\n" + ex.getMessage());
         }
     }
 
@@ -230,8 +227,8 @@ public class ParticleRenderer implements DrawableLayer {
 
     @Override
     public void reset() {
-        DrawableParticleSystem dps = ParticleSystems.getInstance().get();
-        dps.reset();
+        for(DrawableParticleSystem dps : ParticleSystems.getInstance().values())
+            dps.reset();
     }
 
 }
