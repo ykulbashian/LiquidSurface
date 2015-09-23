@@ -18,8 +18,8 @@
 package com.google.fpl.liquidfunpaint.renderer;
 
 import com.google.fpl.liquidfun.ParticleGroup;
+import com.google.fpl.liquidfun.ParticleGroupFlag;
 import com.google.fpl.liquidfun.ParticleSystem;
-import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.ParticleSystems;
 import com.google.fpl.liquidfunpaint.WorldLock;
 import com.google.fpl.liquidfunpaint.shader.Material;
@@ -75,9 +75,6 @@ public class ParticleRenderer implements DrawableLayer {
     private ByteBuffer mParticleVelocityBuffer;
     private ByteBuffer mParticleWeightBuffer;
 
-    private List<ParticleGroup> mParticleRenderList =
-            new ArrayList<>(256);
-
     private Context mContext;
 
     @Override
@@ -108,7 +105,6 @@ public class ParticleRenderer implements DrawableLayer {
         mParticleColorBuffer.rewind();
         mParticleWeightBuffer.rewind();
         mParticleVelocityBuffer.rewind();
-        mParticleRenderList.clear();
 
         WorldLock.getInstance().lock();
         ParticleSystem ps = ParticleSystems.getInstance().get().particleSystem;
@@ -190,16 +186,12 @@ public class ParticleRenderer implements DrawableLayer {
 
         // Go through each particle group
         ParticleSystem ps = ParticleSystems.getInstance().get().particleSystem;
-
         ParticleGroup currGroup = ps.getParticleGroupList();
 
         while (currGroup != null) {
             // Only draw water particles in this pass; queue other groups
-            if (currGroup.getGroupFlags() ==
-                    Tool.getTool(Tool.ToolType.WATER).getParticleGroupFlags()) {
+            if (currGroup.getGroupFlags() == ParticleGroupFlag.particleGroupCanBeEmpty) {
                 drawParticleGroup(currGroup);
-            } else {
-                mParticleRenderList.add(currGroup);
             }
 
             currGroup = currGroup.getNext();
@@ -233,13 +225,21 @@ public class ParticleRenderer implements DrawableLayer {
                 1, false, mPerspectiveTransform, 0);
 
         // Go through all the particleGroups in the render list
-        for (ParticleGroup currGroup : mParticleRenderList) {
-            drawParticleGroup(currGroup);
+        ParticleSystem ps = ParticleSystems.getInstance().get().particleSystem;
+        ParticleGroup currGroup = ps.getParticleGroupList();
+
+        while (currGroup != null) {
+            if (currGroup.getGroupFlags() != ParticleGroupFlag.particleGroupCanBeEmpty) {
+                drawParticleGroup(currGroup);
+            }
+
+            currGroup = currGroup.getNext();
         }
 
         mParticleMaterial.endRender();
 
         mRenderSurface[1].endRender();
+
         mBlurRenderer.draw(mRenderSurface[1].getTexture(), mRenderSurface[1]);
     }
 

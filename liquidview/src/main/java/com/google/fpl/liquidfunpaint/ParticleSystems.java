@@ -1,8 +1,5 @@
 package com.google.fpl.liquidfunpaint;
 
-import android.graphics.Color;
-
-import com.google.fpl.liquidfun.ParticleColor;
 import com.google.fpl.liquidfun.ParticleGroup;
 import com.google.fpl.liquidfun.ParticleGroupDef;
 import com.google.fpl.liquidfun.ParticleSystem;
@@ -62,24 +59,9 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
         if (normalizedVertices == null || normalizedVertices.length == 0 || normalizedVertices.length % 2 != 0)
             return;
 
-        final PolygonShape polygon = new PolygonShape();
-        float[] points = MathHelper.convertVectToFloats(normalizedVertices);
-        polygon.set(points, normalizedVertices.length);
+        PolygonShape polygon = createPolygonShape(normalizedVertices);
 
-        ParticleColor pColor = new ParticleColor(
-                (short) Color.red(options.color),
-                (short)Color.green(options.color),
-                (short)Color.blue(options.color),
-                (short)Color.alpha(options.color));
-
-        final ParticleGroupDef pgd = new ParticleGroupDef();
-        pgd.setFlags(options.particleType);
-        pgd.setGroupFlags(options.particleGroup);
-        pgd.setLinearVelocity(options.velocity);
-        pgd.setColor(pColor);
-        pgd.setStrength(options.strength);
-
-        pgd.setShape(polygon);
+        ParticleGroupDef pgd = options.createParticleGroupDef(polygon);
 
         WorldLock.getInstance().lock();
         ParticleSystem ps = get(key).particleSystem;
@@ -94,15 +76,19 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
         pgd.delete();
     }
 
+    private PolygonShape createPolygonShape(Vector2f[] normalizedVertices) {
+        final PolygonShape polygon = new PolygonShape();
+        float[] points = MathHelper.convertVectToFloats(normalizedVertices);
+        polygon.set(points, normalizedVertices.length);
+        return polygon;
+    }
+
     public void eraseParticles(Vector2f[] normalizedVertices){
         eraseParticles(normalizedVertices, DEFAULT_PARTICLE_SYSTEM);
     }
 
     public void eraseParticles(Vector2f[] normalizedVertices, String key){
-        final PolygonShape polygon = new PolygonShape();
-        float[] points = MathHelper.convertVectToFloats(normalizedVertices);
-
-        polygon.set(points, normalizedVertices.length);
+        final PolygonShape polygon = createPolygonShape(normalizedVertices);
 
         WorldLock.getInstance().lock();
         ParticleSystem ps = get(key).particleSystem;

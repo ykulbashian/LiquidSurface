@@ -2,8 +2,12 @@ package com.google.fpl.liquidfunpaint;
 
 import android.graphics.Color;
 
+import com.google.fpl.liquidfun.ParticleColor;
 import com.google.fpl.liquidfun.ParticleFlag;
+import com.google.fpl.liquidfun.ParticleGroup;
+import com.google.fpl.liquidfun.ParticleGroupDef;
 import com.google.fpl.liquidfun.ParticleGroupFlag;
+import com.google.fpl.liquidfun.Shape;
 import com.google.fpl.liquidfun.Vec2;
 
 /**
@@ -39,6 +43,26 @@ public class LiquidPaint {
 
     public void setParticleType(int particleType) {
         this.particleType = particleType;
+    }
+    
+    public ParticleGroupDef createParticleGroupDef(Shape shape){
+
+        ParticleColor pColor = new ParticleColor(
+                (short) Color.red(color),
+                (short)Color.green(color),
+                (short)Color.blue(color),
+                (short)Color.alpha(color));
+
+        final ParticleGroupDef pgd = new ParticleGroupDef();
+        pgd.setFlags(particleType);
+        pgd.setGroupFlags(particleGroup);
+        pgd.setLinearVelocity(velocity);
+        pgd.setColor(pColor);
+        pgd.setStrength(strength);
+
+        pgd.setShape(shape);
+
+        return pgd;
     }
 
     Vec2 velocity = new Vec2(0, 0);
