@@ -20,12 +20,11 @@ package com.google.fpl.liquidfunpaint.renderer;
 import com.google.fpl.liquidfun.ParticleGroup;
 import com.google.fpl.liquidfun.ParticleGroupFlag;
 import com.google.fpl.liquidfun.ParticleSystem;
-import com.google.fpl.liquidfunpaint.ParticleSystems;
-import com.google.fpl.liquidfunpaint.WorldLock;
+import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
+import com.google.fpl.liquidfunpaint.physics.WorldLock;
 import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
-import com.google.fpl.liquidfunpaint.tool.Tool;
 import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
 import com.google.fpl.liquidfunpaint.util.RenderHelper;
@@ -39,8 +38,6 @@ import org.json.*;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -123,7 +120,7 @@ public class ParticleRenderer implements DrawableLayer {
             GLES20.glClearColor(0, 0, 0, 0);
 
             // Draw the particles
-            drawParticles();
+            drawParticles(ps);
 
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
             GLES20.glViewport(
@@ -141,9 +138,9 @@ public class ParticleRenderer implements DrawableLayer {
         }
     }
 
-    private void drawParticles() {
-        drawWaterParticles();
-        drawNonWaterParticles();
+    private void drawParticles(ParticleSystem ps) {
+        drawWaterParticles(ps);
+        drawNonWaterParticles(ps);
     }
 
     /**
@@ -162,8 +159,9 @@ public class ParticleRenderer implements DrawableLayer {
     /**
      * Draw all the water particles, and save all the other particle groups
      * into a list. We draw these to temp mRenderSurface[0].
+     * @param ps
      */
-    private void drawWaterParticles() {
+    private void drawWaterParticles(ParticleSystem ps) {
         // Draw all water particles to temp render surface 0
         mRenderSurface[0].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
@@ -185,7 +183,6 @@ public class ParticleRenderer implements DrawableLayer {
                 1, false, mPerspectiveTransform, 0);
 
         // Go through each particle group
-        ParticleSystem ps = ParticleSystems.getInstance().get().particleSystem;
         ParticleGroup currGroup = ps.getParticleGroupList();
 
         while (currGroup != null) {
@@ -206,8 +203,9 @@ public class ParticleRenderer implements DrawableLayer {
 
     /**
      * Draw all saved ParticleGroups to temp mRenderSurface[1].
+     * @param ps
      */
-    private void drawNonWaterParticles() {
+    private void drawNonWaterParticles(ParticleSystem ps) {
         // Draw all non-water particles to temp render surface 1
         mRenderSurface[1].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
@@ -225,7 +223,6 @@ public class ParticleRenderer implements DrawableLayer {
                 1, false, mPerspectiveTransform, 0);
 
         // Go through all the particleGroups in the render list
-        ParticleSystem ps = ParticleSystems.getInstance().get().particleSystem;
         ParticleGroup currGroup = ps.getParticleGroupList();
 
         while (currGroup != null) {

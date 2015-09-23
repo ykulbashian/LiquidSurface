@@ -3,7 +3,8 @@ package com.google.fpl.liquidfunpaint;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.fpl.liquidfun.ParticleSystem;
+import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
+import com.google.fpl.liquidfunpaint.physics.WorldLock;
 import com.google.fpl.liquidfunpaint.renderer.DebugRenderer;
 import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;

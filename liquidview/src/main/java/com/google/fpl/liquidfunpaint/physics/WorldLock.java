@@ -1,4 +1,4 @@
-package com.google.fpl.liquidfunpaint;
+package com.google.fpl.liquidfunpaint.physics;
 
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.ParticleSystemDef;

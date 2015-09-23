@@ -9,9 +9,7 @@ import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 
-import com.google.fpl.liquidfun.World;
-import com.google.fpl.liquidfunpaint.LiquidWorld;
-import com.google.fpl.liquidfunpaint.WorldLock;
+import com.google.fpl.liquidfunpaint.physics.WorldLock;
 import com.google.fpl.liquidfunpaint.tool.Tool;
 
 /**
@@ -83,8 +81,8 @@ public class RotatableController implements View.OnTouchListener, SensorEventLis
             float gravityX = mGravityVec[0] * x - mGravityVec[1] * y;
             float gravityY = mGravityVec[1] * x + mGravityVec[0] * y;
             WorldLock.getInstance().setGravity(
-                                            gravityX,
-                                            gravityY);
+                    gravityX,
+                    gravityY);
         }
     }
 
