@@ -150,7 +150,7 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
             }
 
         } finally {
-            mWorldLock.releaseWorld();
+            mWorldLock.unlock();
         }
     }
 

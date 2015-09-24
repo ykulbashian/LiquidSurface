@@ -242,24 +242,20 @@ public class DebugRenderer extends Draw implements DrawableLayer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        World world = WorldLock.getInstance().acquireWorld();
-        try {
-            reset();
+        reset();
 
-            // This captures everything we need to draw into buffers
-            world.drawDebugData();
+        // This captures everything we need to draw into buffers
+        WorldLock.getInstance().getWorld().drawDebugData();
 
-            GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-            GLES20.glViewport(
-                    0, 0,
-                    PhysicsLoop.getInstance().sScreenWidth,
-                    PhysicsLoop.getInstance().sScreenHeight);
-            drawPolygons(mTransformFromWorld);
-            drawCircles(mTransformFromWorld);
-            drawSegments(mTransformFromWorld);
-        } finally {
-            WorldLock.getInstance().releaseWorld();
-        }
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        GLES20.glViewport(
+                0, 0,
+                PhysicsLoop.getInstance().sScreenWidth,
+                PhysicsLoop.getInstance().sScreenHeight);
+        drawPolygons(mTransformFromWorld);
+        drawCircles(mTransformFromWorld);
+        drawSegments(mTransformFromWorld);
+
     }
 
     private void drawPolygons(float[] transformFromWorld) {

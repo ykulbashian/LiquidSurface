@@ -42,31 +42,12 @@ public class WorldLock {
         return sInstance;
     }
 
-    public boolean hasWorld() {
-        return mWorld != null;
-    }
-
-    /**
-     * Acquire the world for thread-safe operations.
-     */
-    public World acquireWorld() {
-        lock();
-        return mWorld;
-    }
-
     public World getWorld(){
         return mWorld;
     }
 
     public void lock(){
         mWorldLock.lock();
-    }
-
-    /**
-     * Release the world after thread-safe operations.
-     */
-    public void releaseWorld() {
-        unlock();
     }
 
     public void createWorld(){
