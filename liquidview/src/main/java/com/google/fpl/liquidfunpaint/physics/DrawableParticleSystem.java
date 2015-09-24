@@ -3,21 +3,31 @@ package com.google.fpl.liquidfunpaint.physics;
 import android.opengl.GLES20;
 
 import com.google.fpl.liquidfun.ParticleGroup;
+import com.google.fpl.liquidfun.ParticleGroupDef;
 import com.google.fpl.liquidfun.ParticleGroupFlag;
 import com.google.fpl.liquidfun.ParticleSystem;
-import com.google.fpl.liquidfunpaint.physics.WorldLock;
+import com.google.fpl.liquidfun.PolygonShape;
+import com.google.fpl.liquidfun.Transform;
+import com.google.fpl.liquidfunpaint.LiquidPaint;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
+import com.google.fpl.liquidfunpaint.util.MathHelper;
+import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created on 15-09-20.
  */
 public class DrawableParticleSystem {
+
+    protected static final Transform MAT_IDENTITY;
+
+    static {
+        MAT_IDENTITY = new Transform();
+        MAT_IDENTITY.setIdentity();
+    }
 
     public final ParticleSystem particleSystem;
 
@@ -45,6 +55,34 @@ public class DrawableParticleSystem {
 
     public int getParticleCount(){
         return particleSystem.getParticleCount();
+    }
+
+    public void createParticleGroup(Vector2f[] normalizedVertices, LiquidPaint options){
+
+        if (normalizedVertices == null || normalizedVertices.length == 0 || normalizedVertices.length % 2 != 0)
+            return;
+
+        PolygonShape polygon = createPolygonShape(normalizedVertices);
+
+        ParticleGroupDef pgd = options.createParticleGroupDef(polygon);
+
+        particleSystem.destroyParticlesInShape(polygon, MAT_IDENTITY);
+
+        particleSystem.createParticleGroup(pgd);
+
+        pgd.delete();
+    }
+
+    public void clearParticles(Vector2f[] normalizedVertices){
+        final PolygonShape polygon = createPolygonShape(normalizedVertices);
+        particleSystem.destroyParticlesInShape(polygon, MAT_IDENTITY);
+    }
+
+    private static PolygonShape createPolygonShape(Vector2f[] normalizedVertices) {
+        final PolygonShape polygon = new PolygonShape();
+        float[] points = MathHelper.convertVectToFloats(normalizedVertices);
+        polygon.set(points, normalizedVertices.length);
+        return polygon;
     }
 
     public void onDrawFrame(){

@@ -1,7 +1,5 @@
 package com.google.fpl.liquidfunpaint.physics;
 
-import com.google.fpl.liquidfun.ParticleGroup;
-import com.google.fpl.liquidfun.ParticleGroupDef;
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
@@ -15,15 +13,6 @@ import java.util.HashMap;
  * Created on 8/13/2015.
  */
 public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
-
-    ParticleGroup pGroup;
-
-    protected static final Transform MAT_IDENTITY;
-
-    static {
-        MAT_IDENTITY = new Transform();
-        MAT_IDENTITY.setIdentity();
-    }
 
     public static final String DEFAULT_PARTICLE_SYSTEM = "default_particle_system";
 
@@ -56,28 +45,7 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
 
 
     public void fillShape(Vector2f[] normalizedVertices, LiquidPaint options, String key){
-
-        if (normalizedVertices == null || normalizedVertices.length == 0 || normalizedVertices.length % 2 != 0)
-            return;
-
-        PolygonShape polygon = createPolygonShape(normalizedVertices);
-
-        ParticleGroupDef pgd = options.createParticleGroupDef(polygon);
-
-        ParticleSystem ps = get(key).particleSystem;
-
-        ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
-
-        pGroup = ps.createParticleGroup(pgd);
-
-        pgd.delete();
-    }
-
-    private PolygonShape createPolygonShape(Vector2f[] normalizedVertices) {
-        final PolygonShape polygon = new PolygonShape();
-        float[] points = MathHelper.convertVectToFloats(normalizedVertices);
-        polygon.set(points, normalizedVertices.length);
-        return polygon;
+        get(key).createParticleGroup(normalizedVertices, options);
     }
 
     public void eraseParticles(Vector2f[] normalizedVertices){
@@ -85,10 +53,7 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
     }
 
     public void eraseParticles(Vector2f[] normalizedVertices, String key){
-        final PolygonShape polygon = createPolygonShape(normalizedVertices);
-
-        ParticleSystem ps = get(key).particleSystem;
-        ps.destroyParticlesInShape(polygon, MAT_IDENTITY);
+        get(key).clearParticles(normalizedVertices);
     }
 
     @Override

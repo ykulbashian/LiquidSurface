@@ -17,6 +17,9 @@ public class WorldLock {
 
     final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
 
+
+    private static final float TIME_STEP = 1 / 60f; // 60 fps
+
     public static final float WORLD_SPAN = 3f;
     public float sPhysicsWorldWidth = WORLD_SPAN;
     public float sPhysicsWorldHeight = WORLD_SPAN;
@@ -61,7 +64,6 @@ public class WorldLock {
             deleteWorld();
             createWorld();
 
-            ParticleSystems.getInstance().reset();
         } finally {
             unlock();
         }
@@ -71,7 +73,7 @@ public class WorldLock {
         mWorld.setDebugDraw(renderer);
     }
 
-    public void deleteWorld() {
+    private void deleteWorld() {
         lock();
 
         try {
@@ -100,12 +102,14 @@ public class WorldLock {
 
     }
 
-    public void stepWorld(float dt){
-
+    public void stepWorld(){
         lock();
+
+        runPendingRunnables();
+
         try {
             mWorld.step(
-                    dt, VELOCITY_ITERATIONS,
+                    TIME_STEP, VELOCITY_ITERATIONS,
                     POSITION_ITERATIONS, PARTICLE_ITERATIONS);
         } finally {
             unlock();
@@ -171,5 +175,10 @@ public class WorldLock {
         } finally {
             unlock();
         }
+    }
+
+    @Override
+    protected void finalize() {
+        deleteWorld();
     }
 }

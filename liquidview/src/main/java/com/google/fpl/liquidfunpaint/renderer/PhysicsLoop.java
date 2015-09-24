@@ -52,8 +52,6 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
     private static final PhysicsLoop _instance = new PhysicsLoop();
     public static final boolean DEBUG_DRAW = true;
 
-    private static final float TIME_STEP = 1 / 60f; // 60 fps
-
     private static final String PAPER_MATERIAL_NAME = "paper";
     private static final String DIFFUSE_TEXTURE_NAME = "uDiffuseTexture";
 
@@ -97,12 +95,6 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
         Matrix.setIdentityM(MAT4X4_IDENTITY, 0);
     }
 
-
-    @Override
-    protected void finalize() {
-        WorldLock.getInstance().deleteWorld();
-    }
-
     private PhysicsLoop() {
         mWorldLock = WorldLock.getInstance();
     }
@@ -140,6 +132,8 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
         mWorldLock.lock();
         try {
             mWorldLock.resetWorld();
+            ParticleSystems.getInstance().reset();
+
             mParticleRenderer.reset();
             mSolidWorld.reset();
 
@@ -170,11 +164,9 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
 
             try {
 
-                mWorldLock.runPendingRunnables();
-
                 drawBackgroundTexture();
 
-                mWorldLock.stepWorld(TIME_STEP);
+                mWorldLock.stepWorld();
 
                 mParticleRenderer.onDrawFrame(gl);
 
