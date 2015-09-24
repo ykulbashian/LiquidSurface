@@ -136,7 +136,7 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
      */
     @Override
     public void reset() {
-        clearPhysicsCommands();
+        mWorldLock.clearPhysicsCommands();
 
         mWorldLock.lock();
         try {
@@ -170,9 +170,8 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
             mWorldLock.lock();
 
             try {
-                while (!pendingRunnables.isEmpty()) {
-                    pendingRunnables.poll().run();
-                }
+
+                mWorldLock.runPendingRunnables();
 
                 drawBackgroundTexture();
 
@@ -224,9 +223,6 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        if (!mWorldLock.hasWorld()) {
-            throw new IllegalStateException("Init world before rendering");
-        }
 
         ShaderProgram.loadAllShaders(mContext.getAssets());
 
@@ -254,14 +250,6 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
 
     public void startSimulation() {
         mSimulation = true;
-    }
-
-    public void addPhysicsCommand(Runnable runnable){
-        pendingRunnables.add(runnable);
-    }
-
-    public void clearPhysicsCommands(){
-        pendingRunnables.clear();
     }
 
 

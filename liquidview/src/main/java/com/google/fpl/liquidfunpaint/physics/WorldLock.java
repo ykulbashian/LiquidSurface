@@ -5,6 +5,8 @@ import com.google.fpl.liquidfun.ParticleSystemDef;
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.renderer.DebugRenderer;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -12,6 +14,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * Created on 15-09-20.
  */
 public class WorldLock {
+
+    final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
 
     public static final float WORLD_SPAN = 3f;
     public float sPhysicsWorldWidth = WORLD_SPAN;
@@ -141,6 +145,21 @@ public class WorldLock {
 
         } finally {
             unlock();
+        }
+    }
+
+
+    public void addPhysicsCommand(Runnable runnable){
+        pendingRunnables.add(runnable);
+    }
+
+    public void clearPhysicsCommands(){
+        pendingRunnables.clear();
+    }
+
+    public void runPendingRunnables(){
+        while (!pendingRunnables.isEmpty()) {
+            pendingRunnables.poll().run();
         }
     }
 
