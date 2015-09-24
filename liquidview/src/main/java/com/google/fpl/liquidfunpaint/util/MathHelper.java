@@ -41,7 +41,7 @@ public final class MathHelper {
         return points;
     }
 
-    public static Vector2f[] normalizePositions(Vector2f[] originalVertices, float viewWidth, float viewHeight){
+    public static Vector2f[] normalizeVertices(Vector2f[] originalVertices, float viewWidth, float viewHeight){
         float widthRatio = WorldLock.getInstance().sRenderWorldWidth / viewWidth;
         float heightRatio = WorldLock.getInstance().sRenderWorldHeight / viewHeight;
 
@@ -52,5 +52,33 @@ public final class MathHelper {
         }
 
         return normalizedVerts;
+    }
+
+    public static Vector2f[] createCircle(Vector2f center, float radius, int numPoints){
+        Vector2f[] vertices = new Vector2f[numPoints];
+
+        double angle = 2*Math.PI/numPoints;
+
+        for(int i = 0; i < numPoints; i++){
+            vertices[i] = new Vector2f(center.x + (float) (radius*Math.cos(i*angle)),
+                    center.y + (float) (radius*Math.sin(i*angle)));
+        }
+
+        return vertices;
+    }
+
+
+    public static Vector2f[] createBox(Vector2f center, float width, float height){
+        Vector2f[] vertices = new Vector2f[4];
+
+        vertices[0] = new Vector2f(center.x - width/2, center.y + height/2);
+
+        vertices[1] = new Vector2f(center.x + width/2, center.y + height/2);
+
+        vertices[2] = new Vector2f(center.x - width/2, center.y - height/2);
+
+        vertices[3] = new Vector2f(center.x + width/2, center.y - height/2);
+
+        return vertices;
     }
 }

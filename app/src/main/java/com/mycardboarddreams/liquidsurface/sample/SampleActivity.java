@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.google.fpl.liquidfunpaint.LiquidPaint;
+import com.google.fpl.liquidfunpaint.util.MathHelper;
 import com.mycardboarddreams.liquidsurface.ILiquidWorld;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
@@ -21,11 +22,11 @@ public class SampleActivity extends AppCompatActivity {
         ltv = (ILiquidWorld) findViewById(R.id.liquid_texture_view);
 
         ltv.clearAll();
-        ltv.createLiquidShape(createCircle(getCenterPoint(), 400, 8));
+        ltv.createLiquidShape(MathHelper.createCircle(getScreenCenter(), 400, 8));
 
-        ltv.createLiquidShape(createCircle(getCenterPoint(), 300, 8), LiquidPaint.LIQUID().setColor(0xFF00FF00), "SecondParticleSystem");
+        ltv.createLiquidShape(MathHelper.createCircle(getScreenCenter(), 300, 8), LiquidPaint.LIQUID().setColor(0xFF00FF00), "SecondParticleSystem");
 
-        ltv.createSolidShape(createCircle(getCenterPoint(), 70, 8));
+        ltv.createSolidShape(MathHelper.createCircle(getScreenCenter(), 70, 8));
     }
 
     /**
@@ -43,38 +44,11 @@ public class SampleActivity extends AppCompatActivity {
         ltv.pausePhysics();
     }
 
-    private Vector2f getCenterPoint(){
+    private Vector2f getScreenCenter(){
 
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
         Vector2f center = new Vector2f(size.x / 2, size.y / 2);
         return center;
-    }
-
-    private Vector2f[] createCircle(Vector2f center, float radius, int numPoints){
-        Vector2f[] vertices = new Vector2f[numPoints];
-
-        double angle = 2*Math.PI/numPoints;
-
-        for(int i = 0; i < numPoints; i++){
-            vertices[i] = new Vector2f(center.x + (float) (radius*Math.cos(i*angle)),
-                                         center.y + (float) (radius*Math.sin(i*angle)));
-        }
-
-        return vertices;
-    }
-
-    private Vector2f[] createBox(Vector2f center, float width, float height){
-        Vector2f[] vertices = new Vector2f[4];
-
-        vertices[0] = new Vector2f(center.x - width/2, center.y + height/2);
-
-        vertices[1] = new Vector2f(center.x + width/2, center.y + height/2);
-
-        vertices[2] = new Vector2f(center.x - width/2, center.y - height/2);
-
-        vertices[3] = new Vector2f(center.x + width/2, center.y - height/2);
-
-        return vertices;
     }
 }

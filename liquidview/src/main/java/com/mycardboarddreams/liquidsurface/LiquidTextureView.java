@@ -96,7 +96,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
         mWorldLock.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
-                ParticleSystems.getInstance().fillShape(MathHelper.normalizePositions(vertices, getWidth(), getHeight()),
+                ParticleSystems.getInstance().fillShape(MathHelper.normalizeVertices(vertices, getWidth(), getHeight()),
                         paint, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
             }
         });
@@ -113,7 +113,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
         mWorldLock.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
-                ParticleSystems.getInstance().fillShape(MathHelper.normalizePositions(vertices, getWidth(), getHeight()),
+                ParticleSystems.getInstance().fillShape(MathHelper.normalizeVertices(vertices, getWidth(), getHeight()),
                         options, particleSystem);
             }
         });
@@ -124,7 +124,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
         mWorldLock.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
-                SolidWorld.getInstance().createSolidObject(MathHelper.normalizePositions(vertices, getWidth(), getHeight()));
+                SolidWorld.getInstance().createSolidObject(MathHelper.normalizeVertices(vertices, getWidth(), getHeight()));
             }
         });
     }
@@ -134,7 +134,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
         mWorldLock.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
-                ParticleSystems.getInstance().eraseParticles(MathHelper.normalizePositions(vertices, getWidth(), getHeight()));
+                ParticleSystems.getInstance().eraseParticles(MathHelper.normalizeVertices(vertices, getWidth(), getHeight()));
             }
         });
     }
@@ -144,7 +144,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
         mWorldLock.addPhysicsCommand(new Runnable() {
             @Override
             public void run() {
-                ParticleSystems.getInstance().eraseParticles(MathHelper.normalizePositions(vertices, getWidth(), getHeight()), particleSystem);
+                ParticleSystems.getInstance().eraseParticles(MathHelper.normalizeVertices(vertices, getWidth(), getHeight()), particleSystem);
             }
         });
     }
