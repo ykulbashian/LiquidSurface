@@ -4,6 +4,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.google.fpl.liquidfunpaint.LiquidPaint;
 import com.mycardboarddreams.liquidsurface.ILiquidWorld;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
@@ -21,6 +22,8 @@ public class SampleActivity extends AppCompatActivity {
 
         ltv.clearAll();
         ltv.createLiquidShape(createCircle(getCenterPoint(), 400, 8));
+
+        ltv.createLiquidShape(createCircle(getCenterPoint(), 300, 8), LiquidPaint.LIQUID().setColor(0xFF00FF00), "SecondParticleSystem");
 
         ltv.createSolidShape(createCircle(getCenterPoint(), 70, 8));
     }

@@ -104,6 +104,22 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
     }
 
     @Override
+    public void createLiquidShape(final Vector2f[] vertices, final String particleSystem) {
+        createLiquidShape(vertices, LiquidPaint.LIQUID(), particleSystem);
+    }
+
+    @Override
+    public void createLiquidShape(final Vector2f[] vertices, final LiquidPaint options, final String particleSystem) {
+        mWorldLock.addPhysicsCommand(new Runnable() {
+            @Override
+            public void run() {
+                ParticleSystems.getInstance().fillShape(MathHelper.normalizePositions(vertices, getWidth(), getHeight()),
+                        options, particleSystem);
+            }
+        });
+    }
+
+    @Override
     public void createSolidShape(final Vector2f[] vertices){
         mWorldLock.addPhysicsCommand(new Runnable() {
             @Override
@@ -124,7 +140,18 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
     }
 
     @Override
+    public void eraseParticles(final Vector2f[] vertices, final String particleSystem) {
+        mWorldLock.addPhysicsCommand(new Runnable() {
+            @Override
+            public void run() {
+                ParticleSystems.getInstance().eraseParticles(MathHelper.normalizePositions(vertices, getWidth(), getHeight()), particleSystem);
+            }
+        });
+    }
+
+    @Override
     public void clearAll() {
+        mWorldLock.clearPhysicsCommands();
         mPhysicsLoop.reset();
     }
 

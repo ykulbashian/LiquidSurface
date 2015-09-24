@@ -13,10 +13,15 @@ public interface ILiquidWorld {
     void pausePhysics();
     void resumePhysics();
 
-    void createSolidShape(Vector2f[] vertices);
-    void eraseParticles(Vector2f[] vertices);
-    void createLiquidShape(Vector2f[] vertices);
-    void createLiquidShape(Vector2f[] vertices, LiquidPaint options);
+    void createSolidShape(final Vector2f[] vertices);
+
+    void eraseParticles(final Vector2f[] vertices);
+    void eraseParticles(final Vector2f[] vertices, final String particleSystem);
+
+    void createLiquidShape(final Vector2f[] vertices);
+    void createLiquidShape(final Vector2f[] vertices, final LiquidPaint options);
+    void createLiquidShape(final Vector2f[] vertices, final String particleSystem);
+    void createLiquidShape(final Vector2f[] vertices, final LiquidPaint options, final String particleSystem);
 
     void clearAll();
 

@@ -136,7 +136,6 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
      */
     @Override
     public void reset() {
-        mWorldLock.clearPhysicsCommands();
 
         mWorldLock.lock();
         try {
