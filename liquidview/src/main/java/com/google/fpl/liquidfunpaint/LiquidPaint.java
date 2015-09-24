@@ -29,20 +29,24 @@ public class LiquidPaint {
         particleGroup = groupFlag;
     }
 
-    public void setVelocity(Vec2 velocity) {
+    public LiquidPaint setVelocity(Vec2 velocity) {
         this.velocity = velocity;
+        return this;
     }
 
-    public void setColor(int color) {
+    public LiquidPaint setColor(int color) {
         this.color = color;
+        return this;
     }
 
-    public void setStrength(float strength) {
+    public LiquidPaint setStrength(float strength) {
         this.strength = strength;
+        return this;
     }
 
-    public void setParticleType(int particleType) {
+    public LiquidPaint setParticleType(int particleType) {
         this.particleType = particleType;
+        return this;
     }
     
     public ParticleGroupDef createParticleGroupDef(Shape shape){
