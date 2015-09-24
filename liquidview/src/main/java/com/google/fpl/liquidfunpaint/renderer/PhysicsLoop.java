@@ -16,12 +16,13 @@
  */
 package com.google.fpl.liquidfunpaint.renderer;
 
-import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.SolidWorld;
 import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
 import com.google.fpl.liquidfunpaint.physics.WorldLock;
 import com.google.fpl.liquidfunpaint.shader.ShaderProgram;
+import com.google.fpl.liquidfunpaint.shader.Texture;
 import com.google.fpl.liquidfunpaint.util.DrawableLayer;
+import com.google.fpl.liquidfunpaint.util.FileHelper;
 import com.google.fpl.liquidfunpaint.util.Observable;
 import com.mycardboarddreams.liquidsurface.BuildConfig;
 
@@ -29,6 +30,9 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -50,6 +54,9 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
 
     private static final float TIME_STEP = 1 / 60f; // 60 fps
 
+    private static final String PAPER_MATERIAL_NAME = "paper";
+    private static final String DIFFUSE_TEXTURE_NAME = "uDiffuseTexture";
+
     private static final String TAG = "PhysicsLoop";
     private static final int ONE_SEC = 1000000000;
 
@@ -67,10 +74,13 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
     // Variables for thread synchronization
     private volatile boolean mSimulation = false;
 
-    LiquidWorld mLiquidWorld;
-    SolidWorld mSolidWorld;
+
+    private ParticleRenderer mParticleRenderer;
+    private SolidWorld mSolidWorld;
 
     WorldLock mWorldLock;
+
+    private Texture mPaperTexture;
 
     final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
 
@@ -105,10 +115,10 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
     public void init(Context context) {
         mContext = context;
 
-        mLiquidWorld = LiquidWorld.getInstance();
-        mLiquidWorld.init(context);
+        mParticleRenderer = new ParticleRenderer();
+        mParticleRenderer.init(context);
         mSolidWorld = SolidWorld.getInstance();
-        mSolidWorld.init(mContext);
+        mSolidWorld.init(context);
 
         if (DEBUG_DRAW) {
             mDebugRenderer = new DebugRenderer();
@@ -131,7 +141,7 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
         mWorldLock.lock();
         try {
             mWorldLock.resetWorld();
-            mLiquidWorld.reset();
+            mParticleRenderer.reset();
             mSolidWorld.reset();
 
             if (DEBUG_DRAW) {
@@ -164,9 +174,11 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
                     pendingRunnables.poll().run();
                 }
 
+                drawBackgroundTexture();
+
                 mWorldLock.stepWorld(TIME_STEP);
 
-                mLiquidWorld.onDrawFrame(gl);
+                mParticleRenderer.onDrawFrame(gl);
 
                 mSolidWorld.onDrawFrame(gl);
 
@@ -180,6 +192,13 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
         }
     }
 
+    private void drawBackgroundTexture() {
+        TextureRenderer.getInstance().drawTexture(
+                mPaperTexture, PhysicsLoop.MAT4X4_IDENTITY, -1, 1, 1, -1,
+                sScreenWidth,
+                sScreenHeight);
+    }
+
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         sScreenWidth = width;
@@ -190,7 +209,9 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
         mWorldLock.lock();
 
         try {
-            mLiquidWorld.onSurfaceChanged(gl, width, height);
+            mWorldLock.setWorldDimensions(width, height);
+
+            mParticleRenderer.onSurfaceChanged(gl, width, height);
             mSolidWorld.onSurfaceChanged(gl, width, height);
 
             if (DEBUG_DRAW) {
@@ -214,7 +235,9 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
         mWorldLock.lock();
 
         try {
-            mLiquidWorld.onSurfaceCreated(gl, config);
+            createBackground(mContext);
+
+            mParticleRenderer.onSurfaceCreated(gl, config);
             mSolidWorld.onSurfaceCreated(gl, config);
 
             if (DEBUG_DRAW) {
@@ -241,6 +264,21 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
         pendingRunnables.clear();
     }
 
+
+    private void createBackground(Context context) {
+        // Read in our specific json file
+        String materialFile = FileHelper.loadAsset(
+                context.getAssets(), ParticleRenderer.JSON_FILE);
+        try {
+            JSONObject json = new JSONObject(materialFile);
+            // Texture for paper
+            JSONObject materialData = json.getJSONObject(PAPER_MATERIAL_NAME);
+            String textureName = materialData.getString(DIFFUSE_TEXTURE_NAME);
+            mPaperTexture = new Texture(context, textureName);
+        }  catch (JSONException ex) {
+            Log.e(TAG, "Cannot parse" + ParticleRenderer.JSON_FILE + "\n" + ex.getMessage());
+        }
+    }
 
     void showFrameRate() {
         if (BuildConfig.DEBUG) {

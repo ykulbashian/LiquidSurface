@@ -25,7 +25,6 @@ import com.google.fpl.liquidfun.Draw;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.Vec2;
 import com.google.fpl.liquidfun.World;
-import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.physics.WorldLock;
 import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.Material.AttributeInfo;
@@ -165,7 +164,7 @@ public class DebugRenderer extends Draw implements DrawableLayer {
 
         float pointSize =
                 Math.max(1.0f, PhysicsLoop.getInstance().sScreenWidth *
-                        (2.0f * radius / LiquidWorld.getInstance().sRenderWorldWidth));
+                        (2.0f * radius / WorldLock.getInstance().sRenderWorldWidth));
         mCirclePointSizeBuffer.putFloat(pointSize);
     }
 
@@ -196,7 +195,7 @@ public class DebugRenderer extends Draw implements DrawableLayer {
 
         float pointSize =
                 Math.max(1.0f, PhysicsLoop.getInstance().sScreenWidth *
-                        (2.0f * radius / LiquidWorld.getInstance().sRenderWorldWidth));
+                        (2.0f * radius / WorldLock.getInstance().sRenderWorldWidth));
         for (int i = 0; i < count; ++i) {
             mCirclePointSizeBuffer.putFloat(pointSize);
         }
@@ -338,8 +337,8 @@ public class DebugRenderer extends Draw implements DrawableLayer {
           Matrix.scaleM(
                   mTransformFromWorld,
                   0,
-                  2f / LiquidWorld.getInstance().sRenderWorldWidth,
-                  2f / LiquidWorld.getInstance().sRenderWorldHeight,
+                  2f / WorldLock.getInstance().sRenderWorldWidth,
+                  2f / WorldLock.getInstance().sRenderWorldHeight,
                   1);
     }
 

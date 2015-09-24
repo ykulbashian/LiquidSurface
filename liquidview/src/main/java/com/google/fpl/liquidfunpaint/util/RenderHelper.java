@@ -18,7 +18,7 @@ package com.google.fpl.liquidfunpaint.util;
 
 import android.opengl.Matrix;
 
-import com.google.fpl.liquidfunpaint.LiquidWorld;
+import com.google.fpl.liquidfunpaint.physics.WorldLock;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -95,8 +95,8 @@ public class RenderHelper {
         Matrix.scaleM(
                 mTransformFromWorld,
                 0,
-                1 / LiquidWorld.getInstance().sRenderWorldWidth,
-                1 / LiquidWorld.getInstance().sRenderWorldHeight,
+                1 / WorldLock.getInstance().sRenderWorldWidth,
+                1 / WorldLock.getInstance().sRenderWorldHeight,
                 1);
 
         Matrix.multiplyMM(mPerspectiveTransform, 0, mTempMatrix, 0, mTransformFromWorld, 0);

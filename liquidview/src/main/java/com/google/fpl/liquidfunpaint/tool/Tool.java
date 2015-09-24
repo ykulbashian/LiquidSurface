@@ -27,7 +27,6 @@ import com.google.fpl.liquidfun.ParticleGroupDef;
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfun.Vec2;
-import com.google.fpl.liquidfunpaint.LiquidWorld;
 import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
 import com.google.fpl.liquidfunpaint.physics.WorldLock;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
@@ -212,11 +211,11 @@ public abstract class Tool {
         worldPoint.x = Math.max(border,
                 Math.min(
                         worldPoint.x,
-                        LiquidWorld.getInstance().sRenderWorldWidth - border));
+                        WorldLock.getInstance().sRenderWorldWidth - border));
         worldPoint.y = Math.max(border,
                 Math.min(
                         worldPoint.y,
-                        LiquidWorld.getInstance().sRenderWorldHeight - border));
+                        WorldLock.getInstance().sRenderWorldHeight - border));
     }
 
     /**
@@ -258,9 +257,9 @@ public abstract class Tool {
         float radius = mBrushSize / 2;
 
         Vector2f worldPoint = new Vector2f(
-                LiquidWorld.getInstance().sRenderWorldWidth
+                WorldLock.getInstance().sRenderWorldWidth
                     * screenX / v.getWidth(),
-                LiquidWorld.getInstance().sRenderWorldHeight *
+                WorldLock.getInstance().sRenderWorldHeight *
                     (v.getHeight() - screenY)
                 / v.getHeight());
         clampToWorld(worldPoint, radius);

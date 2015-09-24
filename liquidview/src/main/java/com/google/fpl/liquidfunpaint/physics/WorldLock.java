@@ -13,6 +13,13 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class WorldLock {
 
+    public static final float WORLD_SPAN = 3f;
+    public float sPhysicsWorldWidth = WORLD_SPAN;
+    public float sPhysicsWorldHeight = WORLD_SPAN;
+
+    public float sRenderWorldWidth = WORLD_SPAN;
+    public float sRenderWorldHeight = WORLD_SPAN;
+
     // Parameters for world simulation
     private static final int VELOCITY_ITERATIONS = 6;
     private static final int POSITION_ITERATIONS = 2;
@@ -93,6 +100,21 @@ public class WorldLock {
         }
     }
 
+    public void setWorldDimensions(float width, float height){
+
+        if(height < width) { //landscape
+            sRenderWorldHeight = WORLD_SPAN;
+            sRenderWorldWidth = width * WORLD_SPAN / height;
+        } else { //portrait
+            sRenderWorldHeight = height * WORLD_SPAN / width;
+            sRenderWorldWidth = WORLD_SPAN;
+        }
+
+        sPhysicsWorldWidth = sRenderWorldWidth;
+        sPhysicsWorldHeight = sRenderWorldHeight;
+
+    }
+
     public void stepWorld(float dt){
 
         lock();
@@ -124,8 +146,8 @@ public class WorldLock {
 
     /**
      * Acquire the particle system for thread-safe operations.
-     * Uses the same lock as LiquidWorld, as all LiquidFun operations should be
-     * synchronized. For example, if we are in the middle of LiquidWorld.sync(), we
+     * Uses the same lock as WorldLock, as all LiquidFun operations should be
+     * synchronized. For example, if we are in the middle of WorldLock.sync(), we
      * don't want to call ParticleSystem.createParticleGroup() at the same
      * time.
      */

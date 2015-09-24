@@ -50,8 +50,8 @@ public class SolidWorld implements DrawableLayer{
     private void createWorldBoundaries(){
         World world = WorldLock.getInstance().getWorld();
 
-        float worldWidth = LiquidWorld.getInstance().sPhysicsWorldWidth;
-        float worldHeight = LiquidWorld.getInstance().sPhysicsWorldHeight;
+        float worldWidth = WorldLock.getInstance().sPhysicsWorldWidth;
+        float worldHeight = WorldLock.getInstance().sPhysicsWorldHeight;
 
         float extraPadding = 1;
         float extraWidth = worldWidth + extraPadding;

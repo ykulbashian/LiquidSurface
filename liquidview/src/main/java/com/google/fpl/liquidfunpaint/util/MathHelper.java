@@ -17,7 +17,7 @@
 package com.google.fpl.liquidfunpaint.util;
 
 import com.google.fpl.liquidfun.Vec2;
-import com.google.fpl.liquidfunpaint.LiquidWorld;
+import com.google.fpl.liquidfunpaint.physics.WorldLock;
 
 public final class MathHelper {
     public static float clamp(float value, float min, float max) {
@@ -26,8 +26,8 @@ public final class MathHelper {
 
     public static Vec2 normalizePosition(Vec2 pos){
         Vec2 normal = new Vec2();
-        normal.setX(2*(pos.getX() - LiquidWorld.getInstance().sRenderWorldWidth/2)/LiquidWorld.getInstance().sRenderWorldWidth);
-        normal.setY(2*(pos.getY() - LiquidWorld.getInstance().sRenderWorldHeight/2)/LiquidWorld.getInstance().sRenderWorldHeight);
+        normal.setX(2*(pos.getX() - WorldLock.getInstance().sRenderWorldWidth/2)/WorldLock.getInstance().sRenderWorldWidth);
+        normal.setY(2*(pos.getY() - WorldLock.getInstance().sRenderWorldHeight/2)/WorldLock.getInstance().sRenderWorldHeight);
         return normal;
     }
 
@@ -42,8 +42,8 @@ public final class MathHelper {
     }
 
     public static Vector2f[] normalizePositions(Vector2f[] originalVertices, float viewWidth, float viewHeight){
-        float widthRatio = LiquidWorld.getInstance().sRenderWorldWidth / viewWidth;
-        float heightRatio = LiquidWorld.getInstance().sRenderWorldHeight / viewHeight;
+        float widthRatio = WorldLock.getInstance().sRenderWorldWidth / viewWidth;
+        float heightRatio = WorldLock.getInstance().sRenderWorldHeight / viewHeight;
 
         Vector2f[] normalizedVerts = new Vector2f[originalVertices.length];
 
