@@ -17,7 +17,7 @@
 
 package com.google.fpl.liquidfunpaint.renderer;
 
-import com.google.fpl.liquidfunpaint.DrawableParticleSystem;
+import com.google.fpl.liquidfunpaint.physics.DrawableParticleSystem;
 import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
 import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;

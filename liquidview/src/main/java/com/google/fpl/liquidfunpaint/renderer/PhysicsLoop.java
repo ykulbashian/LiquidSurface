@@ -16,7 +16,7 @@
  */
 package com.google.fpl.liquidfunpaint.renderer;
 
-import com.google.fpl.liquidfunpaint.SolidWorld;
+import com.google.fpl.liquidfunpaint.physics.SolidWorld;
 import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
 import com.google.fpl.liquidfunpaint.physics.WorldLock;
 import com.google.fpl.liquidfunpaint.shader.ShaderProgram;

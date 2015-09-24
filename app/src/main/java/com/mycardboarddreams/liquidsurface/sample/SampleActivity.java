@@ -3,12 +3,8 @@ package com.mycardboarddreams.liquidsurface.sample;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MotionEvent;
-import android.view.View;
 
-import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.mycardboarddreams.liquidsurface.ILiquidWorld;
-import com.google.fpl.liquidfunpaint.SolidWorld;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 

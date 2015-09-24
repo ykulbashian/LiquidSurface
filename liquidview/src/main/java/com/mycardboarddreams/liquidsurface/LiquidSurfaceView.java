@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 
 import com.google.fpl.liquidfunpaint.LiquidPaint;
 import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
-import com.google.fpl.liquidfunpaint.SolidWorld;
+import com.google.fpl.liquidfunpaint.physics.SolidWorld;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.google.fpl.liquidfunpaint.util.MathHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
