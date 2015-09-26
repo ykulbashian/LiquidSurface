@@ -20,6 +20,7 @@ import android.content.Context;
 import android.opengl.GLES20;
 import android.util.Log;
 
+import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
 import com.google.fpl.liquidfunpaint.physics.WorldLock;
 import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
 
@@ -57,7 +58,7 @@ public class ParticleMaterial extends Material {
         super.beginRender();
 
         float pSize =  mParticleSizeScale * ParticleRenderer.FB_SIZE *
-                (WorldLock.PARTICLE_RADIUS /
+                (ParticleSystems.PARTICLE_RADIUS /
                         Math.min(WorldLock.getInstance().sRenderWorldWidth, WorldLock.getInstance().sRenderWorldHeight));
 
         // Specific uniforms to this material

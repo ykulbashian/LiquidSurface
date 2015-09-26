@@ -40,16 +40,16 @@ public class DrawableParticleSystem {
         particleSystem = pSystem;
 
         mParticlePositionBuffer = ByteBuffer
-                .allocateDirect(2 * 4 * WorldLock.MAX_PARTICLE_COUNT)
+                .allocateDirect(2 * 4 * ParticleSystems.MAX_PARTICLE_COUNT)
                 .order(ByteOrder.nativeOrder());
         mParticleVelocityBuffer = ByteBuffer
-                .allocateDirect(2 * 4 * WorldLock.MAX_PARTICLE_COUNT)
+                .allocateDirect(2 * 4 * ParticleSystems.MAX_PARTICLE_COUNT)
                 .order(ByteOrder.nativeOrder());
         mParticleColorBuffer = ByteBuffer
-                .allocateDirect(4 * WorldLock.MAX_PARTICLE_COUNT)
+                .allocateDirect(4 * ParticleSystems.MAX_PARTICLE_COUNT)
                 .order(ByteOrder.nativeOrder());
         mParticleWeightBuffer = ByteBuffer
-                .allocateDirect(4 * WorldLock.MAX_PARTICLE_COUNT)
+                .allocateDirect(4 * ParticleSystems.MAX_PARTICLE_COUNT)
                 .order(ByteOrder.nativeOrder());
     }
 

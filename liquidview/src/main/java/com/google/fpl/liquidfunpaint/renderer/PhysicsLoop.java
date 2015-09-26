@@ -132,7 +132,6 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
         mWorldLock.lock();
         try {
             mWorldLock.resetWorld();
-            ParticleSystems.getInstance().reset();
 
             mParticleRenderer.reset();
             mSolidWorld.reset();

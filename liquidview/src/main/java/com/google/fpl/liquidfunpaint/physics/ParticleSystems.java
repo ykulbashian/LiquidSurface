@@ -1,10 +1,9 @@
 package com.google.fpl.liquidfunpaint.physics;
 
 import com.google.fpl.liquidfun.ParticleSystem;
-import com.google.fpl.liquidfun.PolygonShape;
-import com.google.fpl.liquidfun.Transform;
+import com.google.fpl.liquidfun.ParticleSystemDef;
+import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.LiquidPaint;
-import com.google.fpl.liquidfunpaint.util.MathHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 import java.util.HashMap;
@@ -16,22 +15,35 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
 
     public static final String DEFAULT_PARTICLE_SYSTEM = "default_particle_system";
 
+    public static final int MAX_PARTICLE_COUNT = 5000;
+    public static final float PARTICLE_RADIUS = 0.06f;
+    public static final float PARTICLE_REPULSIVE_STRENGTH = 0.5f;
+
     private static ParticleSystems sInstance = new ParticleSystems();
 
     public static ParticleSystems getInstance(){
         return sInstance;
     }
 
-    public void reset(){
+    public void reset(World world){
         for(DrawableParticleSystem system : values())
             system.delete();
 
         clear();
-        createParticleSystem(DEFAULT_PARTICLE_SYSTEM);
+        createParticleSystem(world, DEFAULT_PARTICLE_SYSTEM);
     }
 
-    private void createParticleSystem(String key) {
-        ParticleSystem particleSystem = WorldLock.getInstance().createParticleSystem();
+    public void createParticleSystem(World world, String key) {
+        ParticleSystemDef psDef = new ParticleSystemDef();
+        psDef.setRadius(PARTICLE_RADIUS);
+        psDef.setRepulsiveStrength(PARTICLE_REPULSIVE_STRENGTH);
+        psDef.setElasticStrength(2.0f);
+        psDef.setDensity(0.5f);
+        ParticleSystem particleSystem = world.createParticleSystem(psDef);
+        particleSystem.setMaxParticleCount(MAX_PARTICLE_COUNT);
+
+        psDef.delete();
+
         put(key, new DrawableParticleSystem(particleSystem));
     }
 
@@ -61,7 +73,8 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
         if(containsKey(key))
             return super.get(key);
         else{
-            createParticleSystem(key.toString());
+            World world = WorldLock.getInstance().getWorld();
+            createParticleSystem(world, key.toString());
             return get(key);
         }
 
