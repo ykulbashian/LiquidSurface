@@ -93,13 +93,7 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
 
     @Override
     public void createLiquidShape(final Vector2f[] vertices, final LiquidPaint options) {
-        mWorldLock.addPhysicsCommand(new Runnable() {
-            @Override
-            public void run() {
-                ParticleSystems.getInstance().fillShape(MathHelper.normalizeVertices(vertices, getWidth(), getHeight()),
-                        options, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
-            }
-        });
+        createLiquidShape(vertices,options, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
     }
 
     @Override
