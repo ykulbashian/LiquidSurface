@@ -1,6 +1,7 @@
 package com.google.fpl.liquidfunpaint.physics;
 
 import android.content.Context;
+import android.opengl.Matrix;
 
 import com.google.fpl.liquidfun.Body;
 import com.google.fpl.liquidfun.BodyDef;
@@ -27,6 +28,8 @@ import javax.microedition.khronos.opengles.GL10;
 public class SolidWorld implements DrawableLayer{
 
     private final List<Body> bodies = new ArrayList<>();
+
+    private final float[] mTransformFromWorld = new float[16];
 
     private Body mBoundaryBody = null;
     private Texture mSmileyTexture;
@@ -139,14 +142,23 @@ public class SolidWorld implements DrawableLayer{
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         createWorldBoundaries();
+
+        Matrix.setIdentityM(mTransformFromWorld, 0);
+        Matrix.translateM(mTransformFromWorld, 0, -1, -1, 0);
+        Matrix.scaleM(
+                mTransformFromWorld,
+                0,
+                2f / WorldLock.getInstance().sRenderWorldWidth,
+                2f / WorldLock.getInstance().sRenderWorldHeight,
+                1);
     }
 
     public void onDrawFrame(GL10 gl){
         for(Body body : bodies) {
             if (body != null) {
-                Vec2 center = MathHelper.normalizePosition(body.getWorldCenter());
+                Vec2 center = body.getWorldCenter();
                 TextureRenderer.getInstance().drawTexture(
-                        mSmileyTexture, PhysicsLoop.MAT4X4_IDENTITY,
+                        mSmileyTexture, mTransformFromWorld,
                         (center.getX()) - 0.1f,
                         (center.getY()),
                         (center.getX()) + 0.1f,
