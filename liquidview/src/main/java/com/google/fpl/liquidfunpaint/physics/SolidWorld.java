@@ -37,7 +37,6 @@ public class SolidWorld implements DrawableLayer{
     private final float[] mTransformFromWorld = new float[16];
 
     private static final float BOUNDARY_THICKNESS = 0.2f;
-    private static final String TEXTURE_NAME = "textures/smiley.png";
 
     private static SolidWorld sInstance = new SolidWorld();
 
@@ -146,12 +145,10 @@ public class SolidWorld implements DrawableLayer{
     }
     @Override
     public void reset(){
-        World world = WorldLock.getInstance().getWorld();
 
         for(Body body : bodies) {
             if (body != null) {
                 polygons.get(body).delete();
-                world.destroyBody(body);
                 body.delete();
             }
         }
