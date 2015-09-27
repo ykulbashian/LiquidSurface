@@ -50,7 +50,7 @@ import javax.microedition.khronos.opengles.GL10;
 public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
     // Private constants
     private static final PhysicsLoop _instance = new PhysicsLoop();
-    public static final boolean DEBUG_DRAW = true;
+    public static final boolean DEBUG_DRAW = false;
 
     private static final String PAPER_MATERIAL_NAME = "paper";
     private static final String DIFFUSE_TEXTURE_NAME = "uDiffuseTexture";
