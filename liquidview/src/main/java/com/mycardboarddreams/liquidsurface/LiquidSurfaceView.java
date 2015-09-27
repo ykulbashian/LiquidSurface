@@ -7,11 +7,11 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
 import com.google.fpl.liquidfunpaint.LiquidPaint;
-import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
-import com.google.fpl.liquidfunpaint.physics.SolidWorld;
 import com.google.fpl.liquidfunpaint.physics.WorldLock;
+import com.google.fpl.liquidfunpaint.physics.actions.CreateParticles;
+import com.google.fpl.liquidfunpaint.physics.actions.CreateSolidShape;
+import com.google.fpl.liquidfunpaint.physics.actions.EraseParticles;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
-import com.google.fpl.liquidfunpaint.util.MathHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -88,28 +88,22 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
 
     @Override
     public void createLiquidShape(final Vector2f[] vertices){
-        createLiquidShape(vertices, LiquidPaint.LIQUID());
+        mWorldLock.addPhysicsCommand(new CreateParticles(vertices));
     }
 
     @Override
     public void createLiquidShape(final Vector2f[] vertices, final LiquidPaint options) {
-        createLiquidShape(vertices,options, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
+        mWorldLock.addPhysicsCommand(new CreateParticles(vertices, options));
     }
 
     @Override
     public void createLiquidShape(final Vector2f[] vertices, final String particleSystem) {
-        createLiquidShape(vertices, LiquidPaint.LIQUID(), particleSystem);
+        mWorldLock.addPhysicsCommand(new CreateParticles(vertices, particleSystem));
     }
 
     @Override
     public void createLiquidShape(final Vector2f[] vertices, final LiquidPaint options, final String particleSystem) {
-        mWorldLock.addPhysicsCommand(new Runnable() {
-            @Override
-            public void run() {
-                ParticleSystems.getInstance().fillShape(MathHelper.normalizeVertices(vertices, getWidth(), getHeight()),
-                        options, particleSystem);
-            }
-        });
+        mWorldLock.addPhysicsCommand(new CreateParticles(vertices, options, particleSystem));
     }
 
     @Override
@@ -120,32 +114,17 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
 
     @Override
     public void createSolidShape(final Vector2f[] vertices){
-        mWorldLock.addPhysicsCommand(new Runnable() {
-            @Override
-            public void run() {
-                SolidWorld.getInstance().createSolidObject(MathHelper.normalizeVertices(vertices, getWidth(), getHeight()));
-            }
-        });
+        mWorldLock.addPhysicsCommand(new CreateSolidShape(vertices));
     }
 
     @Override
     public void eraseParticles(final Vector2f[] vertices){
-        mWorldLock.addPhysicsCommand(new Runnable() {
-            @Override
-            public void run() {
-                ParticleSystems.getInstance().eraseParticles(MathHelper.normalizeVertices(vertices, getWidth(), getHeight()));
-            }
-        });
+        mWorldLock.addPhysicsCommand(new EraseParticles(vertices));
     }
 
     @Override
     public void eraseParticles(final Vector2f[] vertices, final String particleSystem) {
-        mWorldLock.addPhysicsCommand(new Runnable() {
-            @Override
-            public void run() {
-                ParticleSystems.getInstance().eraseParticles(MathHelper.normalizeVertices(vertices, getWidth(), getHeight()), particleSystem);
-            }
-        });
+        mWorldLock.addPhysicsCommand(new EraseParticles(vertices, particleSystem));
     }
 
     @Override
