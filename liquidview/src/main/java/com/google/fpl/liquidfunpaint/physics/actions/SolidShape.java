@@ -20,6 +20,6 @@ public class SolidShape implements PhysicsCommand {
     @Override
     public void run() {
         Vector2f[] normalized = MathHelper.normalizeVertices(mVertices, PhysicsLoop.getInstance().sScreenWidth, PhysicsLoop.getInstance().sScreenHeight);
-        SolidWorld.getInstance().createSolidObject(normalized);
+        SolidWorld.getInstance().createSolidObject(normalized, BodyType.dynamicBody);
     }
 }

@@ -37,7 +37,7 @@ public class SolidWorld implements DrawableLayer{
     private Body mBoundaryBody = null;
     private Texture mSmileyTexture;
 
-    private static final float BOUNDARY_THICKNESS = 20.0f;
+    private static final float BOUNDARY_THICKNESS = 0.2f;
     private static final String TEXTURE_NAME = "textures/smiley.png";
 
     private static SolidWorld sInstance = new SolidWorld();
@@ -53,80 +53,43 @@ public class SolidWorld implements DrawableLayer{
     }
 
     private void createWorldBoundaries(){
-        World world = WorldLock.getInstance().getWorld();
 
         float worldWidth = WorldLock.getInstance().sPhysicsWorldWidth;
         float worldHeight = WorldLock.getInstance().sPhysicsWorldHeight;
 
-        float extraPadding = 1;
+        float extraPadding = 0;
         float extraWidth = worldWidth + extraPadding;
 
-        // clean up previous Body if exists
-        if (mBoundaryBody != null) {
-            world.destroyBody(mBoundaryBody);
-        }
-
-        // Create native objects
-        BodyDef bodyDef = new BodyDef();
-        PolygonShape boundaryPolygon = new PolygonShape();
-
-        mBoundaryBody = world.createBody(bodyDef);
 
         // boundary definitions
         // top
-        boundaryPolygon.setAsBox(
-                extraWidth,
-                BOUNDARY_THICKNESS,
-                worldWidth / 2,
-                worldHeight + BOUNDARY_THICKNESS,
-                0);
-        mBoundaryBody.createFixture(boundaryPolygon, 0.0f);
-        // bottom
-        boundaryPolygon.setAsBox(
-                extraWidth,
-                BOUNDARY_THICKNESS,
-                worldWidth / 2,
-                -BOUNDARY_THICKNESS,
-                0);
-        mBoundaryBody.createFixture(boundaryPolygon, 0.0f);
-        // left
-        boundaryPolygon.setAsBox(
-                BOUNDARY_THICKNESS,
-                worldHeight,
-                -BOUNDARY_THICKNESS - extraPadding,
-                worldHeight / 2,
-                0);
-        mBoundaryBody.createFixture(boundaryPolygon, 0.0f);
-        // right
-        boundaryPolygon.setAsBox(
-                BOUNDARY_THICKNESS,
-                worldHeight,
-                worldWidth + BOUNDARY_THICKNESS + extraPadding,
-                worldHeight / 2,
-                0);
-        mBoundaryBody.createFixture(boundaryPolygon, 0.0f);
+        Vector2f[] vTop = MathHelper.createBox(new Vector2f(worldWidth / 2, worldHeight + BOUNDARY_THICKNESS/2), 2*extraWidth, BOUNDARY_THICKNESS);
+        createSolidObject(vTop, BodyType.staticBody);
 
-        // Clean up native objects
-        bodyDef.delete();
-        boundaryPolygon.delete();
+        // bottom
+        vTop = MathHelper.createBox(new Vector2f(worldWidth / 2, -BOUNDARY_THICKNESS/2), 2*extraWidth, BOUNDARY_THICKNESS);
+        createSolidObject(vTop, BodyType.staticBody);
+
+        // left
+        vTop = MathHelper.createBox(new Vector2f(-BOUNDARY_THICKNESS/2, worldHeight / 2), BOUNDARY_THICKNESS, worldHeight);
+        createSolidObject(vTop, BodyType.staticBody);
+
+        // right
+        vTop = MathHelper.createBox(new Vector2f(worldWidth + BOUNDARY_THICKNESS/2, worldHeight / 2), BOUNDARY_THICKNESS, worldHeight);
+        createSolidObject(vTop, BodyType.staticBody);
+
     }
 
-    public void createSolidObject(Vector2f[] vertices){
+    public void createSolidObject(Vector2f[] vertices, BodyType type){
         World world = WorldLock.getInstance().getWorld();
-
-        Body body = null;
-        // clean up previous Body if exists
-        if (body != null) {
-            world.destroyBody(body);
-        }
 
         // Create native objects
         BodyDef bodyDef = new BodyDef();
         PolygonShape boundaryPolygon = new PolygonShape();
 
-        body = world.createBody(bodyDef);
+        Body body = world.createBody(bodyDef);
         bodies.add(body);
-        body.setType(BodyType.dynamicBody);
+        body.setType(type);
 
         boundaryPolygon.set(MathHelper.convertVectToFloats(vertices), vertices.length);
         body.createFixture(boundaryPolygon, 0.1f);
@@ -178,8 +141,10 @@ public class SolidWorld implements DrawableLayer{
     }
     @Override
     public void reset(){
+        World world = WorldLock.getInstance().getWorld();
 
         if (mBoundaryBody != null) {
+            world.destroyBody(mBoundaryBody);
             mBoundaryBody.delete();
             mBoundaryBody = null;
         }
@@ -187,6 +152,7 @@ public class SolidWorld implements DrawableLayer{
         for(Body body : bodies) {
             if (body != null) {
                 polygons.get(body).delete();
+                world.destroyBody(body);
                 body.delete();
             }
         }

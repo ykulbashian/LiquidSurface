@@ -72,13 +72,13 @@ public final class MathHelper {
     public static Vector2f[] createBox(Vector2f center, float width, float height){
         Vector2f[] vertices = new Vector2f[4];
 
-        vertices[0] = new Vector2f(center.x - width/2, center.y + height/2);
+        vertices[0] = new Vector2f(center.x - width/2, center.y - height/2);
 
-        vertices[1] = new Vector2f(center.x + width/2, center.y + height/2);
+        vertices[1] = new Vector2f(center.x + width/2, center.y - height/2);
 
-        vertices[2] = new Vector2f(center.x - width/2, center.y - height/2);
+        vertices[2] = new Vector2f(center.x + width/2, center.y + height/2);
 
-        vertices[3] = new Vector2f(center.x + width/2, center.y - height/2);
+        vertices[3] = new Vector2f(center.x - width/2, center.y + height/2);
 
         return vertices;
     }
