@@ -9,27 +9,27 @@ import com.google.fpl.liquidfunpaint.util.Vector2f;
 /**
  * Created on 15-09-26.
  */
-public class CreateParticles implements PhysicsCommand {
+public class ParticleGroup implements PhysicsCommand {
 
     private final Vector2f[] mVertices;
     private final LiquidPaint mPaint;
     private final String mGroup;
 
-    public CreateParticles(Vector2f[] vertices){
+    public ParticleGroup(Vector2f[] vertices){
         this(vertices, LiquidPaint.LIQUID(), ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
     }
 
-    public CreateParticles(Vector2f[] vertices, LiquidPaint paint){
+    public ParticleGroup(Vector2f[] vertices, LiquidPaint paint){
         this(vertices, paint, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
 
     }
 
-    public CreateParticles(Vector2f[] vertices, String particleGroup){
+    public ParticleGroup(Vector2f[] vertices, String particleGroup){
         this(vertices, LiquidPaint.LIQUID(), particleGroup);
 
     }
 
-    public CreateParticles(Vector2f[] vertices, LiquidPaint paint, String particleGroup){
+    public ParticleGroup(Vector2f[] vertices, LiquidPaint paint, String particleGroup){
         mVertices = vertices;
         mPaint = paint;
         mGroup = particleGroup;

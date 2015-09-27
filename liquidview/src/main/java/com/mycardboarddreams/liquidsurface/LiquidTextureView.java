@@ -8,6 +8,9 @@ import android.view.TextureView;
 import com.google.fpl.liquidfunpaint.LiquidPaint;
 import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
 import com.google.fpl.liquidfunpaint.physics.WorldLock;
+import com.google.fpl.liquidfunpaint.physics.actions.ParticleEraser;
+import com.google.fpl.liquidfunpaint.physics.actions.ParticleGroup;
+import com.google.fpl.liquidfunpaint.physics.actions.SolidShape;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.google.fpl.liquidfunpaint.physics.SolidWorld;
 import com.google.fpl.liquidfunpaint.util.MathHelper;
@@ -80,73 +83,25 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
     }
 
     @Override
+    public void createSolidShape(SolidShape solidShape) {
+        mWorldLock.addPhysicsCommand(solidShape);
+    }
+
+    @Override
+    public void eraseParticles(ParticleEraser eraserShape) {
+        mWorldLock.addPhysicsCommand(eraserShape);
+    }
+
+    @Override
+    public void createParticles(ParticleGroup liquidShape) {
+        mWorldLock.addPhysicsCommand(liquidShape);
+    }
+
+    @Override
     public void pausePhysics(){
         mPhysicsLoop.pauseSimulation();
         mController.onPause();
         thread.setPaused(true);
-    }
-
-    @Override
-    public void createLiquidShape(final Vector2f[] vertices){
-        createLiquidShape(vertices, LiquidPaint.LIQUID());
-    }
-
-    @Override
-    public void createLiquidShape(final Vector2f[] vertices, final LiquidPaint paint){
-        mWorldLock.addPhysicsCommand(new Runnable() {
-            @Override
-            public void run() {
-                ParticleSystems.getInstance().fillShape(MathHelper.normalizeVertices(vertices, getWidth(), getHeight()),
-                        paint, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
-            }
-        });
-
-    }
-
-    @Override
-    public void createLiquidShape(final Vector2f[] vertices, final String particleSystem) {
-        createLiquidShape(vertices, LiquidPaint.LIQUID(), particleSystem);
-    }
-
-    @Override
-    public void createLiquidShape(final Vector2f[] vertices, final LiquidPaint options, final String particleSystem) {
-        mWorldLock.addPhysicsCommand(new Runnable() {
-            @Override
-            public void run() {
-                ParticleSystems.getInstance().fillShape(MathHelper.normalizeVertices(vertices, getWidth(), getHeight()),
-                        options, particleSystem);
-            }
-        });
-    }
-
-    @Override
-    public void createSolidShape(final Vector2f[] vertices){
-        mWorldLock.addPhysicsCommand(new Runnable() {
-            @Override
-            public void run() {
-                SolidWorld.getInstance().createSolidObject(MathHelper.normalizeVertices(vertices, getWidth(), getHeight()));
-            }
-        });
-    }
-
-    @Override
-    public void eraseParticles(final Vector2f[] vertices){
-        mWorldLock.addPhysicsCommand(new Runnable() {
-            @Override
-            public void run() {
-                ParticleSystems.getInstance().eraseParticles(MathHelper.normalizeVertices(vertices, getWidth(), getHeight()));
-            }
-        });
-    }
-
-    @Override
-    public void eraseParticles(final Vector2f[] vertices, final String particleSystem) {
-        mWorldLock.addPhysicsCommand(new Runnable() {
-            @Override
-            public void run() {
-                ParticleSystems.getInstance().eraseParticles(MathHelper.normalizeVertices(vertices, getWidth(), getHeight()), particleSystem);
-            }
-        });
     }
 
     @Override

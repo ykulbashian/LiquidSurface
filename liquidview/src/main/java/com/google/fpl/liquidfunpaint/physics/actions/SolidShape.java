@@ -1,6 +1,7 @@
 package com.google.fpl.liquidfunpaint.physics.actions;
 
-import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
+import com.google.fpl.liquidfun.BodyType;
+import com.google.fpl.liquidfunpaint.physics.SolidWorld;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.google.fpl.liquidfunpaint.util.MathHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
@@ -8,23 +9,17 @@ import com.google.fpl.liquidfunpaint.util.Vector2f;
 /**
  * Created on 15-09-26.
  */
-public class EraseParticles implements PhysicsCommand {
+public class SolidShape implements PhysicsCommand {
 
     private final Vector2f[] mVertices;
-    private final String mGroup;
 
-    public EraseParticles(Vector2f[] vertices){
-        this(vertices, ParticleSystems.DEFAULT_PARTICLE_SYSTEM);
-    }
-
-    public EraseParticles(Vector2f[] vertices, String particleGroup){
+    public SolidShape(Vector2f[] vertices){
         mVertices = vertices;
-        mGroup = particleGroup;
     }
 
     @Override
     public void run() {
         Vector2f[] normalized = MathHelper.normalizeVertices(mVertices, PhysicsLoop.getInstance().sScreenWidth, PhysicsLoop.getInstance().sScreenHeight);
-        ParticleSystems.getInstance().eraseParticles(normalized, mGroup);
+        SolidWorld.getInstance().createSolidObject(normalized);
     }
 }
