@@ -1540,17 +1540,6 @@ inline int b2ParticleSystem::CopyWeightBuffer(int startIndex,
 					  copySize);
 }
 
-inline int b2ParticleSystem::CopyVelocityBuffer(int startIndex,
-												int numParticles,
-												void* outBuf,
-												int size) const
-{
-	int copySize = numParticles * sizeof(b2Vec2);
-	void* inBufWithOffset = (void*) (GetVelocityBuffer() + startIndex);
-	return CopyBuffer(startIndex, numParticles, inBufWithOffset, outBuf, size,
-					  copySize);
-}
-
 inline int b2ParticleSystem::CopyBuffer(int startIndex, int numParticles,
 										void* inBufWithOffset, void* outBuf,
 										int outBufSize, int copySize) const
