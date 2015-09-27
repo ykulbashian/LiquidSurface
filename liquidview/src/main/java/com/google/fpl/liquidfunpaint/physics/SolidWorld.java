@@ -2,6 +2,7 @@ package com.google.fpl.liquidfunpaint.physics;
 
 import android.content.Context;
 import android.opengl.Matrix;
+import android.text.TextUtils;
 
 import com.google.fpl.liquidfun.Body;
 import com.google.fpl.liquidfun.BodyDef;
@@ -31,11 +32,9 @@ public class SolidWorld implements DrawableLayer{
 
     private final List<Body> bodies = new ArrayList<>();
     private final Map<Body, PolygonShape> polygons = new HashMap<>();
+    private final Map<Body, Texture> textures = new HashMap<>();
 
     private final float[] mTransformFromWorld = new float[16];
-
-    private Body mBoundaryBody = null;
-    private Texture mSmileyTexture;
 
     private static final float BOUNDARY_THICKNESS = 0.2f;
     private static final String TEXTURE_NAME = "textures/smiley.png";
@@ -64,23 +63,23 @@ public class SolidWorld implements DrawableLayer{
         // boundary definitions
         // top
         Vector2f[] vTop = MathHelper.createBox(new Vector2f(worldWidth / 2, worldHeight + BOUNDARY_THICKNESS/2), 2*extraWidth, BOUNDARY_THICKNESS);
-        createSolidObject(vTop, BodyType.staticBody);
+        createSolidObject(vTop, BodyType.staticBody, null);
 
         // bottom
         vTop = MathHelper.createBox(new Vector2f(worldWidth / 2, -BOUNDARY_THICKNESS/2), 2*extraWidth, BOUNDARY_THICKNESS);
-        createSolidObject(vTop, BodyType.staticBody);
+        createSolidObject(vTop, BodyType.staticBody, null);
 
         // left
         vTop = MathHelper.createBox(new Vector2f(-BOUNDARY_THICKNESS/2, worldHeight / 2), BOUNDARY_THICKNESS, worldHeight);
-        createSolidObject(vTop, BodyType.staticBody);
+        createSolidObject(vTop, BodyType.staticBody, null);
 
         // right
         vTop = MathHelper.createBox(new Vector2f(worldWidth + BOUNDARY_THICKNESS/2, worldHeight / 2), BOUNDARY_THICKNESS, worldHeight);
-        createSolidObject(vTop, BodyType.staticBody);
+        createSolidObject(vTop, BodyType.staticBody, null);
 
     }
 
-    public void createSolidObject(Vector2f[] vertices, BodyType type){
+    public void createSolidObject(Vector2f[] vertices, BodyType type, String textureName){
         World world = WorldLock.getInstance().getWorld();
 
         // Create native objects
@@ -98,12 +97,15 @@ public class SolidWorld implements DrawableLayer{
         bodyDef.delete();
 
         polygons.put(body, boundaryPolygon);
+
+        if(!TextUtils.isEmpty(textureName)){
+            Texture texture = new Texture(mContext, textureName);
+            textures.put(body, texture);
+        }
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        mSmileyTexture = new Texture(mContext, TEXTURE_NAME);
-
     }
 
     @Override
@@ -123,31 +125,28 @@ public class SolidWorld implements DrawableLayer{
     public void onDrawFrame(GL10 gl){
         for(Body body : bodies) {
             if (body != null) {
-                PolygonShape shape = polygons.get(body);
 
-                Vec2[] poly = MathHelper.getPolygonVertices(shape);
+                if(textures.containsKey(body)) {
+                    PolygonShape shape = polygons.get(body);
 
-                Vec2 center = body.getWorldCenter();
-                TextureRenderer.getInstance().drawTexture(
-                        mSmileyTexture, mTransformFromWorld,
-                        (center.getX()) - 0.1f,
-                        (center.getY()),
-                        (center.getX()) + 0.1f,
-                        (center.getY()) - 0.2f,
-                        PhysicsLoop.getInstance().sScreenWidth,
-                        PhysicsLoop.getInstance().sScreenHeight);
+                    Vector2f poly = MathHelper.getPolygonSize(shape);
+
+                    Vec2 center = body.getWorldCenter();
+                    TextureRenderer.getInstance().drawTexture(
+                            textures.get(body), mTransformFromWorld,
+                            (center.getX()) - poly.x / 2,
+                            (center.getY()) + poly.y / 2,
+                            (center.getX()) + poly.x / 2,
+                            (center.getY()) - poly.y / 2,
+                            PhysicsLoop.getInstance().sScreenWidth,
+                            PhysicsLoop.getInstance().sScreenHeight);
+                }
             }
         }
     }
     @Override
     public void reset(){
         World world = WorldLock.getInstance().getWorld();
-
-        if (mBoundaryBody != null) {
-            world.destroyBody(mBoundaryBody);
-            mBoundaryBody.delete();
-            mBoundaryBody = null;
-        }
 
         for(Body body : bodies) {
             if (body != null) {
