@@ -51,8 +51,20 @@ public class PolygonShape extends Shape {
     liquidfunJNI.PolygonShape_setAsBox__SWIG_1(swigCPtr, this, hx, hy, centerX, centerY, angle);
   }
 
+  public void set(Vec2 points, int count) {
+    liquidfunJNI.PolygonShape_set__SWIG_0(swigCPtr, this, Vec2.getCPtr(points), points, count);
+  }
+
+  public int getVertexCount() {
+    return liquidfunJNI.PolygonShape_getVertexCount(swigCPtr, this);
+  }
+
+  public Vec2 getVertex(int index) {
+    return new Vec2(liquidfunJNI.PolygonShape_getVertex(swigCPtr, this, index), false);
+  }
+
   public void set(float[] vertices, int count) {
-    liquidfunJNI.PolygonShape_set(swigCPtr, this, vertices, count);
+    liquidfunJNI.PolygonShape_set__SWIG_1(swigCPtr, this, vertices, count);
   }
 
 }

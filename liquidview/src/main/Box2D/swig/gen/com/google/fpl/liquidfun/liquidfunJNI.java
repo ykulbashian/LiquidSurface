@@ -81,7 +81,10 @@ public class liquidfunJNI {
   public final static native void PolygonShape_setAsBox__SWIG_0(long jarg1, PolygonShape jarg1_, float jarg2, float jarg3);
   public final static native void PolygonShape_setCentroid(long jarg1, PolygonShape jarg1_, float jarg2, float jarg3);
   public final static native void PolygonShape_setAsBox__SWIG_1(long jarg1, PolygonShape jarg1_, float jarg2, float jarg3, float jarg4, float jarg5, float jarg6);
-  public final static native void PolygonShape_set(long jarg1, PolygonShape jarg1_, float[] jarg2, int jarg3);
+  public final static native void PolygonShape_set__SWIG_0(long jarg1, PolygonShape jarg1_, long jarg2, Vec2 jarg2_, int jarg3);
+  public final static native int PolygonShape_getVertexCount(long jarg1, PolygonShape jarg1_);
+  public final static native long PolygonShape_getVertex(long jarg1, PolygonShape jarg1_, int jarg2);
+  public final static native void PolygonShape_set__SWIG_1(long jarg1, PolygonShape jarg1_, float[] jarg2, int jarg3);
   public final static native void delete_PolygonShape(long jarg1);
   public final static native long new_Color__SWIG_0();
   public final static native long new_Color__SWIG_1(float jarg1, float jarg2, float jarg3);

@@ -35,6 +35,10 @@ public:
                   float32 centerX,
                   float32 centerY,
                   float32 angle);
+	void Set(const b2Vec2* points, int32 count);
+
+	int32 GetVertexCount() const { return m_count; }
+	const b2Vec2& GetVertex(int32 index) const;
 
 	void Set(const float32 vertices[], int32 count);
 };

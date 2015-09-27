@@ -2707,7 +2707,55 @@ SWIGEXPORT void JNICALL Java_com_google_fpl_liquidfun_liquidfunJNI_PolygonShape_
 }
 
 
-SWIGEXPORT void JNICALL Java_com_google_fpl_liquidfun_liquidfunJNI_PolygonShape_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jfloatArray jarg2, jint jarg3) {
+SWIGEXPORT void JNICALL Java_com_google_fpl_liquidfun_liquidfunJNI_PolygonShape_1set_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3) {
+  b2PolygonShape *arg1 = (b2PolygonShape *) 0 ;
+  b2Vec2 *arg2 = (b2Vec2 *) 0 ;
+  int32 arg3 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  (void)jarg2_;
+  arg1 = *(b2PolygonShape **)&jarg1; 
+  arg2 = *(b2Vec2 **)&jarg2; 
+  arg3 = (int32)jarg3; 
+  (arg1)->Set((b2Vec2 const *)arg2,arg3);
+}
+
+
+SWIGEXPORT jint JNICALL Java_com_google_fpl_liquidfun_liquidfunJNI_PolygonShape_1getVertexCount(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  b2PolygonShape *arg1 = (b2PolygonShape *) 0 ;
+  int32 result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(b2PolygonShape **)&jarg1; 
+  result = (int32)((b2PolygonShape const *)arg1)->GetVertexCount();
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_com_google_fpl_liquidfun_liquidfunJNI_PolygonShape_1getVertex(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  jlong jresult = 0 ;
+  b2PolygonShape *arg1 = (b2PolygonShape *) 0 ;
+  int32 arg2 ;
+  b2Vec2 *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(b2PolygonShape **)&jarg1; 
+  arg2 = (int32)jarg2; 
+  result = (b2Vec2 *) &((b2PolygonShape const *)arg1)->GetVertex(arg2);
+  *(b2Vec2 **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_com_google_fpl_liquidfun_liquidfunJNI_PolygonShape_1set_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jfloatArray jarg2, jint jarg3) {
   b2PolygonShape *arg1 = (b2PolygonShape *) 0 ;
   float32 *arg2 ;
   int32 arg3 ;
