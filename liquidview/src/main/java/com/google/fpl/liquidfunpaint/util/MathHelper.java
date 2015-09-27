@@ -94,4 +94,35 @@ public final class MathHelper {
         return vertices;
     }
 
+    public static Vector2f getPolygonSize(PolygonShape shape){
+        if(shape.getVertexCount() == 0)
+            return new Vector2f(0, 0);
+
+        float lowX = Float.MAX_VALUE;
+        float lowY = Float.MAX_VALUE;
+        float highX = Float.MIN_VALUE;
+        float highY = Float.MIN_VALUE;
+
+        for(int i = 0; i < shape.getVertexCount(); i++){
+            Vec2 v = shape.getVertex(i);
+            if(v.getX() < lowX) lowX = v.getX();
+            if(v.getX() > highX) highX = v.getX();
+            if(v.getY() < lowY) lowY = v.getY();
+            if(v.getY() > highY) highY = v.getY();
+        }
+
+        return new Vector2f(highX - lowX, highY - lowY);
+    }
+
+    public static Vector2f[] getPolygonVertices2f(PolygonShape shape){
+        int vertexCount = shape.getVertexCount();
+
+        Vector2f[] vertices = new Vector2f[vertexCount];
+        for(int i = 0; i < vertexCount; i++){
+            vertices[i] = new Vector2f(shape.getVertex(i).getX(), shape.getVertex(i).getY());
+        }
+
+        return vertices;
+    }
+
 }
