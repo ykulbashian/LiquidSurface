@@ -16,6 +16,7 @@
 */
 package com.google.fpl.liquidfunpaint.util;
 
+import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Vec2;
 import com.google.fpl.liquidfunpaint.physics.WorldLock;
 
@@ -81,4 +82,16 @@ public final class MathHelper {
 
         return vertices;
     }
+
+    public static Vec2[] getPolygonVertices(PolygonShape shape){
+        int vertexCount = shape.getVertexCount();
+
+        Vec2[] vertices = new Vec2[vertexCount];
+        for(int i = 0; i < vertexCount; i++){
+            vertices[i] = shape.getVertex(i);
+        }
+
+        return vertices;
+    }
+
 }

@@ -17,7 +17,9 @@ import com.google.fpl.liquidfunpaint.util.MathHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -28,6 +30,7 @@ import javax.microedition.khronos.opengles.GL10;
 public class SolidWorld implements DrawableLayer{
 
     private final List<Body> bodies = new ArrayList<>();
+    private final Map<Body, PolygonShape> polygons = new HashMap<>();
 
     private final float[] mTransformFromWorld = new float[16];
 
@@ -130,7 +133,8 @@ public class SolidWorld implements DrawableLayer{
 
         // Clean up native objects
         bodyDef.delete();
-        boundaryPolygon.delete();
+
+        polygons.put(body, boundaryPolygon);
     }
 
     @Override
@@ -156,6 +160,10 @@ public class SolidWorld implements DrawableLayer{
     public void onDrawFrame(GL10 gl){
         for(Body body : bodies) {
             if (body != null) {
+                PolygonShape shape = polygons.get(body);
+
+                Vec2[] poly = MathHelper.getPolygonVertices(shape);
+
                 Vec2 center = body.getWorldCenter();
                 TextureRenderer.getInstance().drawTexture(
                         mSmileyTexture, mTransformFromWorld,
@@ -176,10 +184,12 @@ public class SolidWorld implements DrawableLayer{
             mBoundaryBody = null;
         }
 
-        for(Body body : bodies)
+        for(Body body : bodies) {
             if (body != null) {
+                polygons.get(body).delete();
                 body.delete();
             }
+        }
 
         bodies.clear();
     }
