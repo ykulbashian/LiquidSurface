@@ -6,13 +6,11 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
-import com.google.fpl.liquidfunpaint.LiquidPaint;
 import com.google.fpl.liquidfunpaint.physics.WorldLock;
 import com.google.fpl.liquidfunpaint.physics.actions.ParticleGroup;
 import com.google.fpl.liquidfunpaint.physics.actions.SolidShape;
 import com.google.fpl.liquidfunpaint.physics.actions.ParticleEraser;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
-import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;

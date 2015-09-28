@@ -235,10 +235,12 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
     }
 
     public void pauseSimulation() {
+        Log.d(TAG, "Pausing simulation");
         mSimulation = false;
     }
 
     public void startSimulation() {
+        Log.d(TAG, "Starting simulation");
         mSimulation = true;
     }
 
