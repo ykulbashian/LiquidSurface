@@ -20,7 +20,7 @@ import com.google.fpl.liquidfunpaint.util.Vector2f;
 /**
  * Created on 3/25/2015.
  */
-public class LiquidTextureView extends TextureView implements ILiquidWorld {
+public class LiquidTextureView extends GLTextureView implements ILiquidWorld {
 
     /**
      * Load the native libraries
@@ -38,7 +38,6 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
 
     private PhysicsLoop mPhysicsLoop;
     private WorldLock mWorldLock;
-    private LiquidRenderThread thread;
 
     private RotatableController mController;
 
@@ -63,13 +62,11 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
 
         Activity activity = (Activity)context;
 
-        thread = new LiquidRenderThread(activity);
-
         mPhysicsLoop = PhysicsLoop.getInstance();
         mPhysicsLoop.init(activity);
         mWorldLock = WorldLock.getInstance();
 
-        setSurfaceTextureListener(thread);
+        setRenderer(mPhysicsLoop);
 
         mController = new RotatableController(activity);
     }
@@ -79,7 +76,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
         mController.updateDownDirection((Activity) getContext());
         mPhysicsLoop.startSimulation();
         mController.onResume();
-        thread.setPaused(false);
+        setPaused(false);
     }
 
     @Override
@@ -101,7 +98,7 @@ public class LiquidTextureView extends TextureView implements ILiquidWorld {
     public void pausePhysics(){
         mPhysicsLoop.pauseSimulation();
         mController.onPause();
-        thread.setPaused(true);
+        setPaused(true);
     }
 
     @Override
