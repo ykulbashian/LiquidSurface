@@ -23,6 +23,8 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
 
     private GLSurfaceView.Renderer mRenderer;
 
+    private static final int TARGET_FRAME_RATE = 55;
+
     private static final int EGL_OPENGL_ES2_BIT = 4;
     private static final int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
     private static final String TAG = "RenderThread";
@@ -68,7 +70,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
 
 
     private void initialize(Context context) {
-        targetFps = context.getResources().getInteger(R.integer.target_fps);
+        targetFps = TARGET_FRAME_RATE;
 
         setSurfaceTextureListener(this);
     }
