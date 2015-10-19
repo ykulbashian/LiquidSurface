@@ -43,6 +43,7 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
 
     public boolean isRunning = false;
     private boolean paused = true;
+    private boolean rendererChanged = false;
 
     private RenderThread thread;
 
@@ -63,9 +64,9 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
         initialize(context);
     }
 
-    public void setRenderer(GLSurfaceView.Renderer renderer){
+    public synchronized void setRenderer(GLSurfaceView.Renderer renderer){
         mRenderer = renderer;
-        initializeRenderer();
+        rendererChanged = true;
     }
 
 
@@ -140,11 +141,23 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
             initGL();
             checkGlError();
 
-            initializeRenderer();
-
             long lastFrameTime = System.currentTimeMillis();
 
             while (isRunning) {
+                while (mRenderer == null){
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e){
+                        // Ignore
+                    }
+
+                }
+
+                if(rendererChanged){
+                    initializeRenderer(mRenderer);
+                    rendererChanged = false;
+                }
+
                 if (!shouldSleep()) {
 
                     lastFrameTime = System.currentTimeMillis();
@@ -169,14 +182,14 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
 
     }
 
-    private void initializeRenderer() {
-        if(mRenderer != null && isRunning) {
-            mRenderer.onSurfaceCreated(mGl, eglConfig);
-            mRenderer.onSurfaceChanged(mGl, surfaceWidth, surfaceHeight);
+    private synchronized void initializeRenderer(GLSurfaceView.Renderer renderer) {
+        if(renderer != null && isRunning) {
+            renderer.onSurfaceCreated(mGl, eglConfig);
+            renderer.onSurfaceChanged(mGl, surfaceWidth, surfaceHeight);
         }
     }
 
-    private void drawSingleFrame() {
+    private synchronized void drawSingleFrame() {
         checkCurrent();
 
         if(mRenderer != null)
