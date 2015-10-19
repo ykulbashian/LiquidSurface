@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLUtils;
 import android.util.Log;
+import android.view.Choreographer;
 import android.view.TextureView;
 
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
@@ -43,15 +44,33 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
 
     private int targetFps;
 
+    private PhysicsLoop mPhysicsLoop;
+
     public LiquidRenderThread(Activity context){
         targetFps = context.getResources().getInteger(R.integer.target_fps);
+        mPhysicsLoop = PhysicsLoop.getInstance();
     }
 
-    public void initialize(SurfaceTexture surface, int width, int height, float targetFramesPerSecond, boolean isPaused){
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        startThread(surface, width, height, targetFps);
+    }
+
+    public void startThread(SurfaceTexture surface, int width, int height, float targetFramesPerSecond){
+        Log.d(TAG, "Starting LiquidRenderThread thread");
+        thread = new RenderThread();
         mSurface = surface;
         setDimensions(width, height);
         targetFrameDurationMillis = (int) ((1f/targetFramesPerSecond)*1000);
-        setPaused(isPaused);
+        setPaused(false);
+        thread.start();
+
+    }
+
+    @Override
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+        setDimensions(width, height);
+        mPhysicsLoop.onSurfaceChanged(mGl, width, height);
     }
 
     public synchronized void setPaused(boolean isPaused){
@@ -61,6 +80,12 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
 
     public synchronized boolean isPaused(){
         return paused;
+    }
+
+    @Override
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        stopThread();
+        return false;
     }
 
     public void stopThread(){
@@ -78,22 +103,10 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
 
     }
 
-    public void startThread(SurfaceTexture surface, int width, int height, float framesPerSec){
-        Log.d(TAG, "Starting LiquidRenderThread thread");
-        thread = new RenderThread();
-        initialize(surface, width, height, framesPerSec, false);
-        thread.start();
-
-    }
-
     private class RenderThread extends Thread {
         @Override
         public void run() {
-            initGL();
-            checkGlError();
-
-            PhysicsLoop.getInstance().onSurfaceCreated(mGl, eglConfig);
-            PhysicsLoop.getInstance().onSurfaceChanged(mGl, surfaceWidth, surfaceHeight);
+            initializeOpenGL();
 
             long lastFrameTime = System.currentTimeMillis();
 
@@ -104,14 +117,7 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
 
                     lastFrameTime = System.currentTimeMillis();
 
-                    checkCurrent();
-
-                    PhysicsLoop.getInstance().onDrawFrame(mGl);
-
-                    checkGlError();
-                    if (!mEgl.eglSwapBuffers(mEglDisplay, mEglSurface)) {
-                        Log.e(TAG, "cannot swap buffers!");
-                    }
+                    drawSingleFrame();
                 }
 
                 try {
@@ -129,6 +135,25 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
             }
         }
 
+    }
+
+    private void initializeOpenGL() {
+        initGL();
+        checkGlError();
+
+        mPhysicsLoop.onSurfaceCreated(mGl, eglConfig);
+        mPhysicsLoop.onSurfaceChanged(mGl, surfaceWidth, surfaceHeight);
+    }
+
+    private void drawSingleFrame() {
+        checkCurrent();
+
+        mPhysicsLoop.onDrawFrame(mGl);
+
+        checkGlError();
+        if (!mEgl.eglSwapBuffers(mEglDisplay, mEglSurface)) {
+            Log.e(TAG, "cannot swap buffers!");
+        }
     }
 
     public void setDimensions(int width, int height){
@@ -235,28 +260,7 @@ public class LiquidRenderThread implements TextureView.SurfaceTextureListener {
     }
 
     @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        startThread(surface, width, height, targetFps);
-    }
-
-    @Override
-    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-        setDimensions(width, height);
-        PhysicsLoop.getInstance().onSurfaceChanged(mGl, width, height);
-    }
-
-    @Override
-    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        stopThread();
-        return false;
-    }
-
-    @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-    }
-
-    public void clearAllLiquid() {
-        PhysicsLoop.getInstance().reset();
     }
 
 }

@@ -18,7 +18,7 @@ import javax.microedition.khronos.opengles.GL10;
 /**
  * Created on 15-09-19.
  */
-public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GLSurfaceView.Renderer {
+public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld {
 
     /**
      * Load the native libraries
@@ -66,7 +66,7 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
                             GLSurfaceView.DEBUG_CHECK_GL_ERROR);
         }
 
-        setRenderer(this);
+        setRenderer(mPhysicsLoop);
 
         mController = new RotatableController((Activity)context);
     }
@@ -103,20 +103,5 @@ public class LiquidSurfaceView extends GLSurfaceView implements ILiquidWorld, GL
     public void clearAll() {
         mWorldLock.clearPhysicsCommands();
         mPhysicsLoop.reset();
-    }
-
-    @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        mPhysicsLoop.onSurfaceCreated(gl, config);
-    }
-
-    @Override
-    public void onSurfaceChanged(GL10 gl, int width, int height) {
-        mPhysicsLoop.onSurfaceChanged(gl, width, height);
-    }
-
-    @Override
-    public void onDrawFrame(GL10 gl) {
-        mPhysicsLoop.onDrawFrame(gl);
     }
 }

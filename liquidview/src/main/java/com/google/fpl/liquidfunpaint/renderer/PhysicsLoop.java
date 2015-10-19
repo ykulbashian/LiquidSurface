@@ -80,8 +80,6 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
 
     private Texture mPaperTexture;
 
-    final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
-
     protected DebugRenderer mDebugRenderer = null;
 
     // Measure the frame rate
