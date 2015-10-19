@@ -34,17 +34,17 @@ public class SampleActivity extends AppCompatActivity {
     }
 
     /**
-     * Make sure you call the following onResume() and onPause()
+     * Make sure you call the following onStart() and onStop()
      */
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         ltv.resumePhysics();
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
         ltv.pausePhysics();
     }
 
