@@ -58,7 +58,7 @@ public class ParticleRenderer implements DrawableLayer {
     private ScreenRenderer mScreenRenderer;
 
     private final RenderSurface[] mRenderSurface = new RenderSurface[2];
-    private final float[] mTransformFromTexture = new float[16];
+    private final float[] mDrawToScreenTransform = new float[16];
     private final float[] mPerspectiveTransform = new float[16];
 
     private Context mContext;
@@ -83,7 +83,7 @@ public class ParticleRenderer implements DrawableLayer {
     }
 
     private void drawParticleSystemToScreen(DrawableParticleSystem dps) {
-        dps.onDrawFrame();
+        dps.resetBuffers();
 
         // Draw the particles
         drawParticles(dps);
@@ -95,10 +95,10 @@ public class ParticleRenderer implements DrawableLayer {
                 PhysicsLoop.getInstance().sScreenHeight);
 
         // Copy the water particles to screen
-        mWaterScreenRenderer.draw(mTransformFromTexture);
+        mWaterScreenRenderer.draw(mDrawToScreenTransform);
 
         // Copy the other particles to screen
-        mScreenRenderer.draw(mTransformFromTexture);
+        mScreenRenderer.draw(mDrawToScreenTransform);
     }
 
     private void drawParticles(DrawableParticleSystem dps) {
@@ -139,7 +139,7 @@ public class ParticleRenderer implements DrawableLayer {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        RenderHelper.createTransformMatrix(mPerspectiveTransform, mTransformFromTexture, height, width);
+        RenderHelper.createTransformMatrix(mPerspectiveTransform, mDrawToScreenTransform, height, width);
     }
 
     @Override

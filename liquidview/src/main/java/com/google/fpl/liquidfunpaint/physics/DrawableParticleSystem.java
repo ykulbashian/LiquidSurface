@@ -85,7 +85,7 @@ public class DrawableParticleSystem {
         return polygon;
     }
 
-    public void onDrawFrame(){
+    public void resetBuffers(){
 
         mParticlePositionBuffer.rewind();
         mParticleColorBuffer.rewind();
