@@ -15,6 +15,7 @@ import com.google.fpl.liquidfunpaint.renderer.TextureRenderer;
 import com.google.fpl.liquidfunpaint.shader.Texture;
 import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.MathHelper;
+import com.google.fpl.liquidfunpaint.util.RenderHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 import java.util.ArrayList;
@@ -111,14 +112,7 @@ public class SolidWorld implements DrawableLayer{
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         createWorldBoundaries();
 
-        Matrix.setIdentityM(mTransformFromWorld, 0);
-        Matrix.translateM(mTransformFromWorld, 0, -1, -1, 0);
-        Matrix.scaleM(
-                mTransformFromWorld,
-                0,
-                2f / WorldLock.getInstance().sRenderWorldWidth,
-                2f / WorldLock.getInstance().sRenderWorldHeight,
-                1);
+        RenderHelper.perspectiveTransform(mTransformFromWorld, height, width);
     }
 
     public void onDrawFrame(GL10 gl){
