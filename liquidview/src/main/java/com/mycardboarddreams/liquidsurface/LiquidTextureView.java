@@ -73,9 +73,8 @@ public class LiquidTextureView extends GLTextureView implements ILiquidWorld {
 
     @Override
     public void resumePhysics() {
-        mController.updateDownDirection((Activity) getContext());
         mPhysicsLoop.startSimulation();
-        mController.onResume();
+        mController.onResume((Activity) getContext());
         setPaused(false);
     }
 

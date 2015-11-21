@@ -52,7 +52,8 @@ public class RotatableController implements View.OnTouchListener, SensorEventLis
         }
     }
 
-    public void onResume() {
+    public void onResume(Activity activity) {
+        updateDownDirection(activity);
         mManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
     }
 
