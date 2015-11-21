@@ -139,7 +139,8 @@ public class ParticleRenderer implements DrawableLayer {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        RenderHelper.createTransformMatrix(mPerspectiveTransform, mDrawToScreenTransform, height, width);
+        RenderHelper.createTransformMatrix(mDrawToScreenTransform, height, width);
+        RenderHelper.perspectiveTransform(mPerspectiveTransform, height, width);
     }
 
     @Override

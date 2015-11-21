@@ -54,7 +54,7 @@ public class RenderHelper {
         SCREEN_QUAD_VERTEX_BUFFER.put(SCREEN_QUAD_VERTEX_DATA).position(0);
     }
 
-    public static void createTransformMatrix(float[] mPerspectiveTransform, float[] mTransformFromTexture, float height, float width){
+    public static void createTransformMatrix(float[] mTransformFromTexture, float height, float width){
 
         // Set up the transform
         float ratio = (float) height / width;
@@ -66,8 +66,6 @@ public class RenderHelper {
             Matrix.scaleM(mTransformFromTexture, 0, 1, 1, 1);
 
         createEmptyMVP(mTransformFromTexture, 1, 0.5f);
-
-        perspectiveTransform(mPerspectiveTransform, height, width);
     }
 
     public static void perspectiveTransform(float[] mPerspectiveTransform, float height, float width) {
