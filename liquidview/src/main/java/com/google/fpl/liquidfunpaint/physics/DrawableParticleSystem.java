@@ -35,6 +35,8 @@ public class DrawableParticleSystem {
 
     public final ParticleSystem particleSystem;
 
+    private float mDistance;
+
     public ByteBuffer mParticleColorBuffer;
     public ByteBuffer mParticlePositionBuffer;
     public ByteBuffer mParticleVelocityBuffer;
@@ -42,7 +44,7 @@ public class DrawableParticleSystem {
 
     private final float[] mPerspectiveTransform = new float[16];
 
-    public DrawableParticleSystem(ParticleSystem pSystem){
+    public DrawableParticleSystem(ParticleSystem pSystem, float distance){
         particleSystem = pSystem;
 
         mParticlePositionBuffer = ByteBuffer
@@ -58,8 +60,18 @@ public class DrawableParticleSystem {
                 .allocateDirect(4 * ParticleSystems.MAX_PARTICLE_COUNT)
                 .order(ByteOrder.nativeOrder());
 
-        RenderHelper.perspectiveTransform(mPerspectiveTransform, PhysicsLoop.getInstance().sScreenWidth,
-                PhysicsLoop.getInstance().sScreenHeight);
+        setDistance(distance);
+
+        resetDimensions(PhysicsLoop.getInstance().sScreenWidth, PhysicsLoop.getInstance().sScreenHeight, mDistance);
+    }
+
+    public void setDistance(float newDistance){
+        mDistance = newDistance;
+    }
+
+
+    private void resetDimensions(float width, float height, float distance){
+        RenderHelper.perspectiveTransform(mPerspectiveTransform, width, height, distance);
     }
 
     public int getParticleCount(){
@@ -116,7 +128,7 @@ public class DrawableParticleSystem {
     }
 
     public void onSurfaceChanged(GL10 gl, int width, int height){
-        RenderHelper.perspectiveTransform(mPerspectiveTransform, width, height);
+        RenderHelper.perspectiveTransform(mPerspectiveTransform, width, height, mDistance);
     }
 
     public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial){

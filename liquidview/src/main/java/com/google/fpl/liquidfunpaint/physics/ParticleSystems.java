@@ -44,7 +44,7 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
 
         psDef.delete();
 
-        put(key, new DrawableParticleSystem(particleSystem));
+        put(key, new DrawableParticleSystem(particleSystem, (float) Math.random()));
     }
 
     public int getParticleCount(){

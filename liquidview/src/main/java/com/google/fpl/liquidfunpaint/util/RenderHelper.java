@@ -68,12 +68,13 @@ public class RenderHelper {
         createEmptyMVP(mTransformFromTexture, 1, 0.5f);
     }
 
-    public static void perspectiveTransform(float[] mPerspectiveTransform, float width, float height) {
+    public static void perspectiveTransform(float[] mPerspectiveTransform, float width, float height, float distance) {
         float ratio = height / width;
         Matrix.setIdentityM(mPerspectiveTransform, 0);
 
         float[] transformFromPhysicsWorld = new float[16];
         createWorldTransform(transformFromPhysicsWorld);
+        Matrix.translateM(transformFromPhysicsWorld, 0, 0, 0, distance);
 
         float[] mvpMatrix = new float[16];
         createMVP(mvpMatrix, ratio, 0.25f);
