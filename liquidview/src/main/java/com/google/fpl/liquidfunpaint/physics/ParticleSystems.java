@@ -6,7 +6,14 @@ import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.LiquidPaint;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created on 8/13/2015.
@@ -20,6 +27,8 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
     public static final float PARTICLE_REPULSIVE_STRENGTH = 0.5f;
 
     private static ParticleSystems sInstance = new ParticleSystems();
+
+    private final List<DrawableParticleSystem> orderedList = new ArrayList<>();
 
     public static ParticleSystems getInstance(){
         return sInstance;
@@ -44,7 +53,45 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
 
         psDef.delete();
 
-        put(key, new DrawableParticleSystem(particleSystem, (float) Math.random()));
+        put(key, new DrawableParticleSystem(particleSystem, getNextParticleDistance()));
+    }
+
+    @Override
+    public Collection<DrawableParticleSystem> values() {
+        return orderedList;
+    }
+
+    private void reorderList() {
+        orderedList.clear();
+        orderedList.addAll(super.values());
+        Collections.sort(orderedList, new Comparator<DrawableParticleSystem>() {
+            @Override
+            public int compare(DrawableParticleSystem lhs, DrawableParticleSystem rhs) {
+                if(lhs.getDistance() > rhs.getDistance())
+                    return -1;
+                if(lhs.getDistance() == rhs.getDistance())
+                    return 0;
+
+                return 1;
+            }
+        });
+    }
+
+    @Override
+    public DrawableParticleSystem put(String key, DrawableParticleSystem value) {
+        super.put(key, value);
+        reorderList();
+        return value;
+    }
+
+    @Override
+    public void putAll(Map<? extends String, ? extends DrawableParticleSystem> map) {
+        super.putAll(map);
+        reorderList();
+    }
+
+    private float getNextParticleDistance(){
+        return size() + (float) Math.random();
     }
 
     public int getParticleCount(){

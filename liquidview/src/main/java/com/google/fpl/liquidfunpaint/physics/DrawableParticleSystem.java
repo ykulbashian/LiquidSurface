@@ -69,6 +69,9 @@ public class DrawableParticleSystem {
         mDistance = newDistance;
     }
 
+    public float getDistance(){
+        return mDistance;
+    }
 
     private void resetDimensions(float width, float height, float distance){
         RenderHelper.perspectiveTransform(mPerspectiveTransform, width, height, distance);
