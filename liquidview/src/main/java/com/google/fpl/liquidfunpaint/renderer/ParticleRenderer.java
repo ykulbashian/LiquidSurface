@@ -59,7 +59,6 @@ public class ParticleRenderer implements DrawableLayer {
 
     private final RenderSurface[] mRenderSurface = new RenderSurface[2];
     private final float[] mDrawToScreenTransform = new float[16];
-    private final float[] mPerspectiveTransform = new float[16];
 
     private Context mContext;
 
@@ -115,7 +114,7 @@ public class ParticleRenderer implements DrawableLayer {
         // Draw all water particles to temp render surface 0
         mRenderSurface[0].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
-        dps.renderWaterParticles(mWaterParticleMaterial, mPerspectiveTransform);
+        dps.renderWaterParticles(mWaterParticleMaterial);
 
         mRenderSurface[0].endRender();
 
@@ -130,7 +129,7 @@ public class ParticleRenderer implements DrawableLayer {
         // Draw all non-water particles to temp render surface 1
         mRenderSurface[1].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
-        dps.renderNonWaterParticles(mParticleMaterial, mPerspectiveTransform);
+        dps.renderNonWaterParticles(mParticleMaterial);
 
         mRenderSurface[1].endRender();
 
@@ -139,8 +138,10 @@ public class ParticleRenderer implements DrawableLayer {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        RenderHelper.createTransformMatrix(mDrawToScreenTransform, height, width);
-        RenderHelper.perspectiveTransform(mPerspectiveTransform, height, width);
+        RenderHelper.createTransformMatrix(mDrawToScreenTransform, width, height);
+
+        for(DrawableParticleSystem dps : ParticleSystems.getInstance().values())
+            dps.onSurfaceChanged(gl, width, height);
     }
 
     @Override

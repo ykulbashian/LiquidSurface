@@ -9,13 +9,17 @@ import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfunpaint.LiquidPaint;
+import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
 import com.google.fpl.liquidfunpaint.util.MathHelper;
+import com.google.fpl.liquidfunpaint.util.RenderHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import javax.microedition.khronos.opengles.GL10;
 
 /**
  * Created on 15-09-20.
@@ -36,6 +40,8 @@ public class DrawableParticleSystem {
     public ByteBuffer mParticleVelocityBuffer;
     public ByteBuffer mParticleWeightBuffer;
 
+    private final float[] mPerspectiveTransform = new float[16];
+
     public DrawableParticleSystem(ParticleSystem pSystem){
         particleSystem = pSystem;
 
@@ -51,6 +57,9 @@ public class DrawableParticleSystem {
         mParticleWeightBuffer = ByteBuffer
                 .allocateDirect(4 * ParticleSystems.MAX_PARTICLE_COUNT)
                 .order(ByteOrder.nativeOrder());
+
+        RenderHelper.perspectiveTransform(mPerspectiveTransform, PhysicsLoop.getInstance().sScreenWidth,
+                PhysicsLoop.getInstance().sScreenHeight);
     }
 
     public int getParticleCount(){
@@ -73,7 +82,7 @@ public class DrawableParticleSystem {
         pgd.delete();
     }
 
-    public void clearParticles(Vector2f[] normalizedVertices){
+    public void clearParticles(Vector2f[] normalizedVertices) {
         final PolygonShape polygon = createPolygonShape(normalizedVertices);
         particleSystem.destroyParticlesInShape(polygon, MAT_IDENTITY);
     }
@@ -106,8 +115,11 @@ public class DrawableParticleSystem {
         GLES20.glClearColor(0, 0, 0, 0);
     }
 
-    public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial,
-                                     float[] mPerspectiveTransform){
+    public void onSurfaceChanged(GL10 gl, int width, int height){
+        RenderHelper.perspectiveTransform(mPerspectiveTransform, width, height);
+    }
+
+    public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial){
 
         mWaterParticleMaterial.beginRender();
 
@@ -142,8 +154,7 @@ public class DrawableParticleSystem {
     }
 
 
-    public void renderNonWaterParticles(ParticleMaterial mParticleMaterial,
-                                        float[] mPerspectiveTransform){
+    public void renderNonWaterParticles(ParticleMaterial mParticleMaterial){
 
         mParticleMaterial.beginRender();
 
