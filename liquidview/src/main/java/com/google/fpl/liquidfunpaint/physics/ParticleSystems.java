@@ -91,7 +91,7 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
     }
 
     private float getNextParticleDistance(){
-        return size() + (float) Math.random();
+        return (size() + (float) Math.random())/2;
     }
 
     public int getParticleCount(){

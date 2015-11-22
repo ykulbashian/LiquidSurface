@@ -57,63 +57,72 @@ public class RenderHelper {
     public static void createScreenRender(float[] mTransformFromTexture, float width, float height){
 
         // Set up the transform
-        float ratio = (float) height / width;
+        float ratio = height / width;
         Matrix.setIdentityM(mTransformFromTexture, 0);
 
-        if(height > width) // portrait
-            Matrix.scaleM(mTransformFromTexture, 0, 1 , 1, 1);
-        else // landscape
-            Matrix.scaleM(mTransformFromTexture, 0, 1, 1, 1);
-        createParticleScreenMVP(mTransformFromTexture, ratio, 0.5f);
-
+        if(ratio > 1) { //portrait
+            Matrix.scaleM(mTransformFromTexture, 0, ratio, 1, 1);
+        } else { //landscape
+            Matrix.scaleM(mTransformFromTexture, 0, 1, 1 / ratio, 1);
+        }
     }
 
-    public static void perspectiveTransform(float[] mPerspectiveTransform, float width, float height, float distance) {
+    public static void perspectiveParticleTransform(float[] mPerspectiveTransform, float width, float height, float distance) {
         float ratio = height / width;
         Matrix.setIdentityM(mPerspectiveTransform, 0);
 
         float[] transformFromPhysicsWorld = new float[16];
-        createWorldTransform(transformFromPhysicsWorld);
-        Matrix.translateM(transformFromPhysicsWorld, 0, 0, 0, distance);
+
+        Matrix.setIdentityM(transformFromPhysicsWorld, 0);
+
+        if(ratio > 1) //portrait
+            Matrix.scaleM(transformFromPhysicsWorld, 0, 1/ratio, 1, 1);
+        else //landscape
+            Matrix.scaleM(transformFromPhysicsWorld, 0, 1, 1*ratio, 1);
+
+        Matrix.translateM(transformFromPhysicsWorld, 0, -0.5f, -0.5f, distance);
+        Matrix.scaleM(
+                transformFromPhysicsWorld,
+                0,
+                1 / WorldLock.getInstance().sRenderWorldWidth,
+                1 / WorldLock.getInstance().sRenderWorldHeight,
+                1);
+
 
         float[] mvpMatrix = new float[16];
-        createMVP(mvpMatrix, ratio, 0.25f);
+        createMVP(mvpMatrix, 0.25f);
 
         Matrix.multiplyMM(mPerspectiveTransform, 0, mvpMatrix, 0, transformFromPhysicsWorld, 0);
     }
 
-    private static void createMVP(float[] destArray, float ratio, float multiplier){
+    public static void perspectiveTransform(float[] mPerspectiveTransform, float distance) {
+        Matrix.setIdentityM(mPerspectiveTransform, 0);
+
+        float[] transformFromPhysicsWorld = new float[16];
+        createWorldTransform(transformFromPhysicsWorld, distance);
+
+        float[] mvpMatrix = new float[16];
+        createMVP(mvpMatrix, 0.25f);
+
+        Matrix.multiplyMM(mPerspectiveTransform, 0, mvpMatrix, 0, transformFromPhysicsWorld, 0);
+    }
+
+    private static void createMVP(float[] destArray, float multiplier){
 
         float[] mViewMatrix = new float[16];
         float[] mProjectionMatrix = new float[16];
 
-        createProjection(mProjectionMatrix, ratio, multiplier);
+        createProjection(mProjectionMatrix, multiplier);
         createViewMatrix(mViewMatrix);
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(destArray, 0, mProjectionMatrix, 0, mViewMatrix, 0);
     }
 
-    private static void createParticleScreenMVP(float[] destArray, float ratio, float multiplier){
-
-        float[] mViewMatrix = new float[16];
-        float[] mProjectionMatrix = new float[16];
-
-        createProjection(mProjectionMatrix, ratio, multiplier);
-        createEmptyViewMatrix(mViewMatrix);
-
-        // Calculate the projection and view transformation
-        Matrix.multiplyMM(destArray, 0, mProjectionMatrix, 0, mViewMatrix, 0);
-    }
-
-    private static void createProjection(float[] destArray, float ratio, float multiplier){
+    private static void createProjection(float[] destArray, float multiplier){
         Matrix.setIdentityM(destArray, 0);
 
-        if(ratio > 1) // portrait
-            Matrix.frustumM(destArray, 0, multiplier*ratio, -multiplier*ratio, -multiplier, multiplier, 0.5f, 1000.0f);
-        else // landscape
-            Matrix.frustumM(destArray, 0, multiplier, -multiplier, -multiplier / ratio, multiplier / ratio, 0.5f, 1000.0f);
-
+        Matrix.frustumM(destArray, 0, multiplier, -multiplier, -multiplier, multiplier, 0.5f, 1000.0f);
     }
 
     private static void createViewMatrix(float[] destArray){
@@ -121,22 +130,12 @@ public class RenderHelper {
 
         // Set the camera position (View matrix)
         Matrix.setLookAtM(destArray, 0,
-                -1, 0, -1,
-                0.2f, 0f, 0f,
-                0f, 1.0f, 0.0f);
-    }
-
-    private static void createEmptyViewMatrix(float[] destArray){
-        Matrix.setIdentityM(destArray, 0);
-
-        // Set the camera position (View matrix)
-        Matrix.setLookAtM(destArray, 0,
-                0, 0, -1f,
+                0, 0, -1,
                 0f, 0f, 0f,
                 0f, 1.0f, 0.0f);
     }
 
-    private static void createWorldTransform(float[] destArray){
+    private static void createWorldTransform(float[] destArray, float distance){
 
         Matrix.setIdentityM(destArray, 0);
 
@@ -148,5 +147,6 @@ public class RenderHelper {
                 1 / WorldLock.getInstance().sRenderWorldHeight,
                 1);
 
+        Matrix.translateM(destArray, 0, 0, 0, distance);
     }
 }

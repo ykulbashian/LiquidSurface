@@ -85,7 +85,7 @@ public class DrawableParticleSystem {
     }
 
     private void resetDimensions(float width, float height, float distance){
-        RenderHelper.perspectiveTransform(mPerspectiveTransform, width, height, distance);
+        RenderHelper.perspectiveParticleTransform(mPerspectiveTransform, width, height, distance);
     }
 
     public int getParticleCount(){

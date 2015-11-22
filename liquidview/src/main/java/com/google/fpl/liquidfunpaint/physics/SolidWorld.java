@@ -111,7 +111,7 @@ public class SolidWorld implements DrawableLayer{
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         createWorldBoundaries();
 
-        RenderHelper.perspectiveTransform(mPerspectiveTransform, width, height, 0);
+        RenderHelper.perspectiveTransform(mPerspectiveTransform, 0);
     }
 
     public void onDrawFrame(GL10 gl){
