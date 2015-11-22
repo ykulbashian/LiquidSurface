@@ -138,7 +138,7 @@ public class ParticleRenderer implements DrawableLayer {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        RenderHelper.createTransformMatrix(mDrawToScreenTransform, width, height);
+        RenderHelper.createScreenRender(mDrawToScreenTransform, width, height);
 
         for(DrawableParticleSystem dps : ParticleSystems.getInstance().values())
             dps.onSurfaceChanged(gl, width, height);

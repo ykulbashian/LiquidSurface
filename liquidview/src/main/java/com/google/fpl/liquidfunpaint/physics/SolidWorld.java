@@ -1,7 +1,6 @@
 package com.google.fpl.liquidfunpaint.physics;
 
 import android.content.Context;
-import android.opengl.Matrix;
 import android.text.TextUtils;
 
 import com.google.fpl.liquidfun.Body;
@@ -35,7 +34,7 @@ public class SolidWorld implements DrawableLayer{
     private final Map<Body, PolygonShape> polygons = new HashMap<>();
     private final Map<Body, Texture> textures = new HashMap<>();
 
-    private final float[] mTransformFromWorld = new float[16];
+    private final float[] mPerspectiveTransform = new float[16];
 
     private static final float BOUNDARY_THICKNESS = 0.2f;
 
@@ -112,7 +111,7 @@ public class SolidWorld implements DrawableLayer{
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         createWorldBoundaries();
 
-        RenderHelper.perspectiveTransform(mTransformFromWorld, width, height, 0);
+        RenderHelper.perspectiveTransform(mPerspectiveTransform, width, height, 0);
     }
 
     public void onDrawFrame(GL10 gl){
@@ -126,7 +125,7 @@ public class SolidWorld implements DrawableLayer{
 
                     Vec2 center = body.getWorldCenter();
                     TextureRenderer.getInstance().drawTexture(
-                            textures.get(body), mTransformFromWorld,
+                            textures.get(body), mPerspectiveTransform,
                             (center.getX()) - poly.x / 2,
                             (center.getY()) + poly.y / 2,
                             (center.getX()) + poly.x / 2,

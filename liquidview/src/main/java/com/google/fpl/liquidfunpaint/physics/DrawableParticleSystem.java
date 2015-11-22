@@ -131,7 +131,7 @@ public class DrawableParticleSystem {
     }
 
     public void onSurfaceChanged(GL10 gl, int width, int height){
-        RenderHelper.perspectiveTransform(mPerspectiveTransform, width, height, mDistance);
+        resetDimensions(width, height, mDistance);
     }
 
     public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial){

@@ -54,7 +54,7 @@ public class RenderHelper {
         SCREEN_QUAD_VERTEX_BUFFER.put(SCREEN_QUAD_VERTEX_DATA).position(0);
     }
 
-    public static void createTransformMatrix(float[] mTransformFromTexture, float width, float height){
+    public static void createScreenRender(float[] mTransformFromTexture, float width, float height){
 
         // Set up the transform
         float ratio = (float) height / width;
@@ -64,8 +64,8 @@ public class RenderHelper {
             Matrix.scaleM(mTransformFromTexture, 0, 1 , 1, 1);
         else // landscape
             Matrix.scaleM(mTransformFromTexture, 0, 1, 1, 1);
+        createParticleScreenMVP(mTransformFromTexture, ratio, 0.5f);
 
-        createEmptyMVP(mTransformFromTexture, 1, 0.5f);
     }
 
     public static void perspectiveTransform(float[] mPerspectiveTransform, float width, float height, float distance) {
@@ -94,7 +94,7 @@ public class RenderHelper {
         Matrix.multiplyMM(destArray, 0, mProjectionMatrix, 0, mViewMatrix, 0);
     }
 
-    private static void createEmptyMVP(float[] destArray, float ratio, float multiplier){
+    private static void createParticleScreenMVP(float[] destArray, float ratio, float multiplier){
 
         float[] mViewMatrix = new float[16];
         float[] mProjectionMatrix = new float[16];
