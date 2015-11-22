@@ -112,11 +112,9 @@ public class ParticleRenderer implements DrawableLayer {
      */
     private void drawWaterParticles(DrawableParticleSystem dps) {
         // Draw all water particles to temp render surface 0
-        mRenderSurface[0].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
-        dps.renderWaterParticles(mWaterParticleMaterial);
+        dps.renderWaterParticles(mWaterParticleMaterial, mRenderSurface[0]);
 
-        mRenderSurface[0].endRender();
 
         mBlurRenderer.draw(mRenderSurface[0].getTexture(), mRenderSurface[0]);
     }
@@ -127,11 +125,8 @@ public class ParticleRenderer implements DrawableLayer {
      */
     private void drawNonWaterParticles(DrawableParticleSystem dps) {
         // Draw all non-water particles to temp render surface 1
-        mRenderSurface[1].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
-        dps.renderNonWaterParticles(mParticleMaterial);
-
-        mRenderSurface[1].endRender();
+        dps.renderNonWaterParticles(mParticleMaterial, mRenderSurface[1]);
 
         mBlurRenderer.draw(mRenderSurface[1].getTexture(), mRenderSurface[1]);
     }

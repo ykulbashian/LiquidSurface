@@ -1,5 +1,6 @@
 package com.google.fpl.liquidfunpaint.physics;
 
+import android.graphics.Color;
 import android.opengl.GLES20;
 
 import com.google.fpl.liquidfun.ParticleGroup;
@@ -10,6 +11,7 @@ import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfunpaint.LiquidPaint;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
+import com.google.fpl.liquidfunpaint.renderer.RenderSurface;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
 import com.google.fpl.liquidfunpaint.util.MathHelper;
@@ -134,7 +136,8 @@ public class DrawableParticleSystem {
         resetDimensions(width, height, mDistance);
     }
 
-    public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial){
+    public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial, RenderSurface surface){
+        surface.beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
         mWaterParticleMaterial.beginRender();
 
@@ -166,10 +169,13 @@ public class DrawableParticleSystem {
         }
 
         mWaterParticleMaterial.endRender();
+
+        surface.endRender();
     }
 
 
-    public void renderNonWaterParticles(ParticleMaterial mParticleMaterial){
+    public void renderNonWaterParticles(ParticleMaterial mParticleMaterial, RenderSurface surface){
+        surface.beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
         mParticleMaterial.beginRender();
 
@@ -196,6 +202,8 @@ public class DrawableParticleSystem {
         }
 
         mParticleMaterial.endRender();
+
+        surface.endRender();
     }
 
     /**
