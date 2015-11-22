@@ -10,6 +10,7 @@ import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfunpaint.LiquidPaint;
+import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.google.fpl.liquidfunpaint.renderer.RenderSurface;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
@@ -33,6 +34,14 @@ public class DrawableParticleSystem {
     static {
         MAT_IDENTITY = new Transform();
         MAT_IDENTITY.setIdentity();
+    }
+    public static final RenderSurface[] mRenderSurface = new RenderSurface[2];
+
+    public static void initializeRenderSurfaces(){
+        for (int i = 0; i < mRenderSurface.length; i++) {
+            mRenderSurface[i] = new RenderSurface(ParticleRenderer.FB_SIZE, ParticleRenderer.FB_SIZE);
+            mRenderSurface[i].setClearColor(Color.argb(0, 255, 255, 255));
+        }
     }
 
     public final ParticleSystem particleSystem;
@@ -136,8 +145,8 @@ public class DrawableParticleSystem {
         resetDimensions(width, height, mDistance);
     }
 
-    public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial, RenderSurface surface){
-        surface.beginRender(GLES20.GL_COLOR_BUFFER_BIT);
+    public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial){
+        mRenderSurface[0].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
         mWaterParticleMaterial.beginRender();
 
@@ -170,12 +179,12 @@ public class DrawableParticleSystem {
 
         mWaterParticleMaterial.endRender();
 
-        surface.endRender();
+        mRenderSurface[0].endRender();
     }
 
 
-    public void renderNonWaterParticles(ParticleMaterial mParticleMaterial, RenderSurface surface){
-        surface.beginRender(GLES20.GL_COLOR_BUFFER_BIT);
+    public void renderNonWaterParticles(ParticleMaterial mParticleMaterial){
+        mRenderSurface[1].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
         mParticleMaterial.beginRender();
 
@@ -203,7 +212,7 @@ public class DrawableParticleSystem {
 
         mParticleMaterial.endRender();
 
-        surface.endRender();
+        mRenderSurface[1].endRender();
     }
 
     /**

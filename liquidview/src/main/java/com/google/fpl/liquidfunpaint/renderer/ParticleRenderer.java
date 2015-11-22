@@ -57,7 +57,6 @@ public class ParticleRenderer implements DrawableLayer {
     private ScreenRenderer mWaterScreenRenderer;
     private ScreenRenderer mScreenRenderer;
 
-    private final RenderSurface[] mRenderSurface = new RenderSurface[2];
     private final float[] mDrawToScreenTransform = new float[16];
 
     private Context mContext;
@@ -113,7 +112,7 @@ public class ParticleRenderer implements DrawableLayer {
     private void drawWaterParticles(DrawableParticleSystem dps) {
         // Draw all water particles to temp render surface 0
 
-        dps.renderWaterParticles(mWaterParticleMaterial, mRenderSurface[0]);
+        dps.renderWaterParticles(mWaterParticleMaterial);
 
 
         mBlurRenderer.draw(mRenderSurface[0].getTexture(), mRenderSurface[0]);
@@ -126,7 +125,7 @@ public class ParticleRenderer implements DrawableLayer {
     private void drawNonWaterParticles(DrawableParticleSystem dps) {
         // Draw all non-water particles to temp render surface 1
 
-        dps.renderNonWaterParticles(mParticleMaterial, mRenderSurface[1]);
+        dps.renderNonWaterParticles(mParticleMaterial);
 
         mBlurRenderer.draw(mRenderSurface[1].getTexture(), mRenderSurface[1]);
     }
@@ -142,10 +141,7 @@ public class ParticleRenderer implements DrawableLayer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         // Create the render surfaces
-        for (int i = 0; i < mRenderSurface.length; i++) {
-            mRenderSurface[i] = new RenderSurface(FB_SIZE, FB_SIZE);
-            mRenderSurface[i].setClearColor(Color.argb(0, 255, 255, 255));
-        }
+        DrawableParticleSystem.initializeRenderSurfaces();
 
         // Create the blur renderer
         mBlurRenderer = new BlurRenderer();
@@ -160,12 +156,12 @@ public class ParticleRenderer implements DrawableLayer {
             // Scrolling texture when we copy water particles from FBO to screen
             mWaterScreenRenderer = new ScreenRenderer(
                     json.getJSONObject("waterParticleToScreen"),
-                    mRenderSurface[0].getTexture());
+                    DrawableParticleSystem.mRenderSurface[0].getTexture());
 
             // Scrolling texture when we copy water particles from FBO to screen
             mScreenRenderer = new ScreenRenderer(
                     json.getJSONObject("otherParticleToScreen"),
-                    mRenderSurface[1].getTexture());
+                    DrawableParticleSystem.mRenderSurface[1].getTexture());
 
         } catch (JSONException ex) {
             Log.e(TAG, "Cannot parse " + JSON_FILE + "\n" + ex.getMessage());
