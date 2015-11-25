@@ -230,4 +230,8 @@ public class DrawableParticleSystem {
         particleSystem.delete();
     }
 
+    public ParticleSystem getParticleSystem(){
+        return particleSystem;
+    }
+
 }

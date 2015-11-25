@@ -5,11 +5,12 @@ import com.google.fpl.liquidfun.ParticleSystemDef;
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.LiquidPaint;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
+import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
+import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
 import com.google.fpl.liquidfunpaint.util.RenderHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,7 +23,7 @@ import javax.microedition.khronos.opengles.GL10;
 /**
  * Created on 8/13/2015.
  */
-public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableLayer> {
+public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableDistance> {
 
     public static final String DEFAULT_PARTICLE_SYSTEM = "default_particle_system";
 
@@ -32,14 +33,15 @@ public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableLay
 
     private static ParticleSystems sInstance = new ParticleSystems();
 
-    private final List<DrawableLayer> orderedList = new ArrayList<>();
+    private final List<DrawableDistance> orderedList = new ArrayList<>();
+    private final List<DrawableParticleSystem> allParticleSystems = new ArrayList<>();
 
     public static ParticleSystems getInstance(){
         return sInstance;
     }
 
     public void reset(World world){
-        for(DrawableLayer system : values())
+        for(DrawableParticleSystem system : allParticleSystems)
             system.delete();
 
         clear();
@@ -58,26 +60,27 @@ public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableLay
         psDef.delete();
 
         DrawableParticleSystem newSystem = new DrawableParticleSystem(particleSystem);
+        allParticleSystems.add(newSystem);
 
-        DrawableLayer layer = new DrawableLayer(newSystem, getNextParticleDistance());
+        DrawableDistance layer = new DrawableDistance(getNextParticleDistance(), newSystem);
 
         put(key, layer);
     }
 
     @Override
-    public Collection<DrawableLayer> values() {
+    public Collection<DrawableDistance> values() {
         return orderedList;
     }
 
     private void reorderList() {
         orderedList.clear();
         orderedList.addAll(super.values());
-        Collections.sort(orderedList, new Comparator<DrawableLayer>() {
+        Collections.sort(orderedList, new Comparator<DrawableDistance>() {
             @Override
-            public int compare(DrawableLayer lhs, DrawableLayer rhs) {
-                if(lhs.getDistance() > rhs.getDistance())
+            public int compare(DrawableDistance lhs, DrawableDistance rhs) {
+                if (lhs.getDistance() > rhs.getDistance())
                     return -1;
-                if(lhs.getDistance() == rhs.getDistance())
+                if (lhs.getDistance() == rhs.getDistance())
                     return 0;
 
                 return 1;
@@ -86,16 +89,20 @@ public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableLay
     }
 
     @Override
-    public DrawableLayer put(String key, DrawableLayer value) {
+    public DrawableDistance put(String key, DrawableDistance value) {
         super.put(key, value);
         reorderList();
         return value;
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends DrawableLayer> map) {
+    public void putAll(Map<? extends String, ? extends DrawableDistance> map) {
         super.putAll(map);
         reorderList();
+    }
+
+    public List<DrawableDistance> getDistances(){
+        return orderedList;
     }
 
     private float getNextParticleDistance(){
@@ -104,12 +111,16 @@ public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableLay
 
     public int getParticleCount(){
         int count = 0;
-        for(DrawableLayer system : values()){
+        for(DrawableParticleSystem system : allParticleSystems){
             count += system.getParticleCount();
         }
         return count;
     }
 
+    public void reset(){
+        for(DrawableParticleSystem dps : allParticleSystems)
+            dps.reset();
+    }
 
     public void fillShape(Vector2f[] normalizedVertices, LiquidPaint options, String key){
         get(key).createParticleGroup(normalizedVertices, options);
@@ -124,7 +135,7 @@ public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableLay
     }
 
     @Override
-    public DrawableLayer get(Object key) {
+    public DrawableDistance get(Object key) {
         if(containsKey(key))
             return super.get(key);
         else{
@@ -135,46 +146,14 @@ public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableLay
 
     }
 
-    public DrawableLayer get(){
-        return get(DEFAULT_PARTICLE_SYSTEM);
+    public void onSurfaceChanged(GL10 gl, int width, int height){
+        for(DrawableDistance dps : values()){
+            dps.resetDimensions(width, height);
+        }
     }
 
-    public static class DrawableLayer {
-        public final DrawableDistance distanceD;
-        public final DrawableParticleSystem particleSystem;
-
-        public DrawableLayer(DrawableParticleSystem system, float distance){
-            particleSystem = system;
-            distanceD = new DrawableDistance(distance);
-        }
-
-        public int getParticleCount() {
-            return particleSystem.getParticleCount();
-        }
-
-        public void delete() {
-            particleSystem.delete();
-        }
-
-        public void clearParticles(Vector2f[] normalizedVertices) {
-            particleSystem.clearParticles(normalizedVertices);
-        }
-
-        public float getDistance() {
-            return distanceD.getDistance();
-        }
-
-        public void createParticleGroup(Vector2f[] normalizedVertices, LiquidPaint options) {
-            particleSystem.createParticleGroup(normalizedVertices, options);
-        }
-
-        public void onSurfaceChanged(GL10 gl, int width, int height) {
-            distanceD.resetDimensions(width, height);
-        }
-
-        public void reset() {
-            particleSystem.reset();
-        }
+    public DrawableDistance get(){
+        return get(DEFAULT_PARTICLE_SYSTEM);
     }
 
     public static class DrawableDistance {
@@ -183,7 +162,10 @@ public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableLay
 
         public final float[] mPerspectiveTransform = new float[16];
 
-        public DrawableDistance(float distance){
+        public final DrawableParticleSystem particleSystem;
+
+        public DrawableDistance(float distance, DrawableParticleSystem system){
+            particleSystem = system;
             setDistance(distance);
         }
 
@@ -199,6 +181,22 @@ public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableLay
 
         public void resetDimensions(float width, float height){
             RenderHelper.perspectiveParticleTransform(mPerspectiveTransform, width, height, mDistance);
+        }
+
+        public ParticleSystem getParticleSystem(){
+            return particleSystem.particleSystem;
+        }
+
+        public void createParticleGroup(Vector2f[] normalizedVertices, LiquidPaint options) {
+            particleSystem.createParticleGroup(normalizedVertices, options);
+        }
+
+        public void clearParticles(Vector2f[] normalizedVertices) {
+            particleSystem.clearParticles(normalizedVertices);
+        }
+
+        public void onDraw(WaterParticleMaterial waterMaterial, ParticleMaterial nonWater){
+            particleSystem.onDraw(waterMaterial, nonWater, this);
         }
     }
 }
