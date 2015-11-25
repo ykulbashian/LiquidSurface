@@ -12,13 +12,12 @@ import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfunpaint.LiquidPaint;
 import com.google.fpl.liquidfunpaint.renderer.BlurRenderer;
 import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
-import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.google.fpl.liquidfunpaint.renderer.RenderSurface;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
 import com.google.fpl.liquidfunpaint.util.MathHelper;
-import com.google.fpl.liquidfunpaint.util.RenderHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
+import com.google.fpl.liquidfunpaint.physics.ParticleSystems.DrawableDistance;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -57,9 +56,9 @@ public class DrawableParticleSystem {
     public ByteBuffer mParticleVelocityBuffer;
     public ByteBuffer mParticleWeightBuffer;
 
-    public final DrawableDistance distanceDrawable;
+    public final ParticleSystems.DrawableDistance distanceDrawable;
 
-    public DrawableParticleSystem(ParticleSystem pSystem, DrawableDistance distance){
+    public DrawableParticleSystem(ParticleSystem pSystem, ParticleSystems.DrawableDistance distance){
         particleSystem = pSystem;
 
         mParticlePositionBuffer = ByteBuffer
@@ -241,30 +240,5 @@ public class DrawableParticleSystem {
 
     public float getDistance(){
         return distanceDrawable.getDistance();
-    }
-
-    public static class DrawableDistance {
-
-        private float mDistance;
-
-        private final float[] mPerspectiveTransform = new float[16];
-
-        public DrawableDistance(float distance){
-            setDistance(distance);
-        }
-
-        public void setDistance(float newDistance){
-            mDistance = newDistance;
-
-            resetDimensions(PhysicsLoop.getInstance().sScreenWidth, PhysicsLoop.getInstance().sScreenHeight);
-        }
-
-        public float getDistance(){
-            return mDistance;
-        }
-
-        private void resetDimensions(float width, float height){
-            RenderHelper.perspectiveParticleTransform(mPerspectiveTransform, width, height, mDistance);
-        }
     }
 }

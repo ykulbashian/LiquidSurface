@@ -4,6 +4,8 @@ import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.ParticleSystemDef;
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.LiquidPaint;
+import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
+import com.google.fpl.liquidfunpaint.util.RenderHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 import java.util.ArrayList;
@@ -53,7 +55,7 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
 
         psDef.delete();
 
-        DrawableParticleSystem.DrawableDistance dist = new DrawableParticleSystem.DrawableDistance(getNextParticleDistance());
+        DrawableDistance dist = new DrawableDistance(getNextParticleDistance());
 
         put(key, new DrawableParticleSystem(particleSystem, dist));
     }
@@ -134,7 +136,32 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
     }
 
     public static class DrawableLayer {
-        public DrawableParticleSystem.DrawableDistance distance;
+        public DrawableDistance distance;
         public DrawableParticleSystem particleSystem;
+    }
+
+    public static class DrawableDistance {
+
+        private float mDistance;
+
+        public final float[] mPerspectiveTransform = new float[16];
+
+        public DrawableDistance(float distance){
+            setDistance(distance);
+        }
+
+        public void setDistance(float newDistance){
+            mDistance = newDistance;
+
+            resetDimensions(PhysicsLoop.getInstance().sScreenWidth, PhysicsLoop.getInstance().sScreenHeight);
+        }
+
+        public float getDistance(){
+            return mDistance;
+        }
+
+        public void resetDimensions(float width, float height){
+            RenderHelper.perspectiveParticleTransform(mPerspectiveTransform, width, height, mDistance);
+        }
     }
 }
