@@ -36,6 +36,7 @@ public class WaterParticleMaterial extends Material {
     private static final String DIFFUSE_TEXTURE_NAME = "uDiffuseTexture";
 
     private float mParticleSizeScale;
+    private float mAdjustedParticleSize;
     // Parameters for adding in particle weight.
     // 0: Scale - decreases the range of values
     // 1: Range shift - shift the range from [0.0, inf) to [value, inf) so we
@@ -49,6 +50,7 @@ public class WaterParticleMaterial extends Material {
         // Read in values from the JSON file
         mParticleSizeScale =
                 (float) json.optDouble("particleSizeScale", 1.0);
+        mAdjustedParticleSize = mParticleSizeScale;
 
         // Scale of weight. This changes values from [0.0, max) to
         // [0.0, max*scale).
@@ -72,11 +74,16 @@ public class WaterParticleMaterial extends Material {
         }
     }
 
+    public void beginRender(float distance){
+        mAdjustedParticleSize = mParticleSizeScale/(distance + 1);
+        beginRender();
+    }
+
     @Override
     public void beginRender() {
         super.beginRender();
 
-        float pSize =  mParticleSizeScale * ParticleRenderer.FB_SIZE *
+        float pSize =  mAdjustedParticleSize * ParticleRenderer.FB_SIZE *
                 (ParticleSystems.PARTICLE_RADIUS /
                         Math.min(WorldLock.getInstance().sRenderWorldWidth, WorldLock.getInstance().sRenderWorldHeight));
 

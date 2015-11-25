@@ -148,7 +148,7 @@ public class DrawableParticleSystem {
     public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial){
         mRenderSurface[0].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
-        mWaterParticleMaterial.beginRender();
+        mWaterParticleMaterial.beginRender(mDistance);
 
         // Set attribute arrays
         mWaterParticleMaterial.setVertexAttributeBuffer(
