@@ -53,7 +53,9 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
 
         psDef.delete();
 
-        put(key, new DrawableParticleSystem(particleSystem, getNextParticleDistance()));
+        DrawableParticleSystem.DrawableDistance dist = new DrawableParticleSystem.DrawableDistance(getNextParticleDistance());
+
+        put(key, new DrawableParticleSystem(particleSystem, dist));
     }
 
     @Override
