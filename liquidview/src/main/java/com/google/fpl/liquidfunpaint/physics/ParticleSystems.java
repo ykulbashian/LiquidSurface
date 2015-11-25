@@ -1,10 +1,15 @@
 package com.google.fpl.liquidfunpaint.physics;
 
+import android.graphics.Color;
+
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.ParticleSystemDef;
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.LiquidPaint;
+import com.google.fpl.liquidfunpaint.renderer.BlurRenderer;
+import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
+import com.google.fpl.liquidfunpaint.renderer.RenderSurface;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
 import com.google.fpl.liquidfunpaint.util.RenderHelper;
@@ -24,6 +29,20 @@ import javax.microedition.khronos.opengles.GL10;
 public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
 
     public static final String DEFAULT_PARTICLE_SYSTEM = "default_particle_system";
+
+    public static final RenderSurface[] mRenderSurface = new RenderSurface[2];
+
+    public static BlurRenderer mBlurRenderer;
+
+    public static void initializeRenderSurfaces() {
+        for (int i = 0; i < mRenderSurface.length; i++) {
+            mRenderSurface[i] = new RenderSurface(ParticleRenderer.FB_SIZE, ParticleRenderer.FB_SIZE);
+            mRenderSurface[i].setClearColor(Color.argb(0, 255, 255, 255));
+        }
+
+        // Create the blur renderer
+        mBlurRenderer = new BlurRenderer();
+    }
 
     public static final int MAX_PARTICLE_COUNT = 5000;
     public static final float PARTICLE_RADIUS = 0.06f;

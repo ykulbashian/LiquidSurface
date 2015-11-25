@@ -104,8 +104,7 @@ public class ParticleRenderer implements DrawableLayer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         // Create the render surfaces
-        DrawableParticleSystem.initializeRenderSurfaces();
-
+        ParticleSystems.initializeRenderSurfaces();
 
         try {
             JSONObject json = new JSONObject(materialFile);
@@ -117,12 +116,12 @@ public class ParticleRenderer implements DrawableLayer {
             // Scrolling texture when we copy water particles from FBO to screen
             mWaterScreenRenderer = new ScreenRenderer(
                     json.getJSONObject("waterParticleToScreen"),
-                    DrawableParticleSystem.mRenderSurface[0].getTexture());
+                    ParticleSystems.mRenderSurface[0].getTexture());
 
             // Scrolling texture when we copy water particles from FBO to screen
             mScreenRenderer = new ScreenRenderer(
                     json.getJSONObject("otherParticleToScreen"),
-                    DrawableParticleSystem.mRenderSurface[1].getTexture());
+                    ParticleSystems.mRenderSurface[1].getTexture());
 
         } catch (JSONException ex) {
             Log.e(TAG, "Cannot parse " + JSON_FILE + "\n" + ex.getMessage());
