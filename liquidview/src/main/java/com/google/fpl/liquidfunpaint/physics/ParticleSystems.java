@@ -132,4 +132,9 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
     public DrawableParticleSystem get(){
         return get(DEFAULT_PARTICLE_SYSTEM);
     }
+
+    public static class DrawableLayer {
+        public DrawableParticleSystem.DrawableDistance distance;
+        public DrawableParticleSystem particleSystem;
+    }
 }

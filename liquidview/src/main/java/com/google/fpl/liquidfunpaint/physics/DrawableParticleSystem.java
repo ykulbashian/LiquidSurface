@@ -57,7 +57,7 @@ public class DrawableParticleSystem {
     public ByteBuffer mParticleVelocityBuffer;
     public ByteBuffer mParticleWeightBuffer;
 
-    private final DrawableDistance distanceDrawable;
+    public final DrawableDistance distanceDrawable;
 
     public DrawableParticleSystem(ParticleSystem pSystem, DrawableDistance distance){
         particleSystem = pSystem;
@@ -110,10 +110,10 @@ public class DrawableParticleSystem {
         return polygon;
     }
 
-    public void onDraw(WaterParticleMaterial waterMaterial, ParticleMaterial nonWater){
+    public void onDraw(WaterParticleMaterial waterMaterial, ParticleMaterial nonWater, DrawableDistance distance){
         resetBuffers();
-        renderWaterParticles(waterMaterial);
-        renderNonWaterParticles(nonWater);
+        renderWaterParticles(waterMaterial, distance);
+        renderNonWaterParticles(nonWater, distance);
     }
 
     public void resetBuffers(){
@@ -141,10 +141,10 @@ public class DrawableParticleSystem {
         distanceDrawable.resetDimensions(width, height);
     }
 
-    public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial){
+    public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial, DrawableDistance distance){
         mRenderSurface[0].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
-        mWaterParticleMaterial.beginRender(distanceDrawable.getDistance());
+        mWaterParticleMaterial.beginRender(distance.getDistance());
 
         // Set attribute arrays
         mWaterParticleMaterial.setVertexAttributeBuffer(
@@ -181,7 +181,7 @@ public class DrawableParticleSystem {
     }
 
 
-    public void renderNonWaterParticles(ParticleMaterial mParticleMaterial){
+    public void renderNonWaterParticles(ParticleMaterial mParticleMaterial, DrawableDistance distance){
         mRenderSurface[1].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
         mParticleMaterial.beginRender();
@@ -195,7 +195,7 @@ public class DrawableParticleSystem {
         // Set uniforms
         GLES20.glUniformMatrix4fv(
                 mParticleMaterial.getUniformLocation("uTransform"),
-                1, false, distanceDrawable.mPerspectiveTransform, 0);
+                1, false, distance.mPerspectiveTransform, 0);
 
         // Go through all the particleGroups in the render list
         ParticleGroup currGroup = particleSystem.getParticleGroupList();

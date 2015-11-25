@@ -79,7 +79,7 @@ public class ParticleRenderer implements DrawableLayer {
     }
 
     private void drawParticleSystemToScreen(DrawableParticleSystem dps) {
-        dps.onDraw(mWaterParticleMaterial, mParticleMaterial);
+        dps.onDraw(mWaterParticleMaterial, mParticleMaterial, dps.distanceDrawable);
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         GLES20.glViewport(
