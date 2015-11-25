@@ -10,6 +10,7 @@ import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfunpaint.LiquidPaint;
+import com.google.fpl.liquidfunpaint.renderer.BlurRenderer;
 import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.google.fpl.liquidfunpaint.renderer.RenderSurface;
@@ -37,11 +38,16 @@ public class DrawableParticleSystem {
     }
     public static final RenderSurface[] mRenderSurface = new RenderSurface[2];
 
+    private static BlurRenderer mBlurRenderer;
+
     public static void initializeRenderSurfaces(){
         for (int i = 0; i < mRenderSurface.length; i++) {
             mRenderSurface[i] = new RenderSurface(ParticleRenderer.FB_SIZE, ParticleRenderer.FB_SIZE);
             mRenderSurface[i].setClearColor(Color.argb(0, 255, 255, 255));
         }
+
+        // Create the blur renderer
+        mBlurRenderer = new BlurRenderer();
     }
 
     public final ParticleSystem particleSystem;
@@ -120,6 +126,12 @@ public class DrawableParticleSystem {
         return polygon;
     }
 
+    public void onDraw(WaterParticleMaterial waterMaterial, ParticleMaterial nonWater){
+        resetBuffers();
+        renderWaterParticles(waterMaterial);
+        renderNonWaterParticles(nonWater);
+    }
+
     public void resetBuffers(){
 
         mParticlePositionBuffer.rewind();
@@ -180,6 +192,8 @@ public class DrawableParticleSystem {
         mWaterParticleMaterial.endRender();
 
         mRenderSurface[0].endRender();
+
+        mBlurRenderer.draw(mRenderSurface[0].getTexture(), mRenderSurface[0]);
     }
 
 
@@ -213,6 +227,8 @@ public class DrawableParticleSystem {
         mParticleMaterial.endRender();
 
         mRenderSurface[1].endRender();
+
+        mBlurRenderer.draw(mRenderSurface[1].getTexture(), mRenderSurface[1]);
     }
 
     /**

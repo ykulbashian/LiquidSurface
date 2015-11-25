@@ -27,7 +27,6 @@ import com.google.fpl.liquidfunpaint.util.FileHelper;
 import com.google.fpl.liquidfunpaint.util.RenderHelper;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.opengl.GLES20;
 import android.util.Log;
 
@@ -53,7 +52,6 @@ public class ParticleRenderer implements DrawableLayer {
 
     private WaterParticleMaterial mWaterParticleMaterial;
     private ParticleMaterial mParticleMaterial;
-    private BlurRenderer mBlurRenderer;
     private ScreenRenderer mWaterScreenRenderer;
     private ScreenRenderer mScreenRenderer;
 
@@ -81,10 +79,7 @@ public class ParticleRenderer implements DrawableLayer {
     }
 
     private void drawParticleSystemToScreen(DrawableParticleSystem dps) {
-        dps.resetBuffers();
-
-        // Draw the particles
-        drawParticles(dps);
+        dps.onDraw(mWaterParticleMaterial, mParticleMaterial);
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         GLES20.glViewport(
@@ -97,37 +92,6 @@ public class ParticleRenderer implements DrawableLayer {
 
         // Copy the other particles to screen
         mScreenRenderer.draw(mDrawToScreenTransform);
-    }
-
-    private void drawParticles(DrawableParticleSystem dps) {
-        drawWaterParticles(dps);
-        drawNonWaterParticles(dps);
-    }
-
-    /**
-     * Draw all the water particles, and save all the other particle groups
-     * into a list. We draw these to temp mRenderSurface[0].
-     * @param dps
-     */
-    private void drawWaterParticles(DrawableParticleSystem dps) {
-        // Draw all water particles to temp render surface 0
-
-        dps.renderWaterParticles(mWaterParticleMaterial);
-
-
-        mBlurRenderer.draw(mRenderSurface[0].getTexture(), mRenderSurface[0]);
-    }
-
-    /**
-     * Draw all saved ParticleGroups to temp mRenderSurface[1].
-     * @param dps
-     */
-    private void drawNonWaterParticles(DrawableParticleSystem dps) {
-        // Draw all non-water particles to temp render surface 1
-
-        dps.renderNonWaterParticles(mParticleMaterial);
-
-        mBlurRenderer.draw(mRenderSurface[1].getTexture(), mRenderSurface[1]);
     }
 
     @Override
@@ -143,8 +107,6 @@ public class ParticleRenderer implements DrawableLayer {
         // Create the render surfaces
         DrawableParticleSystem.initializeRenderSurfaces();
 
-        // Create the blur renderer
-        mBlurRenderer = new BlurRenderer();
 
         try {
             JSONObject json = new JSONObject(materialFile);
