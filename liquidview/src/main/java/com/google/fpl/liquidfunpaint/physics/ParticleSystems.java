@@ -11,19 +11,17 @@ import com.google.fpl.liquidfunpaint.util.RenderHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.microedition.khronos.opengles.GL10;
 
 /**
  * Created on 8/13/2015.
  */
-public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableDistance> {
+public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
 
     public static final String DEFAULT_PARTICLE_SYSTEM = "default_particle_system";
 
@@ -33,15 +31,14 @@ public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableDis
 
     private static ParticleSystems sInstance = new ParticleSystems();
 
-    private final List<DrawableDistance> orderedList = new ArrayList<>();
-    private final List<DrawableParticleSystem> allParticleSystems = new ArrayList<>();
+    private final List<DrawableDistance> orderedDistanceList = new ArrayList<>();
 
     public static ParticleSystems getInstance(){
         return sInstance;
     }
 
     public void reset(World world){
-        for(DrawableParticleSystem system : allParticleSystems)
+        for(DrawableParticleSystem system : values())
             system.delete();
 
         clear();
@@ -60,22 +57,25 @@ public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableDis
         psDef.delete();
 
         DrawableParticleSystem newSystem = new DrawableParticleSystem(particleSystem);
-        allParticleSystems.add(newSystem);
 
-        DrawableDistance layer = new DrawableDistance(getNextParticleDistance(), newSystem);
+        put(key, newSystem);
+        addNewLayer(newSystem, getNextParticleDistance());
+    }
 
-        put(key, layer);
+    private void addNewLayer(DrawableParticleSystem system, float distance){
+        DrawableDistance layer = new DrawableDistance(distance, system);
+        orderedDistanceList.add(layer);
+        reorderList();
     }
 
     @Override
-    public Collection<DrawableDistance> values() {
-        return orderedList;
+    public void clear() {
+        super.clear();
+        orderedDistanceList.clear();
     }
 
     private void reorderList() {
-        orderedList.clear();
-        orderedList.addAll(super.values());
-        Collections.sort(orderedList, new Comparator<DrawableDistance>() {
+        Collections.sort(orderedDistanceList, new Comparator<DrawableDistance>() {
             @Override
             public int compare(DrawableDistance lhs, DrawableDistance rhs) {
                 if (lhs.getDistance() > rhs.getDistance())
@@ -88,37 +88,20 @@ public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableDis
         });
     }
 
-    @Override
-    public DrawableDistance put(String key, DrawableDistance value) {
-        super.put(key, value);
-        reorderList();
-        return value;
-    }
-
-    @Override
-    public void putAll(Map<? extends String, ? extends DrawableDistance> map) {
-        super.putAll(map);
-        reorderList();
-    }
-
-    public List<DrawableDistance> getDistances(){
-        return orderedList;
-    }
-
     private float getNextParticleDistance(){
-        return (size() + (float) Math.random())/2;
+        return (orderedDistanceList.size() + (float) Math.random())/4;
     }
 
     public int getParticleCount(){
         int count = 0;
-        for(DrawableParticleSystem system : allParticleSystems){
+        for(DrawableParticleSystem system : values()){
             count += system.getParticleCount();
         }
         return count;
     }
 
     public void reset(){
-        for(DrawableParticleSystem dps : allParticleSystems)
+        for(DrawableParticleSystem dps : values())
             dps.reset();
     }
 
@@ -134,8 +117,12 @@ public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableDis
         get(key).clearParticles(normalizedVertices);
     }
 
+    public List<DrawableDistance> getDistances(){
+        return orderedDistanceList;
+    }
+
     @Override
-    public DrawableDistance get(Object key) {
+    public DrawableParticleSystem get(Object key) {
         if(containsKey(key))
             return super.get(key);
         else{
@@ -147,12 +134,12 @@ public class ParticleSystems extends HashMap<String, ParticleSystems.DrawableDis
     }
 
     public void onSurfaceChanged(GL10 gl, int width, int height){
-        for(DrawableDistance dps : values()){
+        for(DrawableDistance dps : orderedDistanceList){
             dps.resetDimensions(width, height);
         }
     }
 
-    public DrawableDistance get(){
+    public DrawableParticleSystem get(){
         return get(DEFAULT_PARTICLE_SYSTEM);
     }
 
