@@ -74,12 +74,12 @@ public class ParticleRenderer implements DrawableLayer {
      */
     @Override
     public void onDrawFrame(GL10 gl) {
-        for(DrawableParticleSystem dps : ParticleSystems.getInstance().values())
-            drawParticleSystemToScreen(dps);
+        for(ParticleSystems.DrawableLayer dps : ParticleSystems.getInstance().values())
+            drawParticleSystemToScreen(dps.particleSystem, dps.distanceD);
     }
 
-    private void drawParticleSystemToScreen(DrawableParticleSystem dps) {
-        dps.onDraw(mWaterParticleMaterial, mParticleMaterial, dps.distanceDrawable);
+    private void drawParticleSystemToScreen(DrawableParticleSystem dps, ParticleSystems.DrawableDistance dist) {
+        dps.onDraw(mWaterParticleMaterial, mParticleMaterial, dist);
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         GLES20.glViewport(
@@ -98,7 +98,7 @@ public class ParticleRenderer implements DrawableLayer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         RenderHelper.createScreenRender(mDrawToScreenTransform, width, height);
 
-        for(DrawableParticleSystem dps : ParticleSystems.getInstance().values())
+        for(ParticleSystems.DrawableLayer dps : ParticleSystems.getInstance().values())
             dps.onSurfaceChanged(gl, width, height);
     }
 
@@ -174,7 +174,7 @@ public class ParticleRenderer implements DrawableLayer {
 
     @Override
     public void reset() {
-        for(DrawableParticleSystem dps : ParticleSystems.getInstance().values())
+        for(ParticleSystems.DrawableLayer dps : ParticleSystems.getInstance().values())
             dps.reset();
     }
 

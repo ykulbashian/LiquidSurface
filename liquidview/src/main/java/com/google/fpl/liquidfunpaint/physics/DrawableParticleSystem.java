@@ -56,9 +56,7 @@ public class DrawableParticleSystem {
     public ByteBuffer mParticleVelocityBuffer;
     public ByteBuffer mParticleWeightBuffer;
 
-    public final ParticleSystems.DrawableDistance distanceDrawable;
-
-    public DrawableParticleSystem(ParticleSystem pSystem, ParticleSystems.DrawableDistance distance){
+    public DrawableParticleSystem(ParticleSystem pSystem){
         particleSystem = pSystem;
 
         mParticlePositionBuffer = ByteBuffer
@@ -73,8 +71,6 @@ public class DrawableParticleSystem {
         mParticleWeightBuffer = ByteBuffer
                 .allocateDirect(4 * ParticleSystems.MAX_PARTICLE_COUNT)
                 .order(ByteOrder.nativeOrder());
-
-        distanceDrawable = distance;
     }
 
     public int getParticleCount(){
@@ -136,10 +132,6 @@ public class DrawableParticleSystem {
         GLES20.glClearColor(0, 0, 0, 0);
     }
 
-    public void onSurfaceChanged(GL10 gl, int width, int height){
-        distanceDrawable.resetDimensions(width, height);
-    }
-
     public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial, DrawableDistance distance){
         mRenderSurface[0].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
@@ -158,7 +150,7 @@ public class DrawableParticleSystem {
         // Set uniforms
         GLES20.glUniformMatrix4fv(
                 mWaterParticleMaterial.getUniformLocation("uTransform"),
-                1, false, distanceDrawable.mPerspectiveTransform, 0);
+                1, false, distance.mPerspectiveTransform, 0);
 
         // Go through each particle group
         ParticleGroup currGroup = particleSystem.getParticleGroupList();
@@ -238,7 +230,4 @@ public class DrawableParticleSystem {
         particleSystem.delete();
     }
 
-    public float getDistance(){
-        return distanceDrawable.getDistance();
-    }
 }
