@@ -172,19 +172,12 @@ public class WorldLock {
 
         Matrix.setIdentityM(transformFromPhysicsWorld, 0);
 
-        if(ratio > 1) //portrait
-            Matrix.scaleM(transformFromPhysicsWorld, 0, 1/ratio, 1, 1);
+        if(ratio < 1) //portrait
+            Matrix.scaleM(transformFromPhysicsWorld, 0, 1/sPhysicsWorldWidth, 1/(sPhysicsWorldHeight*2), 1);
         else //landscape
-            Matrix.scaleM(transformFromPhysicsWorld, 0, 1, 1*ratio, 1);
+            Matrix.scaleM(transformFromPhysicsWorld, 0, 1/(sPhysicsWorldWidth*2), 1/sPhysicsWorldHeight, 1);
 
-        Matrix.translateM(transformFromPhysicsWorld, 0, -0.5f, -0.5f, distance);
-        Matrix.scaleM(
-                transformFromPhysicsWorld,
-                0,
-                1 / sPhysicsWorldWidth,
-                1 / sPhysicsWorldHeight,
-                1);
-
+        Matrix.translateM(transformFromPhysicsWorld, 0, -sPhysicsWorldWidth/2, -sPhysicsWorldHeight/2, distance);
 
         float[] mvpMatrix = new float[16];
         createMVP(mvpMatrix, 0.25f);
