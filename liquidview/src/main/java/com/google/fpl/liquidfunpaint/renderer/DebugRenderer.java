@@ -164,7 +164,7 @@ public class DebugRenderer extends Draw implements DrawableLayer {
 
         float pointSize =
                 Math.max(1.0f, PhysicsLoop.getInstance().sScreenWidth *
-                        (2.0f * radius / WorldLock.getInstance().sRenderWorldWidth));
+                        (2.0f * radius / WorldLock.getInstance().sPhysicsWorldWidth));
         mCirclePointSizeBuffer.putFloat(pointSize);
     }
 
@@ -195,7 +195,7 @@ public class DebugRenderer extends Draw implements DrawableLayer {
 
         float pointSize =
                 Math.max(1.0f, PhysicsLoop.getInstance().sScreenWidth *
-                        (2.0f * radius / WorldLock.getInstance().sRenderWorldWidth));
+                        (2.0f * radius / WorldLock.getInstance().sPhysicsWorldWidth));
         for (int i = 0; i < count; ++i) {
             mCirclePointSizeBuffer.putFloat(pointSize);
         }
@@ -333,8 +333,8 @@ public class DebugRenderer extends Draw implements DrawableLayer {
           Matrix.scaleM(
                   mTransformFromWorld,
                   0,
-                  2f / WorldLock.getInstance().sRenderWorldWidth,
-                  2f / WorldLock.getInstance().sRenderWorldHeight,
+                  2f / WorldLock.getInstance().sPhysicsWorldWidth,
+                  2f / WorldLock.getInstance().sPhysicsWorldHeight,
                   1);
     }
 

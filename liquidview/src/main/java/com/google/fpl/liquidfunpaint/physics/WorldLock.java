@@ -22,9 +22,6 @@ public class WorldLock {
     public float sPhysicsWorldWidth = WORLD_SPAN;
     public float sPhysicsWorldHeight = WORLD_SPAN;
 
-    public float sRenderWorldWidth = WORLD_SPAN;
-    public float sRenderWorldHeight = WORLD_SPAN;
-
     // Parameters for world simulation
     private static final int VELOCITY_ITERATIONS = 6;
     private static final int POSITION_ITERATIONS = 2;
@@ -86,15 +83,12 @@ public class WorldLock {
     public void setWorldDimensions(float width, float height){
 
         if(height < width) { //landscape
-            sRenderWorldHeight = WORLD_SPAN;
-            sRenderWorldWidth = width * WORLD_SPAN / height;
+            sPhysicsWorldHeight = WORLD_SPAN;
+            sPhysicsWorldWidth = width * WORLD_SPAN / height;
         } else { //portrait
-            sRenderWorldHeight = height * WORLD_SPAN / width;
-            sRenderWorldWidth = WORLD_SPAN;
+            sPhysicsWorldHeight = height * WORLD_SPAN / width;
+            sPhysicsWorldWidth = WORLD_SPAN;
         }
-
-        sPhysicsWorldWidth = sRenderWorldWidth;
-        sPhysicsWorldHeight = sRenderWorldHeight;
 
     }
 

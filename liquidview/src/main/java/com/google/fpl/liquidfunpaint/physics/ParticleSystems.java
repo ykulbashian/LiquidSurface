@@ -154,7 +154,7 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
 
     public void onSurfaceChanged(GL10 gl, int width, int height){
         for(DrawableDistance dps : orderedDistanceList){
-            dps.resetDimensions(width, height);
+            dps.resetDimensions();
         }
     }
 
@@ -178,15 +178,15 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
         public void setDistance(float newDistance){
             mDistance = newDistance;
 
-            resetDimensions(PhysicsLoop.getInstance().sScreenWidth, PhysicsLoop.getInstance().sScreenHeight);
+            resetDimensions();
         }
 
         public float getDistance(){
             return mDistance;
         }
 
-        public void resetDimensions(float width, float height){
-            RenderHelper.perspectiveParticleTransform(mPerspectiveTransform, width, height, mDistance);
+        public void resetDimensions(){
+            RenderHelper.perspectiveParticleTransform(mPerspectiveTransform, mDistance);
         }
 
         public ParticleSystem getParticleSystem(){

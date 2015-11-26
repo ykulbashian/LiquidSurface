@@ -54,10 +54,10 @@ public class RenderHelper {
         SCREEN_QUAD_VERTEX_BUFFER.put(SCREEN_QUAD_VERTEX_DATA).position(0);
     }
 
-    public static void createScreenRender(float[] mTransformFromTexture, float width, float height){
+    public static void createScreenRender(float[] mTransformFromTexture){
 
         // Set up the transform
-        float ratio = height / width;
+        float ratio = WorldLock.getInstance().sPhysicsWorldHeight / WorldLock.getInstance().sPhysicsWorldWidth;
         Matrix.setIdentityM(mTransformFromTexture, 0);
 
         if(ratio > 1) { //portrait
@@ -67,8 +67,8 @@ public class RenderHelper {
         }
     }
 
-    public static void perspectiveParticleTransform(float[] mPerspectiveTransform, float width, float height, float distance) {
-        float ratio = height / width;
+    public static void perspectiveParticleTransform(float[] mPerspectiveTransform, float distance) {
+        float ratio = WorldLock.getInstance().sPhysicsWorldHeight / WorldLock.getInstance().sPhysicsWorldWidth;
         Matrix.setIdentityM(mPerspectiveTransform, 0);
 
         float[] transformFromPhysicsWorld = new float[16];
@@ -84,8 +84,8 @@ public class RenderHelper {
         Matrix.scaleM(
                 transformFromPhysicsWorld,
                 0,
-                1 / WorldLock.getInstance().sRenderWorldWidth,
-                1 / WorldLock.getInstance().sRenderWorldHeight,
+                1 / WorldLock.getInstance().sPhysicsWorldWidth,
+                1 / WorldLock.getInstance().sPhysicsWorldHeight,
                 1);
 
 
@@ -143,8 +143,8 @@ public class RenderHelper {
         Matrix.scaleM(
                 destArray,
                 0,
-                1 / WorldLock.getInstance().sRenderWorldWidth,
-                1 / WorldLock.getInstance().sRenderWorldHeight,
+                1 / WorldLock.getInstance().sPhysicsWorldWidth,
+                1 / WorldLock.getInstance().sPhysicsWorldHeight,
                 1);
 
         Matrix.translateM(destArray, 0, 0, 0, distance);

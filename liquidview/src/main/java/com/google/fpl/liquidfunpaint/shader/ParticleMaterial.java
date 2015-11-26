@@ -59,7 +59,7 @@ public class ParticleMaterial extends Material {
 
         float pSize =  mParticleSizeScale * ParticleRenderer.FB_SIZE *
                 (ParticleSystems.PARTICLE_RADIUS /
-                        Math.min(WorldLock.getInstance().sRenderWorldWidth, WorldLock.getInstance().sRenderWorldHeight));
+                        Math.min(WorldLock.getInstance().sPhysicsWorldWidth, WorldLock.getInstance().sPhysicsWorldHeight));
 
         // Specific uniforms to this material
         GLES20.glUniform1f(
