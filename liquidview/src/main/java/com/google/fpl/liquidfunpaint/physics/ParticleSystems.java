@@ -186,7 +186,7 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
         }
 
         public void resetDimensions(){
-            RenderHelper.perspectiveParticleTransform(mPerspectiveTransform, mDistance);
+            WorldLock.getInstance().perspectiveParticleTransform(mPerspectiveTransform, mDistance);
         }
 
         public ParticleSystem getParticleSystem(){

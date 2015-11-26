@@ -17,8 +17,8 @@
 
 package com.google.fpl.liquidfunpaint.renderer;
 
-import com.google.fpl.liquidfunpaint.physics.DrawableParticleSystem;
 import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
+import com.google.fpl.liquidfunpaint.physics.WorldLock;
 import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
@@ -55,8 +55,6 @@ public class ParticleRenderer implements DrawableLayer {
     private ScreenRenderer mWaterScreenRenderer;
     private ScreenRenderer mScreenRenderer;
 
-    private final float[] mDrawToScreenTransform = new float[16];
-
     private Context mContext;
 
     private String materialFile;
@@ -88,7 +86,7 @@ public class ParticleRenderer implements DrawableLayer {
                 PhysicsLoop.getInstance().sScreenHeight);
 
         // Copy the water particles to screen
-        mWaterScreenRenderer.draw(mDrawToScreenTransform);
+        mWaterScreenRenderer.draw(WorldLock.getInstance().mDrawToScreenTransform);
 
         // Copy the other particles to screen
         mScreenRenderer.draw(mDrawToScreenTransform);
@@ -96,7 +94,6 @@ public class ParticleRenderer implements DrawableLayer {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
-        RenderHelper.createScreenRender(mDrawToScreenTransform);
 
         ParticleSystems.getInstance().onSurfaceChanged(gl, width, height);
     }

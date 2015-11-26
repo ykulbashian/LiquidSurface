@@ -1,7 +1,10 @@
 package com.google.fpl.liquidfunpaint.physics;
 
+import android.opengl.Matrix;
+
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.renderer.DebugRenderer;
+import com.google.fpl.liquidfunpaint.util.RenderHelper;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -16,7 +19,7 @@ public class WorldLock {
     final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
 
 
-    private static final float TIME_STEP = 1 / 60f; // 60 fps
+    private static final float TIME_STEP = 1 / 120f; // 60 fps
 
     public static final float WORLD_SPAN = 3f;
     public float sPhysicsWorldWidth = WORLD_SPAN;
@@ -29,6 +32,8 @@ public class WorldLock {
 
     private World mWorld = null;
     private Lock mWorldLock = new ReentrantLock();
+
+    public final float[] mDrawToScreenTransform = new float[16];
 
     private static WorldLock sInstance = new WorldLock();
 
@@ -90,6 +95,21 @@ public class WorldLock {
             sPhysicsWorldWidth = WORLD_SPAN;
         }
 
+        createScreenRender();
+
+    }
+
+    private void createScreenRender(){
+
+        // Set up the transform
+        float ratio = sPhysicsWorldHeight / sPhysicsWorldWidth;
+        Matrix.setIdentityM(mDrawToScreenTransform, 0);
+
+        if(ratio > 1) { //portrait
+            Matrix.scaleM(mDrawToScreenTransform, 0, ratio, 1, 1);
+        } else { //landscape
+            Matrix.scaleM(mDrawToScreenTransform, 0, 1, 1 / ratio, 1);
+        }
     }
 
     public void stepWorld(){
@@ -141,5 +161,89 @@ public class WorldLock {
     @Override
     protected void finalize() {
         deleteWorld();
+    }
+
+
+    public void perspectiveParticleTransform(float[] mPerspectiveTransform, float distance) {
+        float ratio = sPhysicsWorldHeight / sPhysicsWorldWidth;
+        Matrix.setIdentityM(mPerspectiveTransform, 0);
+
+        float[] transformFromPhysicsWorld = new float[16];
+
+        Matrix.setIdentityM(transformFromPhysicsWorld, 0);
+
+        if(ratio > 1) //portrait
+            Matrix.scaleM(transformFromPhysicsWorld, 0, 1/ratio, 1, 1);
+        else //landscape
+            Matrix.scaleM(transformFromPhysicsWorld, 0, 1, 1*ratio, 1);
+
+        Matrix.translateM(transformFromPhysicsWorld, 0, -0.5f, -0.5f, distance);
+        Matrix.scaleM(
+                transformFromPhysicsWorld,
+                0,
+                1 / sPhysicsWorldWidth,
+                1 / sPhysicsWorldHeight,
+                1);
+
+
+        float[] mvpMatrix = new float[16];
+        createMVP(mvpMatrix, 0.25f);
+
+        Matrix.multiplyMM(mPerspectiveTransform, 0, mvpMatrix, 0, transformFromPhysicsWorld, 0);
+    }
+
+    public void perspectiveTransform(float[] mPerspectiveTransform, float distance) {
+        Matrix.setIdentityM(mPerspectiveTransform, 0);
+
+        float[] transformFromPhysicsWorld = new float[16];
+        createWorldTransform(transformFromPhysicsWorld, distance);
+
+        float[] mvpMatrix = new float[16];
+        createMVP(mvpMatrix, 0.25f);
+
+        Matrix.multiplyMM(mPerspectiveTransform, 0, mvpMatrix, 0, transformFromPhysicsWorld, 0);
+    }
+
+    private void createMVP(float[] destArray, float multiplier){
+
+        float[] mViewMatrix = new float[16];
+        float[] mProjectionMatrix = new float[16];
+
+        createProjection(mProjectionMatrix, multiplier);
+        createViewMatrix(mViewMatrix);
+
+        // Calculate the projection and view transformation
+        Matrix.multiplyMM(destArray, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+    }
+
+    private void createProjection(float[] destArray, float multiplier){
+        Matrix.setIdentityM(destArray, 0);
+
+        Matrix.frustumM(destArray, 0, multiplier, -multiplier, -multiplier, multiplier, 0.5f, 1000.0f);
+    }
+
+    private void createViewMatrix(float[] destArray){
+        Matrix.setIdentityM(destArray, 0);
+
+        // Set the camera position (View matrix)
+        Matrix.setLookAtM(destArray, 0,
+                0, 0, -1,
+                0f, 0f, 0f,
+                0f, 1.0f, 0.0f);
+    }
+
+    private void createWorldTransform(float[] destArray, float distance){
+
+        Matrix.setIdentityM(destArray, 0);
+
+        Matrix.translateM(destArray, 0, -0.5f, -0.5f, 0);
+        Matrix.scaleM(
+                destArray,
+                0,
+                1 / sPhysicsWorldWidth,
+                1 / sPhysicsWorldHeight,
+                1);
+
+        Matrix.translateM(destArray, 0, 0, 0, distance);
     }
 }
