@@ -4,7 +4,6 @@ import android.opengl.Matrix;
 
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.renderer.DebugRenderer;
-import com.google.fpl.liquidfunpaint.util.RenderHelper;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -21,9 +20,11 @@ public class WorldLock {
 
     private static final float TIME_STEP = 1 / 120f; // 60 fps
 
-    public static final float WORLD_SPAN = 3f;
-    public float sPhysicsWorldWidth = WORLD_SPAN;
-    public float sPhysicsWorldHeight = WORLD_SPAN;
+    public static final float WORLD_SCALE = 3f;
+    public float sPhysicsWorldWidth = WORLD_SCALE;
+    public float sPhysicsWorldHeight = WORLD_SCALE;
+
+    public float screenRatio = 1.0f;
 
     // Parameters for world simulation
     private static final int VELOCITY_ITERATIONS = 6;
@@ -86,13 +87,14 @@ public class WorldLock {
     }
 
     public void setWorldDimensions(float width, float height){
+        screenRatio = height/width;
 
         if(height < width) { //landscape
-            sPhysicsWorldHeight = WORLD_SPAN;
-            sPhysicsWorldWidth = width * WORLD_SPAN / height;
+            sPhysicsWorldHeight = WORLD_SCALE;
+            sPhysicsWorldWidth = width * WORLD_SCALE / height;
         } else { //portrait
-            sPhysicsWorldHeight = height * WORLD_SPAN / width;
-            sPhysicsWorldWidth = WORLD_SPAN;
+            sPhysicsWorldHeight = height * WORLD_SCALE / width;
+            sPhysicsWorldWidth = WORLD_SCALE;
         }
 
         createScreenRender();
@@ -101,14 +103,12 @@ public class WorldLock {
 
     private void createScreenRender(){
 
-        // Set up the transform
-        float ratio = sPhysicsWorldHeight / sPhysicsWorldWidth;
         Matrix.setIdentityM(mDrawToScreenTransform, 0);
 
-        if(ratio > 1) { //portrait
-            Matrix.scaleM(mDrawToScreenTransform, 0, ratio, 1, 1);
+        if(screenRatio > 1) { //portrait
+            Matrix.scaleM(mDrawToScreenTransform, 0, screenRatio, 1, 1);
         } else { //landscape
-            Matrix.scaleM(mDrawToScreenTransform, 0, 1, 1 / ratio, 1);
+            Matrix.scaleM(mDrawToScreenTransform, 0, 1, 1 / screenRatio, 1);
         }
     }
 
@@ -165,19 +165,27 @@ public class WorldLock {
 
 
     public void perspectiveParticleTransform(float[] mPerspectiveTransform, float distance) {
-        float ratio = sPhysicsWorldHeight / sPhysicsWorldWidth;
         Matrix.setIdentityM(mPerspectiveTransform, 0);
 
         float[] transformFromPhysicsWorld = new float[16];
 
         Matrix.setIdentityM(transformFromPhysicsWorld, 0);
 
-        if(ratio < 1) //portrait
-            Matrix.scaleM(transformFromPhysicsWorld, 0, 1/sPhysicsWorldWidth, 1/(sPhysicsWorldHeight*2), 1);
-        else //landscape
-            Matrix.scaleM(transformFromPhysicsWorld, 0, 1/(sPhysicsWorldWidth*2), 1/sPhysicsWorldHeight, 1);
+        // understretch
+        if(screenRatio < 1) //landscape
+            Matrix.scaleM(transformFromPhysicsWorld, 0, 1, screenRatio, 1);
+        else //portrait
+            Matrix.scaleM(transformFromPhysicsWorld, 0, 1/screenRatio, 1, 1);
 
-        Matrix.translateM(transformFromPhysicsWorld, 0, -sPhysicsWorldWidth/2, -sPhysicsWorldHeight/2, distance);
+
+        Matrix.translateM(transformFromPhysicsWorld, 0, -0.5f, -0.5f, distance); // center
+
+        Matrix.scaleM(transformFromPhysicsWorld, 0, 1 / WORLD_SCALE, 1 / WORLD_SCALE, 1); //-1, 1
+
+        if(screenRatio < 1) //landscape
+            Matrix.scaleM(transformFromPhysicsWorld, 0, screenRatio, 1, 1);
+        else //portrait
+            Matrix.scaleM(transformFromPhysicsWorld, 0, 1, 1/screenRatio, 1);
 
         float[] mvpMatrix = new float[16];
         createMVP(mvpMatrix, 0.25f);
@@ -229,13 +237,15 @@ public class WorldLock {
 
         Matrix.setIdentityM(destArray, 0);
 
-        Matrix.translateM(destArray, 0, -0.5f, -0.5f, 0);
-        Matrix.scaleM(
-                destArray,
-                0,
-                1 / sPhysicsWorldWidth,
-                1 / sPhysicsWorldHeight,
-                1);
+
+        Matrix.translateM(destArray, 0, -0.5f, -0.5f, distance); // center
+
+        Matrix.scaleM(destArray, 0, 1 / WORLD_SCALE, 1 / WORLD_SCALE, 1); //-1, 1
+
+        if(screenRatio < 1) //landscape
+            Matrix.scaleM(destArray, 0, screenRatio, 1, 1);
+        else //portrait
+            Matrix.scaleM(destArray, 0, 1, 1/screenRatio, 1);
 
         Matrix.translateM(destArray, 0, 0, 0, distance);
     }
