@@ -24,7 +24,6 @@ import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
 import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
-import com.google.fpl.liquidfunpaint.util.RenderHelper;
 
 import android.content.Context;
 import android.opengl.GLES20;

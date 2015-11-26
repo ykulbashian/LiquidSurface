@@ -85,7 +85,7 @@ public class WaterParticleMaterial extends Material {
 
         float pSize =  mAdjustedParticleSize * ParticleRenderer.FB_SIZE *
                 (ParticleSystems.PARTICLE_RADIUS /
-                        Math.min(WorldLock.getInstance().sPhysicsWorldWidth, WorldLock.getInstance().sPhysicsWorldHeight));
+                        Math.min(WorldLock.getInstance().sScreenWorldWidth, WorldLock.getInstance().sScreenWorldHeight));
 
         // Specific uniforms to this material
         GLES20.glUniform1f(

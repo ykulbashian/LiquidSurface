@@ -1,6 +1,7 @@
 package com.google.fpl.liquidfunpaint.physics;
 
 import android.content.Context;
+import android.graphics.PointF;
 import android.text.TextUtils;
 
 import com.google.fpl.liquidfun.Body;
@@ -51,6 +52,8 @@ public class SolidWorld implements DrawableLayer{
     }
 
     private void createWorldBoundaries(){
+        float screenHeight = WorldLock.getInstance().sScreenWorldHeight;
+        float screenWidth = WorldLock.getInstance().sScreenWorldWidth;
 
         float worldWidth = WorldLock.getInstance().sPhysicsWorldWidth;
         float worldHeight = WorldLock.getInstance().sPhysicsWorldHeight;
@@ -58,22 +61,28 @@ public class SolidWorld implements DrawableLayer{
         float extraPadding = 0;
         float extraWidth = worldWidth + extraPadding;
 
+        float midWidth = screenWidth/2;
+        float midHeight = screenHeight/2;
+        float left = -1*(worldWidth-screenWidth)/2;
+        float right = screenWidth + (worldWidth-screenWidth)/2;
+        float bottom = -1*(worldHeight-screenHeight)/2;
+        float top = screenHeight + (worldHeight-screenHeight)/2;
 
         // boundary definitions
         // top
-        Vector2f[] vTop = MathHelper.createBox(new Vector2f(worldWidth / 2, worldHeight + BOUNDARY_THICKNESS/2), 2*extraWidth, BOUNDARY_THICKNESS);
+        Vector2f[] vTop = MathHelper.createBox(new Vector2f(midWidth, top), 2*extraWidth, BOUNDARY_THICKNESS);
         createSolidObject(vTop, BodyType.staticBody, null);
 
         // bottom
-        vTop = MathHelper.createBox(new Vector2f(worldWidth / 2, -BOUNDARY_THICKNESS/2), 2*extraWidth, BOUNDARY_THICKNESS);
+        vTop = MathHelper.createBox(new Vector2f(midWidth, bottom), 2*extraWidth, BOUNDARY_THICKNESS);
         createSolidObject(vTop, BodyType.staticBody, null);
 
         // left
-        vTop = MathHelper.createBox(new Vector2f(-BOUNDARY_THICKNESS/2, worldHeight / 2), BOUNDARY_THICKNESS, worldHeight);
+        vTop = MathHelper.createBox(new Vector2f(left, midHeight), BOUNDARY_THICKNESS, worldHeight);
         createSolidObject(vTop, BodyType.staticBody, null);
 
         // right
-        vTop = MathHelper.createBox(new Vector2f(worldWidth + BOUNDARY_THICKNESS/2, worldHeight / 2), BOUNDARY_THICKNESS, worldHeight);
+        vTop = MathHelper.createBox(new Vector2f(right, midHeight), BOUNDARY_THICKNESS, worldHeight);
         createSolidObject(vTop, BodyType.staticBody, null);
 
     }

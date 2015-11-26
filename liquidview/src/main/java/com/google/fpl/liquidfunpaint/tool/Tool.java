@@ -211,11 +211,11 @@ public abstract class Tool {
         worldPoint.x = Math.max(border,
                 Math.min(
                         worldPoint.x,
-                        WorldLock.getInstance().sPhysicsWorldWidth - border));
+                        WorldLock.getInstance().sScreenWorldWidth - border));
         worldPoint.y = Math.max(border,
                 Math.min(
                         worldPoint.y,
-                        WorldLock.getInstance().sPhysicsWorldHeight - border));
+                        WorldLock.getInstance().sScreenWorldHeight - border));
     }
 
     /**
@@ -257,9 +257,9 @@ public abstract class Tool {
         float radius = mBrushSize / 2;
 
         Vector2f worldPoint = new Vector2f(
-                WorldLock.getInstance().sPhysicsWorldWidth
+                WorldLock.getInstance().sScreenWorldWidth
                     * screenX / v.getWidth(),
-                WorldLock.getInstance().sPhysicsWorldHeight *
+                WorldLock.getInstance().sScreenWorldHeight *
                     (v.getHeight() - screenY)
                 / v.getHeight());
         clampToWorld(worldPoint, radius);

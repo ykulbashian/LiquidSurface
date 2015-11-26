@@ -27,8 +27,8 @@ public final class MathHelper {
 
     public static Vec2 normalizePosition(Vec2 pos){
         Vec2 normal = new Vec2();
-        normal.setX(2*(pos.getX() - WorldLock.getInstance().sPhysicsWorldWidth/2)/WorldLock.getInstance().sPhysicsWorldWidth);
-        normal.setY(2*(pos.getY() - WorldLock.getInstance().sPhysicsWorldHeight/2)/WorldLock.getInstance().sPhysicsWorldHeight);
+        normal.setX(2*(pos.getX() - WorldLock.getInstance().sScreenWorldWidth/2)/WorldLock.getInstance().sScreenWorldWidth);
+        normal.setY(2*(pos.getY() - WorldLock.getInstance().sScreenWorldHeight/2)/WorldLock.getInstance().sScreenWorldHeight);
         return normal;
     }
 
@@ -43,8 +43,8 @@ public final class MathHelper {
     }
 
     public static Vector2f[] normalizeVertices(Vector2f[] originalVertices, float viewWidth, float viewHeight){
-        float widthRatio = WorldLock.getInstance().sPhysicsWorldWidth / viewWidth;
-        float heightRatio = WorldLock.getInstance().sPhysicsWorldHeight / viewHeight;
+        float widthRatio = WorldLock.getInstance().sScreenWorldWidth / viewWidth;
+        float heightRatio = WorldLock.getInstance().sScreenWorldHeight / viewHeight;
 
         Vector2f[] normalizedVerts = new Vector2f[originalVertices.length];
 

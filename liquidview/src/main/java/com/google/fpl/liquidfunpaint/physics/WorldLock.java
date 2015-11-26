@@ -23,6 +23,8 @@ public class WorldLock {
     public static final float WORLD_SCALE = 3f;
     public float sPhysicsWorldWidth = WORLD_SCALE;
     public float sPhysicsWorldHeight = WORLD_SCALE;
+    public float sScreenWorldWidth = WORLD_SCALE;
+    public float sScreenWorldHeight = WORLD_SCALE;
 
     public float screenRatio = 1.0f;
 
@@ -90,11 +92,11 @@ public class WorldLock {
         screenRatio = height/width;
 
         if(height < width) { //landscape
-            sPhysicsWorldHeight = WORLD_SCALE;
-            sPhysicsWorldWidth = width * WORLD_SCALE / height;
+            sScreenWorldHeight = WORLD_SCALE;
+            sScreenWorldWidth = width * WORLD_SCALE / height;
         } else { //portrait
-            sPhysicsWorldHeight = height * WORLD_SCALE / width;
-            sPhysicsWorldWidth = WORLD_SCALE;
+            sScreenWorldHeight = height * WORLD_SCALE / width;
+            sScreenWorldWidth = WORLD_SCALE;
         }
 
         createScreenRender();
@@ -177,8 +179,18 @@ public class WorldLock {
         else //portrait
             Matrix.scaleM(transformFromPhysicsWorld, 0, 1/screenRatio, 1, 1);
 
+        Matrix.translateM(transformFromPhysicsWorld, 0, 0, 0, distance);
 
-        Matrix.translateM(transformFromPhysicsWorld, 0, -0.5f, -0.5f, distance); // center
+        normalizeToScreenRatio(transformFromPhysicsWorld);
+
+        float[] mvpMatrix = new float[16];
+        createMVP(mvpMatrix, 0.25f);
+
+        Matrix.multiplyMM(mPerspectiveTransform, 0, mvpMatrix, 0, transformFromPhysicsWorld, 0);
+    }
+
+    private void normalizeToScreenRatio(float[] transformFromPhysicsWorld) {
+        Matrix.translateM(transformFromPhysicsWorld, 0, -0.5f, -0.5f, 0); // center
 
         Matrix.scaleM(transformFromPhysicsWorld, 0, 1 / WORLD_SCALE, 1 / WORLD_SCALE, 1); //-1, 1
 
@@ -186,11 +198,6 @@ public class WorldLock {
             Matrix.scaleM(transformFromPhysicsWorld, 0, screenRatio, 1, 1);
         else //portrait
             Matrix.scaleM(transformFromPhysicsWorld, 0, 1, 1/screenRatio, 1);
-
-        float[] mvpMatrix = new float[16];
-        createMVP(mvpMatrix, 0.25f);
-
-        Matrix.multiplyMM(mPerspectiveTransform, 0, mvpMatrix, 0, transformFromPhysicsWorld, 0);
     }
 
     public void perspectiveTransform(float[] mPerspectiveTransform, float distance) {
@@ -237,16 +244,25 @@ public class WorldLock {
 
         Matrix.setIdentityM(destArray, 0);
 
-
-        Matrix.translateM(destArray, 0, -0.5f, -0.5f, distance); // center
-
-        Matrix.scaleM(destArray, 0, 1 / WORLD_SCALE, 1 / WORLD_SCALE, 1); //-1, 1
-
-        if(screenRatio < 1) //landscape
-            Matrix.scaleM(destArray, 0, screenRatio, 1, 1);
-        else //portrait
-            Matrix.scaleM(destArray, 0, 1, 1/screenRatio, 1);
+        if(screenRatio > 1) { //portrait
+            Matrix.scaleM(destArray, 0, 1/2, screenRatio, 1);
+        } else { //landscape
+            Matrix.scaleM(destArray, 0, 1 /(2* screenRatio), 1, 1);
+        }
 
         Matrix.translateM(destArray, 0, 0, 0, distance);
+
+        normalizeToScreenRatio(destArray);
+    }
+
+    public void createUnstretchedTransform(float[] destArray, float distance){
+        Matrix.setIdentityM(destArray, 0);
+        Matrix.translateM(destArray, 0, -0.5f, -0.5f, distance);
+        Matrix.scaleM(
+                destArray,
+                0,
+                1f / sScreenWorldWidth,
+                1f / sScreenWorldHeight,
+                1);
     }
 }
