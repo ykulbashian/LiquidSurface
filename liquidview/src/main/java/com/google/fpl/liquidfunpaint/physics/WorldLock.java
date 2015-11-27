@@ -5,6 +5,7 @@ import android.opengl.Matrix;
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.renderer.DebugRenderer;
 
+import java.util.Arrays;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Lock;
@@ -17,11 +18,20 @@ public class WorldLock {
 
     final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
 
+    private static class ThreeDPoint {
+        float x, y, z;
+    }
+
+    private float tiltDegrees = 0;
+    private float panDegrees = 0;
+    private ThreeDPoint position = new ThreeDPoint(); {
+        position.z = -1;
+    }
 
     private static final float TIME_STEP = 1 / 120f; // 60 fps
 
-    public static final float WORLD_SCALE = 3f;
-    public float sPhysicsWorldWidth = WORLD_SCALE;
+    public static final float WORLD_SCALE = 2f;
+    public float sPhysicsWorldWidth =2* WORLD_SCALE;
     public float sPhysicsWorldHeight = WORLD_SCALE;
     public float sScreenWorldWidth = WORLD_SCALE;
     public float sScreenWorldHeight = WORLD_SCALE;
@@ -37,6 +47,8 @@ public class WorldLock {
     private Lock mWorldLock = new ReentrantLock();
 
     public final float[] mDrawToScreenTransform = new float[16];
+    public final float[] mSolidWorldTransform = new float[16];
+    public final float[] mParticleTransform = new float[16];
 
     private static WorldLock sInstance = new WorldLock();
 
@@ -101,6 +113,8 @@ public class WorldLock {
 
         createScreenRender();
 
+        perspectiveTransform(mSolidWorldTransform, 0);
+        perspectiveParticleTransform(mParticleTransform, 0);
     }
 
     private void createScreenRender(){
@@ -165,6 +179,16 @@ public class WorldLock {
         deleteWorld();
     }
 
+    public float[] getSolidWorldTransform(){
+        return mSolidWorldTransform;
+    }
+
+    public float[] getParticleTransform(float distance){
+        float[] dest = Arrays.copyOf(mParticleTransform, 16);
+        Matrix.translateM(dest, 0, 0, 0, distance);
+        return dest;
+    }
+
 
     public void perspectiveParticleTransform(float[] mPerspectiveTransform, float distance) {
         Matrix.setIdentityM(mPerspectiveTransform, 0);
@@ -204,7 +228,7 @@ public class WorldLock {
         Matrix.setIdentityM(mPerspectiveTransform, 0);
 
         float[] transformFromPhysicsWorld = new float[16];
-        createWorldTransform(transformFromPhysicsWorld, distance);
+        createUnstretchedTransform(transformFromPhysicsWorld, distance);
 
         float[] mvpMatrix = new float[16];
         createMVP(mvpMatrix, 0.25f);
@@ -235,7 +259,7 @@ public class WorldLock {
 
         // Set the camera position (View matrix)
         Matrix.setLookAtM(destArray, 0,
-                0, 0, -1,
+                position.x, position.y, position.z,
                 0f, 0f, 0f,
                 0f, 1.0f, 0.0f);
     }
@@ -245,7 +269,7 @@ public class WorldLock {
         Matrix.setIdentityM(destArray, 0);
 
         if(screenRatio > 1) { //portrait
-            Matrix.scaleM(destArray, 0, 1/2, screenRatio, 1);
+            Matrix.scaleM(destArray, 0, 1, screenRatio, 1);
         } else { //landscape
             Matrix.scaleM(destArray, 0, 1 /(2* screenRatio), 1, 1);
         }

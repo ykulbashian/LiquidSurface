@@ -129,10 +129,11 @@ public class DrawableParticleSystem {
         mWaterParticleMaterial.setVertexAttributeBuffer(
                 "aWeight", mParticleWeightBuffer, 0);
 
+        float[] transform = WorldLock.getInstance().getParticleTransform(distance.getDistance());
         // Set uniforms
         GLES20.glUniformMatrix4fv(
                 mWaterParticleMaterial.getUniformLocation("uTransform"),
-                1, false, distance.mPerspectiveTransform, 0);
+                1, false, transform, 0);
 
         // Go through each particle group
         ParticleGroup currGroup = particleSystem.getParticleGroupList();
@@ -165,10 +166,11 @@ public class DrawableParticleSystem {
         mParticleMaterial.setVertexAttributeBuffer(
                 "aColor", mParticleColorBuffer, 0);
 
+        float[] transform = WorldLock.getInstance().getParticleTransform(distance.getDistance());
         // Set uniforms
         GLES20.glUniformMatrix4fv(
                 mParticleMaterial.getUniformLocation("uTransform"),
-                1, false, distance.mPerspectiveTransform, 0);
+                1, false, transform, 0);
 
         // Go through all the particleGroups in the render list
         ParticleGroup currGroup = particleSystem.getParticleGroupList();

@@ -134,7 +134,8 @@ public class SolidWorld implements DrawableLayer{
 
                     Vec2 center = body.getWorldCenter();
                     TextureRenderer.getInstance().drawTexture(
-                            textures.get(body), mPerspectiveTransform,
+                            textures.get(body),
+                            WorldLock.getInstance().getSolidWorldTransform(),
                             (center.getX()) - poly.x / 2,
                             (center.getY()) + poly.y / 2,
                             (center.getX()) + poly.x / 2,
