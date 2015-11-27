@@ -16,6 +16,13 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class WorldLock {
 
+    private final Runnable updateTransformations = new Runnable() {
+        @Override
+        public void run() {
+            updateTransformations();
+        }
+    };
+
     final private Queue<Runnable> pendingRunnables = new ConcurrentLinkedQueue<>();
 
     private static class ThreeDPoint {
@@ -24,8 +31,14 @@ public class WorldLock {
 
     private float tiltDegrees = 0;
     private float panDegrees = 0;
-    private ThreeDPoint position = new ThreeDPoint(); {
+    private ThreeDPoint position = new ThreeDPoint();
+    {
+        position.y = 0.3f;
         position.z = -1;
+    }
+    private ThreeDPoint lookAt = new ThreeDPoint();
+    {
+        lookAt.y = -0.2f;
     }
 
     private static final float TIME_STEP = 1 / 120f; // 60 fps
@@ -111,6 +124,10 @@ public class WorldLock {
             sScreenWorldWidth = WORLD_SCALE;
         }
 
+        updateTransformations();
+    }
+
+    private void updateTransformations() {
         createScreenRender();
 
         perspectiveTransform(mSolidWorldTransform, 0);
@@ -189,6 +206,25 @@ public class WorldLock {
         return dest;
     }
 
+    public void translateCamera(final float x, final float y, final float z){
+        addPhysicsCommand(new Runnable() {
+            @Override
+            public void run() {
+                position.x += x;
+                position.y += y;
+                position.z += z;
+
+                lookAt.x += x;
+                lookAt.y += y;
+                lookAt.z += z;
+            }
+        });
+
+        if(pendingRunnables.contains(updateTransformations)){
+            pendingRunnables.remove(updateTransformations);
+        }
+        pendingRunnables.add(updateTransformations);
+    }
 
     public void perspectiveParticleTransform(float[] mPerspectiveTransform, float distance) {
         Matrix.setIdentityM(mPerspectiveTransform, 0);
@@ -260,7 +296,7 @@ public class WorldLock {
         // Set the camera position (View matrix)
         Matrix.setLookAtM(destArray, 0,
                 position.x, position.y, position.z,
-                0f, 0f, 0f,
+                lookAt.x, lookAt.y, lookAt.z,
                 0f, 1.0f, 0.0f);
     }
 
