@@ -3,18 +3,13 @@ package com.mycardboarddreams.liquidsurface;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.TextureView;
+import android.view.MotionEvent;
 
-import com.google.fpl.liquidfunpaint.LiquidPaint;
-import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
 import com.google.fpl.liquidfunpaint.physics.WorldLock;
 import com.google.fpl.liquidfunpaint.physics.actions.ParticleEraser;
 import com.google.fpl.liquidfunpaint.physics.actions.ParticleGroup;
 import com.google.fpl.liquidfunpaint.physics.actions.SolidShape;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
-import com.google.fpl.liquidfunpaint.physics.SolidWorld;
-import com.google.fpl.liquidfunpaint.util.MathHelper;
-import com.google.fpl.liquidfunpaint.util.Vector2f;
 
 
 /**
@@ -40,6 +35,8 @@ public class LiquidTextureView extends GLTextureView implements ILiquidWorld {
     private WorldLock mWorldLock;
 
     private RotatableController mController;
+
+    private GestureInterpreter mGestureInterpreter;
 
     public LiquidTextureView(Context context) {
         super(context);
@@ -69,6 +66,8 @@ public class LiquidTextureView extends GLTextureView implements ILiquidWorld {
         setRenderer(mPhysicsLoop);
 
         mController = new RotatableController(activity);
+
+        mGestureInterpreter = new GestureInterpreter(context);
     }
 
     @Override
@@ -106,4 +105,21 @@ public class LiquidTextureView extends GLTextureView implements ILiquidWorld {
         mPhysicsLoop.reset();
     }
 
+    @Override
+    public void translateCamera(float x, float y, float z){
+        mWorldLock.translateCamera(x, y, z);
+    }
+
+    @Override
+    public void addGestureListener(GestureInterpreter.GestureListener detector) {
+        mGestureInterpreter.setGestureListener(detector);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if(mGestureInterpreter.onTouchEvent(event)){
+            return true;
+        }
+        return super.onTouchEvent(event);
+    }
 }

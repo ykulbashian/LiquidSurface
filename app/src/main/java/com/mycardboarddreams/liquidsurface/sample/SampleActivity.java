@@ -3,11 +3,14 @@ package com.mycardboarddreams.liquidsurface.sample;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 
 import com.google.fpl.liquidfunpaint.LiquidPaint;
 import com.google.fpl.liquidfunpaint.physics.actions.ParticleGroup;
 import com.google.fpl.liquidfunpaint.physics.actions.SolidShape;
 import com.google.fpl.liquidfunpaint.util.MathHelper;
+import com.mycardboarddreams.liquidsurface.GestureInterpreter;
 import com.mycardboarddreams.liquidsurface.ILiquidWorld;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
@@ -25,12 +28,30 @@ public class SampleActivity extends AppCompatActivity {
 
         ltv.clearAll();
         ParticleGroup liquidShape1 = new ParticleGroup(MathHelper.createCircle(getScreenCenter(), 400, 8));
-        ParticleGroup liquidShape2 = new ParticleGroup(MathHelper.createCircle(getScreenCenter(), 300, 8), LiquidPaint.LIQUID().setColor(0xFF00FF00), "SecondParticleSystem");
+        ParticleGroup liquidShape2 = new ParticleGroup(MathHelper.createCircle(getScreenCenter(), 300, 8), LiquidPaint.LIQUID().setColor(0xFF0000FF), "SecondParticleSystem");
         SolidShape solidShape = new SolidShape(MathHelper.createCircle(getScreenCenter(), 70, 8), "textures/smiley.png");
 
         ltv.createParticles(liquidShape1);
         ltv.createParticles(liquidShape2);
         ltv.createSolidShape(solidShape);
+
+        ltv.addGestureListener(new GestureInterpreter.GestureListener() {
+            @Override
+            public boolean onScroll(float xDistance, float yDistance) {
+                ltv.translateCamera(xDistance/400, -yDistance/400, 0);
+                return true;
+            }
+
+            @Override
+            public boolean onScale(float scale) {
+                if(scale < 1)
+                    ltv.translateCamera(0, 0, (-1/scale)/30);
+                else
+                    ltv.translateCamera(0, 0, scale/30);
+
+                return false;
+            }
+        });
     }
 
     /**
