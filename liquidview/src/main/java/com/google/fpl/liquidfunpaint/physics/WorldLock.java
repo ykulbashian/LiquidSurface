@@ -27,19 +27,21 @@ public class WorldLock {
 
     private static class ThreeDPoint {
         float x, y, z;
+
+        public ThreeDPoint(float x, float y, float z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
     }
 
     private float tiltDegrees = 0;
     private float panDegrees = 0;
-    private ThreeDPoint position = new ThreeDPoint();
-    {
-        position.y = 0.3f;
-        position.z = -1;
-    }
-    private ThreeDPoint lookAt = new ThreeDPoint();
-    {
-        lookAt.y = -0.2f;
-    }
+    private final static ThreeDPoint STATIC_POSITION = new ThreeDPoint(0, 0, -1);
+    private final static ThreeDPoint STATIC_LOOK_AT = new ThreeDPoint(0, 0, 0);
+
+    private ThreeDPoint position = new ThreeDPoint(0, 0.3f, -1);
+    private ThreeDPoint lookAt = new ThreeDPoint(0, -0.2f, 0);
 
     private static final float TIME_STEP = 1 / 120f; // 60 fps
 
@@ -59,9 +61,9 @@ public class WorldLock {
     private World mWorld = null;
     private Lock mWorldLock = new ReentrantLock();
 
-    public final float[] mDrawToScreenTransform = new float[16];
-    public final float[] mSolidWorldTransform = new float[16];
-    public final float[] mParticleTransform = new float[16];
+    private final float[] mDrawToScreenTransform = new float[16];
+    private final float[] mSolidWorldTransform = new float[16];
+    private final float[] mParticleTransform = new float[16];
 
     private static WorldLock sInstance = new WorldLock();
 
@@ -143,6 +145,17 @@ public class WorldLock {
         } else { //landscape
             Matrix.scaleM(mDrawToScreenTransform, 0, 1, 1 / screenRatio, 1);
         }
+
+        float[] mvpMatrix = new float[16];
+        createMVP(mvpMatrix, 0.5f, STATIC_POSITION, STATIC_LOOK_AT);
+
+        Matrix.multiplyMM(mDrawToScreenTransform, 0, mvpMatrix, 0, mDrawToScreenTransform, 0);
+    }
+
+    public float[] getScreenTransform(float distance){
+        float[] dest = Arrays.copyOf(mDrawToScreenTransform, 16);
+        Matrix.translateM(dest, 0, 0, 0, distance);
+        return dest;
     }
 
     public void stepWorld(){
@@ -244,7 +257,7 @@ public class WorldLock {
         normalizeToScreenRatio(transformFromPhysicsWorld);
 
         float[] mvpMatrix = new float[16];
-        createMVP(mvpMatrix, 0.25f);
+        createMVP(mvpMatrix, 0.25f, position, lookAt);
 
         Matrix.multiplyMM(mPerspectiveTransform, 0, mvpMatrix, 0, transformFromPhysicsWorld, 0);
     }
@@ -267,18 +280,18 @@ public class WorldLock {
         createUnstretchedTransform(transformFromPhysicsWorld, distance);
 
         float[] mvpMatrix = new float[16];
-        createMVP(mvpMatrix, 0.25f);
+        createMVP(mvpMatrix, 0.25f, position, lookAt);
 
         Matrix.multiplyMM(mPerspectiveTransform, 0, mvpMatrix, 0, transformFromPhysicsWorld, 0);
     }
 
-    private void createMVP(float[] destArray, float multiplier){
+    private void createMVP(float[] destArray, float multiplier, ThreeDPoint position, ThreeDPoint lookAt){
 
         float[] mViewMatrix = new float[16];
         float[] mProjectionMatrix = new float[16];
 
         createProjection(mProjectionMatrix, multiplier);
-        createViewMatrix(mViewMatrix);
+        createViewMatrix(mViewMatrix, position, lookAt);
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(destArray, 0, mProjectionMatrix, 0, mViewMatrix, 0);
@@ -290,7 +303,7 @@ public class WorldLock {
         Matrix.frustumM(destArray, 0, multiplier, -multiplier, -multiplier, multiplier, 0.5f, 1000.0f);
     }
 
-    private void createViewMatrix(float[] destArray){
+    private void createViewMatrix(float[] destArray, ThreeDPoint position, ThreeDPoint lookAt){
         Matrix.setIdentityM(destArray, 0);
 
         // Set the camera position (View matrix)

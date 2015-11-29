@@ -85,10 +85,10 @@ public class ParticleRenderer implements DrawableLayer {
                 PhysicsLoop.getInstance().sScreenHeight);
 
         // Copy the water particles to screen
-        mWaterScreenRenderer.draw(WorldLock.getInstance().mDrawToScreenTransform);
+        mWaterScreenRenderer.draw(WorldLock.getInstance().getScreenTransform(0));
 
         // Copy the other particles to screen
-        mScreenRenderer.draw(WorldLock.getInstance().mDrawToScreenTransform);
+        mScreenRenderer.draw(WorldLock.getInstance().getScreenTransform(0));
     }
 
     @Override
