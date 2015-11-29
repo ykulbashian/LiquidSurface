@@ -45,9 +45,15 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     private boolean paused = true;
     private boolean rendererChanged = false;
 
-    private RenderThread thread;
+    private RenderThread mGLThread;
 
     private int targetFps;
+    private int mDebugFlags;
+    private boolean mPreserveEGLContextOnPause;
+    private int mEGLContextClientVersion;
+    private GLSurfaceView.EGLConfigChooser mEGLConfigChooser;
+    private GLSurfaceView.EGLWindowSurfaceFactory mEGLWindowSurfaceFactory;
+    private GLSurfaceView.EGLContextFactory mEGLContextFactory;
 
     public GLTextureView(Context context) {
         super(context);
@@ -83,13 +89,20 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
 
     public void startThread(SurfaceTexture surface, int width, int height, float targetFramesPerSecond){
         Log.d(TAG, "Starting GLTextureView thread");
-        thread = new RenderThread();
+        mGLThread = new RenderThread();
         mSurface = surface;
         setDimensions(width, height);
         targetFrameDurationMillis = (int) ((1f/targetFramesPerSecond)*1000);
 
-        thread.start();
+        mGLThread.start();
 
+    }
+
+    private void checkRenderThreadState() {
+        if (mGLThread != null) {
+            throw new IllegalStateException(
+                    "setRenderer has already been called for this instance.");
+        }
     }
 
     @Override
@@ -99,9 +112,14 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
             mRenderer.onSurfaceChanged(mGl, width, height);
     }
 
-    public synchronized void setPaused(boolean isPaused){
-        Log.d(TAG, String.format("Setting GLTextureView paused to %s", isPaused));
-        paused = isPaused;
+    public synchronized void onPause(){
+        Log.d(TAG, String.format("Setting GLTextureView paused to %s", true));
+        paused = true;
+    }
+
+    public synchronized void onResume(){
+        Log.d(TAG, String.format("Setting GLTextureView paused to %s", false));
+        paused = false;
     }
 
     public synchronized boolean isPaused(){
@@ -115,16 +133,16 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     }
 
     public void stopThread(){
-        if(thread != null){
+        if(mGLThread != null){
             Log.d(TAG, "Stopping and joining GLTextureView");
             isRunning = false;
             try {
-                thread.join();
+                mGLThread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            thread = null;
+            mGLThread = null;
         }
 
     }
@@ -308,4 +326,47 @@ public class GLTextureView extends TextureView implements TextureView.SurfaceTex
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
     }
 
+    public void setDebugFlags(int debugFlags) {
+        mDebugFlags = debugFlags;
+    }
+
+    public int getDebugFlags(){
+        return mDebugFlags;
+    }
+
+    public void setPreserveEGLContextOnPause(boolean preserveOnPause) {
+        mPreserveEGLContextOnPause = preserveOnPause;
+    }
+
+    public boolean getPreserveEGLContextOnPause() {
+        return mPreserveEGLContextOnPause;
+    }
+    public void setEGLContextClientVersion(int version) {
+        checkRenderThreadState();
+        mEGLContextClientVersion = version;
+    }
+
+//    public void setEGLConfigChooser(boolean needDepth) {
+//        setEGLConfigChooser(new SimpleEGLConfigChooser(needDepth));
+//    }
+//
+//    public void setEGLConfigChooser(int redSize, int greenSize, int blueSize,
+//                                    int alphaSize, int depthSize, int stencilSize) {
+//        setEGLConfigChooser(new ComponentSizeChooser(redSize, greenSize,
+//                blueSize, alphaSize, depthSize, stencilSize));
+//    }
+//    public void setEGLConfigChooser(GLSurfaceView.EGLConfigChooser configChooser) {
+//        checkRenderThreadState();
+//        mEGLConfigChooser = configChooser;
+//    }
+
+    public void setEGLWindowSurfaceFactory(GLSurfaceView.EGLWindowSurfaceFactory factory) {
+        checkRenderThreadState();
+        mEGLWindowSurfaceFactory = factory;
+    }
+
+    public void setEGLContextFactory(GLSurfaceView.EGLContextFactory factory) {
+        checkRenderThreadState();
+        mEGLContextFactory = factory;
+    }
 }
