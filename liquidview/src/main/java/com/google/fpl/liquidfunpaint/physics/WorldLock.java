@@ -152,9 +152,9 @@ public class WorldLock {
         Matrix.multiplyMM(mDrawToScreenTransform, 0, mvpMatrix, 0, mDrawToScreenTransform, 0);
     }
 
-    public float[] getScreenTransform(float distance){
+    public float[] getScreenTransform(float x, float y, float distance){
         float[] dest = Arrays.copyOf(mDrawToScreenTransform, 16);
-        Matrix.translateM(dest, 0, 0, 0, distance);
+        Matrix.translateM(dest, 0, x, y, distance);
         return dest;
     }
 
