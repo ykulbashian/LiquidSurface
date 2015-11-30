@@ -1,69 +1,55 @@
-### **--currently the library only works in landscape mode, I'm working to fix that--**
-
 ![Sample liquid](screenshots/Screenshot_1.png)
+![Sample liquid](screenshots/Screenshot_2.png)
+
+***
+
+# What is LiquidSurface?
+LiquidSurface is a simple implementation of the LiquidFun library on a TextureView or GLSurfaceView.
+It comes with pre-built C++ libraries, so you don't have to rebuild them.
+It is designed to be plug-and-play and can be fit into any view hierarchy you like.
+You can:
+1. Change the background
+2. Create multiple independent liquid systems (unlike liquidfun paint)
+3. Create basic solid objects with bitmaps
+
+***
 
 # Running the sample
-To run this project you need to do the following:
-
-1. In terminal, go to the following folder:
-**<project root>/liquidview/src/main/Box2D/swig/jni**
-
-2. Run ndk-build in this folder. If you are one a Windows machine, use Cygwin.
-(I'm having difficulty integrating Gradle native code building on Windows, which is why you have to do it manually).
-
-This will generate the native (.so) libraries automatically and the rest should run correctly.
+The library comes with pre-built native binaries so you don't have to run ndkbuild.
+If you want to change the native libraries, you should rebuild using SWIG.
 
 ***
 
 # Using the Library
 
-### Add particle resume/pause
-In your activity, remember to resume particle animation in onResume():
-
-```java
-public void onResume(){
-    super.onResume();
-    LiquidTextureView.resumeParticles();
-}
-```
-
-and pause the particle animation in onPause():
-
-```java
-public void onPause(){
-    super.onPause();
-    LiquidTextureView.pauseParticles();
-}
-```
-
 ### Simple example
-The most simple example of an app is the following:
+The simplest usage of LiquidSurface is:
+
+```xml
+    <com.mycardboarddreams.liquidsurface.LiquidSurfaceView
+        android:id="@+id/liquid_surface"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
+```
 
 ```java
 public class SampleActivity extends ActionBarActivity {
 
-    LiquidTextureView ltv;
+    ILiquidWorld lw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sample);
 
-        ltv = (LiquidTextureView) findViewById(R.id.liquid_texture_view);
+        lw = (ILiquidWorld) findViewById(R.id.liquid_surface);
 
         /**
-         * Create a triangle of blue liquid
-         */
-        Point size = new Point();
-        getWindowManager().getDefaultDisplay().getSize(size);
-
-        int blueColor = 0xFF00FFFF;
-
-        ltv.createLiquidShape(new float[]{
-                size.x/2 - 200, size.y/2,
-                size.x/2 + 200, size.y/2,
-                size.x/2, size.y/2 + 400},
-                blueColor);
+        * Use an array of points to define a shape. The liquid is created inside that.
+        */
+        Vector2f[] circleVertices = MathHelper.createCircle(new Vector2f(500, 500), 400, 8);
+        ParticleGroup liquidShape = new ParticleGroup(circleVertices);
+        ltv.createParticles(liquidShape);
     }
 
     /**
@@ -72,16 +58,18 @@ public class SampleActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        ltv.resumeParticles();
+        lw.resumeParticles();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        ltv.pauseParticles();
+        lw.pauseParticles();
     }
 }
 ```
+
+***
 
 ### Background image
 If you'd like to change the background image, either replace the following file:
@@ -98,6 +86,7 @@ and change the following line:
     }
 ```
 
+***
 
 ### Debug
 If you want to debug the liquid physics, open the Renderer class
@@ -105,31 +94,47 @@ If you want to debug the liquid physics, open the Renderer class
 and set the following line:
 
 ```java
-public class Renderer extends Observable implements GLSurfaceView.Renderer{
+public class PhysicsLoop extends Observable<Float> implements DrawableLayer{
     ...
     public static final boolean DEBUG_DRAW = true;
     ...
 }
 ```
 
+***
 
-### TextureView
-The library uses a [TextureView](http://developer.android.com/reference/android/view/TextureView.html) instead of the usual GLSurfaceView.
-It also has a few helper methods to create blocks of liquid and solid barriers.
+### TextureView and GLSurfaceView
+The library can use a [TextureView](http://developer.android.com/reference/android/view/TextureView.html) or a [GLSurfaceView](http://developer.android.com/reference/android/opengl/GLSurfaceView.html).
+Both implement ILiquidWorld. 
+
+The liquid shapes are created from arrays of Vector2f points that define the outline of the shape. The values are relative to the width and height of the TextureView itself. Box2D requires that the shapes always be convex.
+Define a ParticleGroup then pass it into createParticles(). The particles are created before the next frame.
 
 ```java
-public void createLiquidShape(final float[] vertices, final int color){
+public void createParticles(ParticleGroup liquidShape){
     ...
 }
 
-public void createSolidShape(final float[] vertices){
+// you can also erase those particles.
+public void eraseParticles(ParticleEraser eraserShape){
     ...
 }
 ```
 
-Vertices are passed in in pairs of floats (x, y). The values are relative to the width and height of the TextureView itself.
+***
 
-There are other useful functions that will be added in later commits.
+### Particle Systems
+You can create particles in more than one particle system. Particles from separate systems don't interact. Particles from all systems interact with solid objects.
+
+Particle systems are organized by name. The name of default particle system is:
+```java
+public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
+
+    public static final String DEFAULT_PARTICLE_SYSTEM = "default_particle_system";
+    
+}
+```
+You can decide which system a particle group belongs to by passing in a name when you create a ParticleGroup. Using a name that doesn't exist will create a new system with that name.
 
 ***
 
@@ -147,4 +152,7 @@ In the file **src/main/Box2D/Box2D/Common/b2Settings.h**
 
 _b2_maxPolygonVertices_ is the maximum number of vertices per polygon. In the original code it's set to 8.
 
-I also created my own method to create a PolygonShape through pairs of floats.
+I also added a method to create a PolygonShape through pairs of floats.
+
+[Recent change]
+The shaders can now read the velocity of each particle too.
