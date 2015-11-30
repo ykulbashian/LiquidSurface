@@ -28,7 +28,7 @@ public class SampleActivity extends AppCompatActivity {
 
         ltv.clearAll();
         ParticleGroup liquidShape1 = new ParticleGroup(MathHelper.createCircle(getScreenCenter(), 400, 8));
-        ParticleGroup liquidShape2 = new ParticleGroup(MathHelper.createCircle(getScreenCenter(), 300, 8), LiquidPaint.LIQUID().setColor(0xFF0000FF), "SecondParticleSystem");
+        ParticleGroup liquidShape2 = new ParticleGroup(MathHelper.createCircle(getScreenCenter(), 300, 8), LiquidPaint.LIQUID(), "SecondParticleSystem");
         SolidShape solidShape = new SolidShape(MathHelper.createCircle(getScreenCenter(), 70, 8), "textures/smiley.png");
 
         ltv.createParticles(liquidShape1);
