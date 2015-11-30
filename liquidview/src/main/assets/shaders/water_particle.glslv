@@ -31,7 +31,6 @@ uniform vec3 uWeightParams; // Parameters for adding in particle weight.
 varying vec4 vColor;      // output color for fragment shader
 
 void main() {
-  gl_Position = uTransform * aPosition;
 
   gl_PointSize = uPointSize;
   vColor = aColor;
@@ -41,5 +40,9 @@ void main() {
 
   // Modulate the color by weight, if the weight is above the cutoff.
   vColor.rgb *= ((weight > uWeightParams[2]) ? 1.0 / weight : 1.0);
-  vColor.rgb *= (aVelocity.x > 10.0 && weight < uWeightParams[2] + 0.2) ? aVelocity.x : 1.0;
+  vColor.rgb *= (aVelocity.x > 100.0 && weight < uWeightParams[2] + 0.2) ? aVelocity.x : 1.0;
+
+  gl_Position = aPosition;
+  gl_Position.z = aVelocity.x/20.0;
+  gl_Position = uTransform * gl_Position;
 }

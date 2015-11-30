@@ -147,7 +147,7 @@ public class WorldLock {
         }
 
         float[] mvpMatrix = new float[16];
-        createMVP(mvpMatrix, 0.5f, STATIC_POSITION, STATIC_LOOK_AT);
+        createMVP(mvpMatrix, 0.25f, STATIC_POSITION, STATIC_LOOK_AT);
 
         Matrix.multiplyMM(mDrawToScreenTransform, 0, mvpMatrix, 0, mDrawToScreenTransform, 0);
     }
@@ -155,6 +155,12 @@ public class WorldLock {
     public float[] getScreenTransform(float x, float y, float distance){
         float[] dest = Arrays.copyOf(mDrawToScreenTransform, 16);
         Matrix.translateM(dest, 0, x, y, distance);
+        return dest;
+    }
+
+    public float[] getScreenTransform(float x, float y, float distance, float scale){
+        float[] dest = getScreenTransform(x, y, distance);
+        Matrix.scaleM(dest, 0, scale, 1, 1);
         return dest;
     }
 

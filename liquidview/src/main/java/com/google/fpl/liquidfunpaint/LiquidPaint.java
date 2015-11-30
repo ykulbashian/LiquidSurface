@@ -18,7 +18,7 @@ public class LiquidPaint {
     public static LiquidPaint SOLID() {return new LiquidPaint(Color.BLACK, ParticleFlag.elasticParticle, ParticleGroupFlag.rigidParticleGroup);}
     public static LiquidPaint ELASTIC() {return ELASTIC(Color.GREEN);}
     public static LiquidPaint WALL() {return new LiquidPaint(Color.BLACK, ParticleFlag.wallParticle, ParticleGroupFlag.rigidParticleGroup);}
-    public static LiquidPaint LIQUID() {return LIQUID(0xFF00AAFF);}
+    public static LiquidPaint LIQUID() {return LIQUID(0xFF00CCFF);}
 
     public static LiquidPaint LIQUID(int color) {return new LiquidPaint(color, ParticleFlag.waterParticle, ParticleGroupFlag.particleGroupCanBeEmpty);}
     public static LiquidPaint ELASTIC(int color) {return new LiquidPaint(color, ParticleFlag.elasticParticle, ParticleGroupFlag.rigidParticleGroup);}
