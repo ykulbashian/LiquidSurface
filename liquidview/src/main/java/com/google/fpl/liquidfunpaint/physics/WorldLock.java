@@ -158,6 +158,10 @@ public class WorldLock {
         return dest;
     }
 
+    public float getCameraDistance(){
+        return -1*(position.z + 1);
+    }
+
     public void stepWorld(){
         lock();
 
