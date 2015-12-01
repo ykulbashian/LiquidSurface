@@ -60,7 +60,7 @@ public class ParticleRenderer implements DrawableLayer {
 
     private static int NUM_SLICES = 20;
     private static float[] lateralDistances = new float[NUM_SLICES];
-    private static float WIDE_ANGLE = 30;
+    private static float WIDE_ANGLE = 23;
     static {
         for(int i = 0; i < lateralDistances.length; i++)
             lateralDistances[i] = (float) Math.sin((Math.random()*2*WIDE_ANGLE) - WIDE_ANGLE)*i/10;
@@ -94,8 +94,8 @@ public class ParticleRenderer implements DrawableLayer {
 
         // Copy the water particles to screen
         for(int i = NUM_SLICES; i >= 0; i--){
-            float distance = dist.getDistance() + i * 0.3f;
-            mWaterScreenRenderer.draw(WorldLock.getInstance().getScreenTransform(lateralDistances[i%lateralDistances.length], distance*0.15f-0.5f, distance, 1 + i*0.1f));
+            float distance = dist.getDistance() + i * 0.1f;
+            mWaterScreenRenderer.draw(WorldLock.getInstance().getScreenTransform(lateralDistances[i%lateralDistances.length], distance*0.15f-0.5f, distance, 1 + distance*1.0f));
         }
 
         // Copy the other particles to screen
