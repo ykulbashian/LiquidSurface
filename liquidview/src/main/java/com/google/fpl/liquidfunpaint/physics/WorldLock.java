@@ -41,13 +41,13 @@ public class WorldLock {
     private final static ThreeDPoint STATIC_POSITION = new ThreeDPoint(0, 0, -1);
     private final static ThreeDPoint STATIC_LOOK_AT = new ThreeDPoint(0, 0, 0);
 
-    private ThreeDPoint position = new ThreeDPoint(0, 0.3f, -1);
-    private ThreeDPoint lookAt = new ThreeDPoint(0, -0.2f, 0);
+    private ThreeDPoint position = new ThreeDPoint(0, 0.76f, -1);
+    private ThreeDPoint lookAt = new ThreeDPoint(0, 0.2f, 0);
 
-    private static final float TIME_STEP = 1 / 120f; // 60 fps
+    private static final float TIME_STEP = 1 / 180f; // 60 fps
 
     public static final float WORLD_SCALE = 2f;
-    public float sPhysicsWorldWidth =2* WORLD_SCALE;
+    public float sPhysicsWorldWidth = 2 * WORLD_SCALE;
     public float sPhysicsWorldHeight = WORLD_SCALE;
     public float sScreenWorldWidth = WORLD_SCALE;
     public float sScreenWorldHeight = WORLD_SCALE;
