@@ -1,6 +1,7 @@
 package com.google.fpl.liquidfunpaint.physics;
 
 import android.opengl.Matrix;
+import android.util.Log;
 
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.renderer.DebugRenderer;
@@ -204,6 +205,15 @@ public class WorldLock {
         pendingRunnables.add(runnable);
     }
 
+    private void addCameraCommand(Runnable cameraCommand){
+        addPhysicsCommand(cameraCommand);
+
+        if(pendingRunnables.contains(updateTransformations)){
+            pendingRunnables.remove(updateTransformations);
+        }
+        pendingRunnables.add(updateTransformations);
+    }
+
     public void clearPhysicsCommands(){
         pendingRunnables.clear();
     }
@@ -230,7 +240,7 @@ public class WorldLock {
     }
 
     public void translateCamera(final float x, final float y, final float z){
-        addPhysicsCommand(new Runnable() {
+        addCameraCommand(new Runnable() {
             @Override
             public void run() {
                 position.x += x;
@@ -242,11 +252,16 @@ public class WorldLock {
                 lookAt.z += z;
             }
         });
+    }
 
-        if(pendingRunnables.contains(updateTransformations)){
-            pendingRunnables.remove(updateTransformations);
-        }
-        pendingRunnables.add(updateTransformations);
+    public void rotateCamera(final float pan, final float tilt){
+        addCameraCommand(new Runnable() {
+            @Override
+            public void run() {
+                tiltDegrees = tilt;
+                panDegrees = pan;
+            }
+        });
     }
 
     public void perspectiveParticleTransform(float[] mPerspectiveTransform, float distance) {
