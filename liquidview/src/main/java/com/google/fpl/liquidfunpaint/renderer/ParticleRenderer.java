@@ -94,7 +94,8 @@ public class ParticleRenderer implements DrawableLayer {
 
         // Copy the water particles to screen
         for(int i = NUM_SLICES; i >= 0; i--){
-            mWaterScreenRenderer.draw(WorldLock.getInstance().getScreenTransform(lateralDistances[i%lateralDistances.length], 0, i*0.3f, 1 + i*0.1f));
+            float distance = dist.getDistance() + i * 0.3f;
+            mWaterScreenRenderer.draw(WorldLock.getInstance().getScreenTransform(lateralDistances[i%lateralDistances.length], distance*0.15f-0.5f, distance, 1 + i*0.1f));
         }
 
         // Copy the other particles to screen

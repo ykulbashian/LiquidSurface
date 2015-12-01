@@ -117,7 +117,7 @@ public class DrawableParticleSystem {
     public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial, DrawableDistance distance){
         ParticleSystems.mRenderSurface[0].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
-        mWaterParticleMaterial.beginRender(distance.getDistance() + WorldLock.getInstance().getCameraDistance());
+        mWaterParticleMaterial.beginRender(WorldLock.getInstance().getCameraDistance());
 
         // Set attribute arrays
         mWaterParticleMaterial.setVertexAttributeBuffer(
@@ -129,7 +129,7 @@ public class DrawableParticleSystem {
         mWaterParticleMaterial.setVertexAttributeBuffer(
                 "aWeight", mParticleWeightBuffer, 0);
 
-        float[] transform = WorldLock.getInstance().getParticleTransform(distance.getDistance());
+        float[] transform = WorldLock.getInstance().getParticleTransform(0);//distance.getDistance());
         // Set uniforms
         GLES20.glUniformMatrix4fv(
                 mWaterParticleMaterial.getUniformLocation("uTransform"),
@@ -166,7 +166,7 @@ public class DrawableParticleSystem {
         mParticleMaterial.setVertexAttributeBuffer(
                 "aColor", mParticleColorBuffer, 0);
 
-        float[] transform = WorldLock.getInstance().getParticleTransform(distance.getDistance());
+        float[] transform = WorldLock.getInstance().getParticleTransform(0);//distance.getDistance());
         // Set uniforms
         GLES20.glUniformMatrix4fv(
                 mParticleMaterial.getUniformLocation("uTransform"),
