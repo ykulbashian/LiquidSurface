@@ -36,7 +36,7 @@ void main() {
   vColor = aColor;
 
   // Square the weight to make a nicer curve, then apply scale and range shift.
-  float weight = aWeight * aWeight * uWeightParams[0] + uWeightParams[1];
+  float weight = 1.5 *aWeight * aWeight * uWeightParams[0] + uWeightParams[1];
 
   // Modulate the color by weight, if the weight is above the cutoff.
   vColor.rgb *= ((weight > uWeightParams[2]) ? 1.0 / weight : 1.0);

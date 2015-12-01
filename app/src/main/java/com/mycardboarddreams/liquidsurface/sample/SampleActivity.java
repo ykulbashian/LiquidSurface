@@ -27,7 +27,7 @@ public class SampleActivity extends AppCompatActivity {
         ltv = (ILiquidWorld) findViewById(R.id.liquid_texture_view);
 
         ParticleGroup liquidShape1 = new ParticleGroup(MathHelper.createCircle(getScreenCenter(), 500, 8), LiquidPaint.LIQUID(0xFF00CCFF));
-        ParticleGroup liquidShape2 = new ParticleGroup(MathHelper.createCircle(getScreenCenter(), 400, 8), LiquidPaint.LIQUID(0xFF00C6EE), "SecondParticleSystem");
+        ParticleGroup liquidShape2 = new ParticleGroup(MathHelper.createCircle(getScreenCenter(), 400, 8), LiquidPaint.LIQUID(0xFF00C6FF), "SecondParticleSystem");
         SolidShape solidShape = new SolidShape(MathHelper.createCircle(getScreenCenter(), 70, 8), "textures/smiley.png");
 
         ltv.createParticles(liquidShape1);

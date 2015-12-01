@@ -47,7 +47,7 @@ public class WorldLock {
     private static final float TIME_STEP = 1 / 180f; // 60 fps
 
     public static final float WORLD_SCALE = 2f;
-    public float sPhysicsWorldWidth = 1.5f * WORLD_SCALE;
+    public float sPhysicsWorldWidth = 2.0f * WORLD_SCALE;
     public float sPhysicsWorldHeight = WORLD_SCALE;
     public float sScreenWorldWidth = WORLD_SCALE;
     public float sScreenWorldHeight = WORLD_SCALE;
