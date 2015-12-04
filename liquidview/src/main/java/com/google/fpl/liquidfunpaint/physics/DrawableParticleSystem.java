@@ -10,6 +10,7 @@ import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfunpaint.LiquidPaint;
+import com.google.fpl.liquidfunpaint.renderer.BlurRenderer;
 import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
 import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
 import com.google.fpl.liquidfunpaint.renderer.RenderSurface;
@@ -132,10 +133,10 @@ public class DrawableParticleSystem {
         return polygon;
     }
 
-    public void onDraw(WaterParticleMaterial waterMaterial, ParticleMaterial nonWater, DrawableDistance dist){
+    public void onDraw(WaterParticleMaterial waterMaterial, ParticleMaterial nonWater, BlurRenderer blurRenderer, DrawableDistance dist){
         resetBuffers();
-        renderWaterParticles(waterMaterial, dist);
-        renderNonWaterParticles(nonWater, dist);
+        renderWaterParticles(waterMaterial, blurRenderer, dist);
+        renderNonWaterParticles(nonWater, blurRenderer, dist);
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         GLES20.glViewport(
@@ -176,7 +177,7 @@ public class DrawableParticleSystem {
         GLES20.glClearColor(0, 0, 0, 0);
     }
 
-    public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial, DrawableDistance distance){
+    public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial, BlurRenderer blurRenderer, DrawableDistance distance){
         mRenderSurface[0].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
         mWaterParticleMaterial.beginRender(WorldLock.getInstance().getCameraDistance());
@@ -213,11 +214,11 @@ public class DrawableParticleSystem {
 
         mRenderSurface[0].endRender();
 
-        ParticleSystems.mBlurRenderer.draw(mRenderSurface[0].getTexture(), mRenderSurface[0]);
+        blurRenderer.draw(mRenderSurface[0].getTexture(), mRenderSurface[0]);
     }
 
 
-    public void renderNonWaterParticles(ParticleMaterial mParticleMaterial, DrawableDistance distance){
+    public void renderNonWaterParticles(ParticleMaterial mParticleMaterial, BlurRenderer blurRenderer, DrawableDistance distance){
         mRenderSurface[1].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
         mParticleMaterial.beginRender();
@@ -249,7 +250,7 @@ public class DrawableParticleSystem {
 
         mRenderSurface[1].endRender();
 
-        ParticleSystems.mBlurRenderer.draw(mRenderSurface[1].getTexture(), mRenderSurface[1]);
+        blurRenderer.draw(mRenderSurface[1].getTexture(), mRenderSurface[1]);
     }
 
     /**

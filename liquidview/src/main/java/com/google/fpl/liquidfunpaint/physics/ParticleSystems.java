@@ -9,6 +9,7 @@ import com.google.fpl.liquidfunpaint.LiquidPaint;
 import com.google.fpl.liquidfunpaint.renderer.BlurRenderer;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
+import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 
@@ -21,32 +22,21 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
  * Created on 8/13/2015.
  */
-public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
+public class ParticleSystems extends HashMap<String, DrawableParticleSystem> implements DrawableLayer {
 
     public static final String DEFAULT_PARTICLE_SYSTEM = "default_particle_system";
-
-    public static BlurRenderer mBlurRenderer;
-
-    public void initializeRenderSurfaces(JSONObject json) throws JSONException {
-        for(DrawableParticleSystem system : values()){
-            system.initializeRenderSurfaces(json);
-        }
-
-        // Create the blur renderer
-        mBlurRenderer = new BlurRenderer();
-    }
 
     public static final int MAX_PARTICLE_COUNT = 5000;
     public static final float PARTICLE_RADIUS = 0.06f;
     public static final float PARTICLE_REPULSIVE_STRENGTH = 0.5f;
     public static final String JSON_FILE = "materials/particlerenderer.json";
 
-    private String materialFile;
     private JSONObject json;
 
     private static ParticleSystems sInstance = new ParticleSystems();
@@ -119,6 +109,7 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
         return count;
     }
 
+    @Override
     public void reset(){
         for(DrawableParticleSystem dps : values())
             dps.reset();
@@ -152,22 +143,37 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
 
     }
 
+    @Override
     public void onSurfaceChanged(GL10 gl, int width, int height){
+    }
+
+    @Override
+    public void onDrawFrame(GL10 gl) {
+
     }
 
     public DrawableParticleSystem get(){
         return get(DEFAULT_PARTICLE_SYSTEM);
     }
 
+    @Override
     public void init(Context context) {
 
         // Read in our specific json file
-        materialFile = FileHelper.loadAsset(context.getAssets(), JSON_FILE);
+        String materialFile = FileHelper.loadAsset(context.getAssets(), JSON_FILE);
         try {
             json = new JSONObject(materialFile);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        for(DrawableParticleSystem system : values()){
+            system.initializeRenderSurfaces(json);
+        }
+
     }
 
     public static class DrawableDistance {
@@ -201,8 +207,8 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
             particleSystem.clearParticles(normalizedVertices);
         }
 
-        public void onDraw(WaterParticleMaterial waterMaterial, ParticleMaterial nonWater){
-            particleSystem.onDraw(waterMaterial, nonWater, this);
+        public void onDraw(WaterParticleMaterial waterMaterial, ParticleMaterial nonWater, BlurRenderer blurRenderer){
+            particleSystem.onDraw(waterMaterial, nonWater, blurRenderer, this);
         }
     }
 }

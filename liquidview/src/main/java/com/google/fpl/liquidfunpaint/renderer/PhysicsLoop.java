@@ -34,9 +34,6 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -75,7 +72,7 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
 
     private ParticleRenderer mParticleRenderer;
     private SolidWorld mSolidWorld;
-    private ParticleSystems mPhysicsSystems;
+    private ParticleSystems mParticleSystems;
 
     WorldLock mWorldLock;
 
@@ -110,8 +107,8 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
         mParticleRenderer.init(context);
         mSolidWorld = SolidWorld.getInstance();
         mSolidWorld.init(context);
-        mPhysicsSystems = ParticleSystems.getInstance();
-        mPhysicsSystems.init(context);
+        mParticleSystems = ParticleSystems.getInstance();
+        mParticleSystems.init(context);
 
         if (DEBUG_DRAW) {
             mDebugRenderer = new DebugRenderer();
@@ -202,6 +199,7 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
             mWorldLock.setWorldDimensions(width, height);
 
             mParticleRenderer.onSurfaceChanged(gl, width, height);
+            mParticleSystems.onSurfaceChanged(gl, width, height);
             mSolidWorld.onSurfaceChanged(gl, width, height);
 
             if (DEBUG_DRAW) {
@@ -225,6 +223,7 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
             createBackground(mContext);
 
             mParticleRenderer.onSurfaceCreated(gl, config);
+            mParticleSystems.onSurfaceCreated(gl, config);
             mSolidWorld.onSurfaceCreated(gl, config);
 
             if (DEBUG_DRAW) {

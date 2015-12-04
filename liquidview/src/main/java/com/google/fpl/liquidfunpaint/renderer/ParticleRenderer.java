@@ -54,6 +54,8 @@ public class ParticleRenderer implements DrawableLayer {
 
     private String materialFile;
 
+    public static BlurRenderer mBlurRenderer;
+
 
     @Override
     public void init(Context context) {
@@ -73,13 +75,12 @@ public class ParticleRenderer implements DrawableLayer {
     }
 
     private void drawParticleSystemToScreen(ParticleSystems.DrawableDistance dist) {
-        dist.onDraw(mWaterParticleMaterial, mParticleMaterial);
+        dist.onDraw(mWaterParticleMaterial, mParticleMaterial, mBlurRenderer);
     }
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
 
-        ParticleSystems.getInstance().onSurfaceChanged(gl, width, height);
     }
 
     @Override
@@ -93,7 +94,8 @@ public class ParticleRenderer implements DrawableLayer {
 
             initializeNonWaterParticleMaterial(json);
 
-            ParticleSystems.getInstance().initializeRenderSurfaces(json);
+            // Create the blur renderer
+            mBlurRenderer = new BlurRenderer();
 
         } catch (JSONException ex) {
             Log.e(TAG, "Cannot parse " + JSON_FILE + "\n" + ex.getMessage());
