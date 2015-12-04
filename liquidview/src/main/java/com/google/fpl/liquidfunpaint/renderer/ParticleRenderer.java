@@ -18,7 +18,6 @@
 package com.google.fpl.liquidfunpaint.renderer;
 
 import com.google.fpl.liquidfunpaint.physics.ParticleSystems;
-import com.google.fpl.liquidfunpaint.physics.WorldLock;
 import com.google.fpl.liquidfunpaint.shader.Material;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
@@ -26,7 +25,6 @@ import com.google.fpl.liquidfunpaint.util.DrawableLayer;
 import com.google.fpl.liquidfunpaint.util.FileHelper;
 
 import android.content.Context;
-import android.opengl.GLES20;
 import android.util.Log;
 
 import org.json.*;
@@ -51,21 +49,11 @@ public class ParticleRenderer implements DrawableLayer {
 
     private WaterParticleMaterial mWaterParticleMaterial;
     private ParticleMaterial mParticleMaterial;
-    private ScreenRenderer mWaterScreenRenderer;
-    private ScreenRenderer mScreenRenderer;
 
     private Context mContext;
 
     private String materialFile;
 
-    private static int NUM_SLICES = 20;
-    private static float[] lateralDistances = new float[NUM_SLICES];
-    private static float WIDE_ANGLE = 23;
-    private static float frame = 0;
-    static {
-        for(int i = 0; i < lateralDistances.length; i++)
-            lateralDistances[i] = (float) Math.sin((Math.random()*2*WIDE_ANGLE) - WIDE_ANGLE)*i/10;
-    }
 
     @Override
     public void init(Context context) {
@@ -86,23 +74,6 @@ public class ParticleRenderer implements DrawableLayer {
 
     private void drawParticleSystemToScreen(ParticleSystems.DrawableDistance dist) {
         dist.onDraw(mWaterParticleMaterial, mParticleMaterial);
-
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-        GLES20.glViewport(
-                0, 0,
-                PhysicsLoop.getInstance().sScreenWidth,
-                PhysicsLoop.getInstance().sScreenHeight);
-
-        frame += 0.01f;
-        // Copy the water particles to screen
-        for(int i = NUM_SLICES; i >= 0; i--){
-            float distance = dist.getDistance() + i * 0.2f;
-            float x = (float) (lateralDistances[i % lateralDistances.length] * Math.sin(frame));
-            mWaterScreenRenderer.draw(WorldLock.getInstance().getScreenTransform(x, distance*0.15f-0.5f, distance, 1 + distance*0.5f));
-        }
-
-        // Copy the other particles to screen
-        mScreenRenderer.draw(WorldLock.getInstance().getScreenTransform(0, 0, 0));
     }
 
     @Override
@@ -114,7 +85,6 @@ public class ParticleRenderer implements DrawableLayer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         // Create the render surfaces
-        ParticleSystems.initializeRenderSurfaces();
 
         try {
             JSONObject json = new JSONObject(materialFile);
@@ -123,15 +93,7 @@ public class ParticleRenderer implements DrawableLayer {
 
             initializeNonWaterParticleMaterial(json);
 
-            // Scrolling texture when we copy water particles from FBO to screen
-            mWaterScreenRenderer = new ScreenRenderer(
-                    json.getJSONObject("waterParticleToScreen"),
-                    ParticleSystems.mRenderSurface[0].getTexture());
-
-            // Scrolling texture when we copy water particles from FBO to screen
-            mScreenRenderer = new ScreenRenderer(
-                    json.getJSONObject("otherParticleToScreen"),
-                    ParticleSystems.mRenderSurface[1].getTexture());
+            ParticleSystems.getInstance().initializeRenderSurfaces(json);
 
         } catch (JSONException ex) {
             Log.e(TAG, "Cannot parse " + JSON_FILE + "\n" + ex.getMessage());

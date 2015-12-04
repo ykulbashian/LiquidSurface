@@ -1,19 +1,19 @@
 package com.google.fpl.liquidfunpaint.physics;
 
-import android.graphics.Color;
+import android.content.Context;
 
 import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.ParticleSystemDef;
 import com.google.fpl.liquidfun.World;
 import com.google.fpl.liquidfunpaint.LiquidPaint;
 import com.google.fpl.liquidfunpaint.renderer.BlurRenderer;
-import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
-import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
-import com.google.fpl.liquidfunpaint.renderer.RenderSurface;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
-import com.google.fpl.liquidfunpaint.util.RenderHelper;
+import com.google.fpl.liquidfunpaint.util.FileHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,14 +30,11 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
 
     public static final String DEFAULT_PARTICLE_SYSTEM = "default_particle_system";
 
-    public static final RenderSurface[] mRenderSurface = new RenderSurface[2];
-
     public static BlurRenderer mBlurRenderer;
 
-    public static void initializeRenderSurfaces() {
-        for (int i = 0; i < mRenderSurface.length; i++) {
-            mRenderSurface[i] = new RenderSurface(ParticleRenderer.FB_SIZE, ParticleRenderer.FB_SIZE);
-            mRenderSurface[i].setClearColor(Color.argb(0, 255, 255, 255));
+    public void initializeRenderSurfaces(JSONObject json) throws JSONException {
+        for(DrawableParticleSystem system : values()){
+            system.initializeRenderSurfaces(json);
         }
 
         // Create the blur renderer
@@ -47,6 +44,10 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
     public static final int MAX_PARTICLE_COUNT = 5000;
     public static final float PARTICLE_RADIUS = 0.06f;
     public static final float PARTICLE_REPULSIVE_STRENGTH = 0.5f;
+    public static final String JSON_FILE = "materials/particlerenderer.json";
+
+    private String materialFile;
+    private JSONObject json;
 
     private static ParticleSystems sInstance = new ParticleSystems();
 
@@ -61,7 +62,6 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
             system.delete();
 
         clear();
-        createParticleSystem(world, DEFAULT_PARTICLE_SYSTEM);
     }
 
     public void createParticleSystem(World world, String key) {
@@ -75,7 +75,7 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
 
         psDef.delete();
 
-        DrawableParticleSystem newSystem = new DrawableParticleSystem(particleSystem);
+        DrawableParticleSystem newSystem = new DrawableParticleSystem(particleSystem, json);
 
         put(key, newSystem);
         addNewLayer(newSystem, getNextParticleDistance());
@@ -157,6 +157,17 @@ public class ParticleSystems extends HashMap<String, DrawableParticleSystem> {
 
     public DrawableParticleSystem get(){
         return get(DEFAULT_PARTICLE_SYSTEM);
+    }
+
+    public void init(Context context) {
+
+        // Read in our specific json file
+        materialFile = FileHelper.loadAsset(context.getAssets(), JSON_FILE);
+        try {
+            json = new JSONObject(materialFile);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public static class DrawableDistance {

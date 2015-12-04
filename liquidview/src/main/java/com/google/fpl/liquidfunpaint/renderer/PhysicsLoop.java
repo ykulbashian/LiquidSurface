@@ -75,6 +75,7 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
 
     private ParticleRenderer mParticleRenderer;
     private SolidWorld mSolidWorld;
+    private ParticleSystems mPhysicsSystems;
 
     WorldLock mWorldLock;
 
@@ -109,6 +110,8 @@ public class PhysicsLoop extends Observable<Float> implements DrawableLayer {
         mParticleRenderer.init(context);
         mSolidWorld = SolidWorld.getInstance();
         mSolidWorld.init(context);
+        mPhysicsSystems = ParticleSystems.getInstance();
+        mPhysicsSystems.init(context);
 
         if (DEBUG_DRAW) {
             mDebugRenderer = new DebugRenderer();

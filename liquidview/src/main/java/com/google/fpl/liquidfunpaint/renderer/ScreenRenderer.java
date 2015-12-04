@@ -16,7 +16,6 @@
 */
 package com.google.fpl.liquidfunpaint.renderer;
 
-import android.content.Context;
 import android.opengl.GLES20;
 
 import com.google.fpl.liquidfunpaint.shader.Material;

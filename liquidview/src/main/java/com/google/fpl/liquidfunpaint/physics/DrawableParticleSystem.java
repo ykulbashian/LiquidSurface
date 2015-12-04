@@ -1,5 +1,6 @@
 package com.google.fpl.liquidfunpaint.physics;
 
+import android.graphics.Color;
 import android.opengl.GLES20;
 
 import com.google.fpl.liquidfun.ParticleGroup;
@@ -9,11 +10,18 @@ import com.google.fpl.liquidfun.ParticleSystem;
 import com.google.fpl.liquidfun.PolygonShape;
 import com.google.fpl.liquidfun.Transform;
 import com.google.fpl.liquidfunpaint.LiquidPaint;
+import com.google.fpl.liquidfunpaint.renderer.ParticleRenderer;
+import com.google.fpl.liquidfunpaint.renderer.PhysicsLoop;
+import com.google.fpl.liquidfunpaint.renderer.RenderSurface;
+import com.google.fpl.liquidfunpaint.renderer.ScreenRenderer;
 import com.google.fpl.liquidfunpaint.shader.ParticleMaterial;
 import com.google.fpl.liquidfunpaint.shader.WaterParticleMaterial;
 import com.google.fpl.liquidfunpaint.util.MathHelper;
 import com.google.fpl.liquidfunpaint.util.Vector2f;
 import com.google.fpl.liquidfunpaint.physics.ParticleSystems.DrawableDistance;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -30,6 +38,15 @@ public class DrawableParticleSystem {
         MAT_IDENTITY.setIdentity();
     }
 
+    private static final int NUM_SLICES = 20;
+    private static final float[] lateralDistances = new float[NUM_SLICES];
+    private static final float WIDE_ANGLE = 23;
+    private float frame = 0;
+    static {
+        for(int i = 0; i < lateralDistances.length; i++)
+            lateralDistances[i] = (float) Math.sin((Math.random()*2*WIDE_ANGLE) - WIDE_ANGLE)*i/10;
+    }
+
 
     public final ParticleSystem particleSystem;
 
@@ -38,7 +55,12 @@ public class DrawableParticleSystem {
     public ByteBuffer mParticleVelocityBuffer;
     public ByteBuffer mParticleWeightBuffer;
 
-    public DrawableParticleSystem(ParticleSystem pSystem){
+    private ScreenRenderer mWaterScreenRenderer;
+    private ScreenRenderer mScreenRenderer;
+
+    public final RenderSurface[] mRenderSurface = new RenderSurface[2];
+
+    public DrawableParticleSystem(ParticleSystem pSystem, JSONObject json){
         particleSystem = pSystem;
 
         mParticlePositionBuffer = ByteBuffer
@@ -53,6 +75,29 @@ public class DrawableParticleSystem {
         mParticleWeightBuffer = ByteBuffer
                 .allocateDirect(4 * ParticleSystems.MAX_PARTICLE_COUNT)
                 .order(ByteOrder.nativeOrder());
+
+        initializeRenderSurfaces(json);
+    }
+
+    public void initializeRenderSurfaces(JSONObject json) {
+
+        for (int i = 0; i < mRenderSurface.length; i++) {
+            mRenderSurface[i] = new RenderSurface(ParticleRenderer.FB_SIZE, ParticleRenderer.FB_SIZE);
+            mRenderSurface[i].setClearColor(Color.argb(0, 255, 255, 255));
+        }
+
+        try {
+            // Scrolling texture when we copy water particles from FBO to screen
+            mWaterScreenRenderer = new ScreenRenderer(
+                    json.getJSONObject("waterParticleToScreen"),
+                    mRenderSurface[0].getTexture());
+
+            // Scrolling texture when we copy water particles from FBO to screen
+            mScreenRenderer = new ScreenRenderer(
+                    json.getJSONObject("otherParticleToScreen"),
+                    mRenderSurface[1].getTexture());
+        } catch (JSONException e){}
+
     }
 
     public int getParticleCount(){
@@ -87,10 +132,27 @@ public class DrawableParticleSystem {
         return polygon;
     }
 
-    public void onDraw(WaterParticleMaterial waterMaterial, ParticleMaterial nonWater, DrawableDistance distance){
+    public void onDraw(WaterParticleMaterial waterMaterial, ParticleMaterial nonWater, DrawableDistance dist){
         resetBuffers();
-        renderWaterParticles(waterMaterial, distance);
-        renderNonWaterParticles(nonWater, distance);
+        renderWaterParticles(waterMaterial, dist);
+        renderNonWaterParticles(nonWater, dist);
+
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        GLES20.glViewport(
+                0, 0,
+                PhysicsLoop.getInstance().sScreenWidth,
+                PhysicsLoop.getInstance().sScreenHeight);
+
+        frame += 0.01f;
+        // Copy the water particles to screen
+        for(int i = NUM_SLICES; i >= 0; i--){
+            float distance = dist.getDistance() + i * 0.2f;
+            float x = lateralDistances[i % lateralDistances.length] + (float) (lateralDistances[i % lateralDistances.length] * Math.sin(frame));
+            mWaterScreenRenderer.draw(WorldLock.getInstance().getScreenTransform(x, distance*0.15f-0.5f, distance, 1 + distance*0.5f));
+        }
+
+        // Copy the other particles to screen
+        mScreenRenderer.draw(WorldLock.getInstance().getScreenTransform(0, 0, 0));
     }
 
     public void resetBuffers(){
@@ -115,7 +177,7 @@ public class DrawableParticleSystem {
     }
 
     public void renderWaterParticles(WaterParticleMaterial mWaterParticleMaterial, DrawableDistance distance){
-        ParticleSystems.mRenderSurface[0].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
+        mRenderSurface[0].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
         mWaterParticleMaterial.beginRender(WorldLock.getInstance().getCameraDistance());
 
@@ -149,14 +211,14 @@ public class DrawableParticleSystem {
 
         mWaterParticleMaterial.endRender();
 
-        ParticleSystems.mRenderSurface[0].endRender();
+        mRenderSurface[0].endRender();
 
-        ParticleSystems.mBlurRenderer.draw(ParticleSystems.mRenderSurface[0].getTexture(), ParticleSystems.mRenderSurface[0]);
+        ParticleSystems.mBlurRenderer.draw(mRenderSurface[0].getTexture(), mRenderSurface[0]);
     }
 
 
     public void renderNonWaterParticles(ParticleMaterial mParticleMaterial, DrawableDistance distance){
-        ParticleSystems.mRenderSurface[1].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
+        mRenderSurface[1].beginRender(GLES20.GL_COLOR_BUFFER_BIT);
 
         mParticleMaterial.beginRender();
 
@@ -185,9 +247,9 @@ public class DrawableParticleSystem {
 
         mParticleMaterial.endRender();
 
-        ParticleSystems.mRenderSurface[1].endRender();
+        mRenderSurface[1].endRender();
 
-        ParticleSystems.mBlurRenderer.draw(ParticleSystems.mRenderSurface[1].getTexture(), ParticleSystems.mRenderSurface[1]);
+        ParticleSystems.mBlurRenderer.draw(mRenderSurface[1].getTexture(), mRenderSurface[1]);
     }
 
     /**
